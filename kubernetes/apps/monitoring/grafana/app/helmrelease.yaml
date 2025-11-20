@@ -1,0 +1,127 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+spec:
+  chart:
+    spec:
+      chart: grafana
+      version: 8.x
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+  interval: 1h
+  values:
+    replicas: 1
+
+    admin:
+      existingSecret: grafana-secret
+      userKey: admin-user
+      passwordKey: admin-password
+
+    env:
+      GF_EXPLORE_ENABLED: true
+      GF_SERVER_ROOT_URL: "https://grafana.\${SECRET_DOMAIN}"
+      GF_AUTH_ANONYMOUS_ENABLED: false
+      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
+      GF_DATE_FORMATS_FULL_DATE: "MMM Do, YYYY hh:mm:ss a"
+      GF_DATE_FORMATS_INTERVAL_SECOND: "hh:mm:ss a"
+      GF_DATE_FORMATS_INTERVAL_MINUTE: "hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_HOUR: "DD/MM hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
+      GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
+      GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: VictoriaMetrics
+            type: prometheus
+            uid: victoriametrics
+            access: proxy
+            url: http://victoria-metrics-server:8428
+            isDefault: true
+            jsonData:
+              timeInterval: 30s
+              httpMethod: POST
+            editable: false
+
+          - name: VictoriaLogs
+            type: victorialogs-datasource
+            uid: victorialogs
+            access: proxy
+            url: http://victoria-logs-server:9428/select/logsql/query
+            jsonData:
+              httpMethod: POST
+            editable: false
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+
+    dashboards:
+      default:
+        victoriametrics:
+          gnetId: 11176  # VictoriaMetrics overview
+          revision: 18
+          datasource: VictoriaMetrics
+        kubernetes-cluster:
+          gnetId: 7249  # Kubernetes Cluster
+          revision: 1
+          datasource: VictoriaMetrics
+        kubernetes-pods:
+          gnetId: 6417  # Kubernetes Pods
+          revision: 1
+          datasource: VictoriaMetrics
+        node-exporter:
+          gnetId: 1860  # Node Exporter Full
+          revision: 37
+          datasource: VictoriaMetrics
+
+    plugins:
+      - grafana-piechart-panel
+      - grafana-worldmap-panel
+      - victorialogs-datasource
+
+    persistence:
+      enabled: true
+      storageClassName: local-path
+      size: 10Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 80
+      targetPort: 3000
+
+    ingress:
+      enabled: false
+
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 472
+      runAsGroup: 472
+      fsGroup: 472
