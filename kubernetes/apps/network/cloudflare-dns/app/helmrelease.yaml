@@ -26,9 +26,9 @@ spec:
     triggerLoopOnEvent: true
     policy: sync
     sources: ["crd", "gateway-httproute"]
-    txtPrefix: 
+    txtPrefix:
     txtOwnerId: default
-    domainFilters: ["${SECRET_DOMAIN}"]
+    domainFilters: ["alexieff.io"]
     serviceMonitor:
       enabled: true
     podAnnotations:
