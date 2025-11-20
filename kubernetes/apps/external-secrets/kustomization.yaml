@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./external-secrets-operator/ks.yaml
+  - ./onepassword-secret-store/ks.yaml
