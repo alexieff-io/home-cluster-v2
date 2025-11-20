@@ -1,0 +1,18 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app onepassword-connect
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: onepassword-connect
+  interval: 1h
+  values:
+    connect:
+      credentials: onepassword-connect-secret
+      credentialsKey: 1password-credentials.json
+    operator:
+      create: false
+      token:
+        value: ""

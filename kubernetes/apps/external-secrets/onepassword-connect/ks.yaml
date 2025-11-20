@@ -2,14 +2,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: onepassword-secret-store
+  name: onepassword-connect
   namespace: flux-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/external-secrets/onepassword-secret-store/app
+  path: ./kubernetes/apps/external-secrets/onepassword-connect/app
   dependsOn:
     - name: external-secrets-operator
-    - name: onepassword-connect
   prune: true
   sourceRef:
     kind: GitRepository
