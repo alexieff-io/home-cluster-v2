@@ -94,8 +94,7 @@ spec:
     plugins:
       - grafana-piechart-panel
       - grafana-worldmap-panel
-      # victorialogs-datasource not available in official plugin registry yet
-
+      - victoriametrics-logs-datasource
     persistence:
       enabled: true
       storageClassName: longhorn
