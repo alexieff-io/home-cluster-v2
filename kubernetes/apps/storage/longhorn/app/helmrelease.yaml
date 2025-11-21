@@ -1,0 +1,142 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: longhorn
+spec:
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.7.x
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+  interval: 1h
+  timeout: 15m
+  values:
+    # Persistence settings
+    persistence:
+      defaultClass: true
+      defaultClassReplicaCount: 3
+      reclaimPolicy: Delete
+      migratable: false
+      recurringJobSelector:
+        enable: false
+
+    # Default settings
+    defaultSettings:
+      backupTarget: ""
+      backupTargetCredentialSecret: ""
+      allowRecurringJobWhileVolumeDetached: false
+      createDefaultDiskLabeledNodes: false
+      defaultDataPath: /var/lib/longhorn
+      defaultDataLocality: disabled
+      replicaSoftAntiAffinity: true
+      replicaAutoBalance: best-effort
+      storageOverProvisioningPercentage: 200
+      storageMinimalAvailablePercentage: 25
+      upgradeChecker: true
+      defaultReplicaCount: 3
+      defaultLonghornStaticStorageClass: longhorn-static
+      backupstorePollInterval: 300
+      failedBackupTTL: 1440
+      restoreVolumeRecurringJobs: false
+      recurringSuccessfulJobsHistoryLimit: 1
+      recurringFailedJobsHistoryLimit: 1
+      supportBundleFailedHistoryLimit: 1
+      taintToleration: ""
+      systemManagedComponentsNodeSelector: ""
+      priorityClass: ""
+      autoSalvage: true
+      autoDeletePodWhenVolumeDetachedUnexpectedly: true
+      disableSchedulingOnCordonedNode: true
+      replicaZoneSoftAntiAffinity: true
+      nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+      allowNodeDrainWithLastHealthyReplica: false
+      mkfsExt4Parameters: ""
+      disableReplicaRebuild: false
+      replicaReplenishmentWaitInterval: 600
+      concurrentReplicaRebuildPerNodeLimit: 5
+      concurrentVolumeBackupRestorePerNodeLimit: 5
+      disableRevisionCounter: true
+      systemManagedPodsImagePullPolicy: if-not-present
+      allowVolumeCreationWithDegradedAvailability: true
+      autoCleanupSystemGeneratedSnapshot: true
+      concurrentAutomaticEngineUpgradePerNodeLimit: 0
+      backingImageCleanupWaitInterval: 60
+      backingImageRecoveryWaitInterval: 300
+      guaranteedEngineManagerCPU: 12
+      guaranteedReplicaManagerCPU: 12
+      kubernetesClusterAutoscalerEnabled: false
+      orphanAutoDeletion: true
+      storageNetwork: ""
+      deletingConfirmationFlag: true
+      engineReplicaTimeout: 8
+      snapshotDataIntegrity: disabled
+      snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: false
+      snapshotDataIntegrityCronjob: "0 0 */7 * *"
+      removeSnapshotsDuringFilesystemTrim: enabled
+      fastReplicaRebuildEnabled: false
+      replicaFileSyncHttpClientTimeout: 30
+
+    # Longhorn UI service
+    service:
+      ui:
+        type: ClusterIP
+        nodePort: null
+
+    # Enable ServiceMonitor for Prometheus
+    serviceMonitor:
+      enabled: true
+
+    # Enable metrics
+    metrics:
+      serviceMonitor:
+        enabled: true
+
+    # Longhorn Manager settings
+    longhornManager:
+      priorityClass: ~
+      tolerations: []
+      nodeSelector: {}
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+
+    # Longhorn Driver settings
+    longhornDriver:
+      priorityClass: ~
+      tolerations: []
+      nodeSelector: {}
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+
+    # Longhorn UI settings
+    longhornUI:
+      priorityClass: ~
+      tolerations: []
+      nodeSelector: {}
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+      replicas: 2
+
+    # Ingress disabled (using HTTPRoute instead)
+    ingress:
+      enabled: false
+
+    # Enable Prometheus ServiceMonitor
+    enablePSP: false
+
+    # Annotations for ServiceMonitor
+    annotations: {}
