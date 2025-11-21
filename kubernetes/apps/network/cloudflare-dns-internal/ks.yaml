@@ -12,6 +12,4 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: false
-  dependsOn:
-    - name: cloudflare-dns
   targetNamespace: network
