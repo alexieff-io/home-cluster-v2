@@ -18,8 +18,8 @@ spec:
       name: server
       persistentVolume:
         enabled: true
-        storageClass: local-path
-        size: 20Gi
+        storageClass: longhorn
+        size: 512Gi
       retentionPeriod: "7d"
       service:
         servicePort: 9428
