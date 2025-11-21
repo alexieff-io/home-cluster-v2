@@ -15,7 +15,7 @@ spec:
   values:
     server:
       enabled: true
-      name: server
+      name: server-metrics
       persistentVolume:
         enabled: true
         storageClass: longhorn
