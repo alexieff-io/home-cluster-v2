@@ -1,0 +1,52 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app node-exporter
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: prometheus-community
+  chart: prometheus-node-exporter
+  interval: 1h
+  values:
+    fullnameOverride: *app
+
+    # Run on all nodes including control plane
+    hostNetwork: true
+    hostPID: true
+
+    # Tolerate control plane taints
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+
+    # Prometheus annotations for VictoriaMetrics discovery
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9100"
+
+    service:
+      type: ClusterIP
+      port: 9100
+      targetPort: 9100
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
+
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+
+    # Enable common collectors
+    extraArgs:
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+      - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$
