@@ -49,14 +49,15 @@ spec:
               httpMethod: POST
             editable: false
 
-          - name: VictoriaLogs
-            type: victorialogs-datasource
-            uid: victorialogs
-            access: proxy
-            url: http://victoria-logs-server:9428/select/logsql/query
-            jsonData:
-              httpMethod: POST
-            editable: false
+          # VictoriaLogs datasource commented out until plugin is available
+          # - name: VictoriaLogs
+          #   type: victorialogs-datasource
+          #   uid: victorialogs
+          #   access: proxy
+          #   url: http://victoria-logs-server:9428/select/logsql/query
+          #   jsonData:
+          #     httpMethod: POST
+          #   editable: false
 
     dashboardProviders:
       dashboardproviders.yaml:
@@ -93,7 +94,7 @@ spec:
     plugins:
       - grafana-piechart-panel
       - grafana-worldmap-panel
-      - victorialogs-datasource
+      # victorialogs-datasource not available in official plugin registry yet
 
     persistence:
       enabled: true
