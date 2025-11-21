@@ -5,7 +5,7 @@ metadata:
   name: longhorn-ui
   namespace: longhorn-system
 spec:
-  hostnames: ["longhorn.\${SECRET_DOMAIN}"]
+  hostnames: ["{{ .Release.Name }}.${SECRET_DOMAIN}"]
   parentRefs:
     - name: envoy-internal
       namespace: network
