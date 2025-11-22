@@ -38,10 +38,17 @@ rules:
     resources:
       - namespaces
       - events
+      - pods
+      - services
     verbs: ["get", "list", "watch"]
   - apiGroups: ["apps"]
     resources:
       - deployments
       - daemonsets
       - statefulsets
+      - replicasets
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - ingresses
     verbs: ["get", "list", "watch"]
