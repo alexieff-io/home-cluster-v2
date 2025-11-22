@@ -13,6 +13,10 @@ rules:
       - helmcharts
       - buckets
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["infra.toolkit.fluxcd.io"]
+    resources:
+      - terraforms
+    verbs: ["get", "list", "watch"]    
   - apiGroups: ["kustomize.toolkit.fluxcd.io"]
     resources:
       - kustomizations
