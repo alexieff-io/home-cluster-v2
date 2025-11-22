@@ -9,6 +9,9 @@ spec:
     name: flux-instance
   interval: 1h
   values:
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
     instance:
       distribution:
         artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.33.0
