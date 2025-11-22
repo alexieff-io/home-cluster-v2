@@ -7,6 +7,6 @@ components:
   - ../../components/sops
 
 resources:
-  - ./namespace.yaml
-  - ./echo/ks.yaml
-  - ./librechat/ks.yaml
+#  - ./namespace.yaml
+#  - ./echo/ks.yaml
+#  - ./librechat/ks.yaml
