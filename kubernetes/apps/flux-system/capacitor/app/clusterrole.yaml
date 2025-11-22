@@ -13,7 +13,7 @@ rules:
       - helmcharts
       - buckets
     verbs: ["get", "list", "watch"]
-  - apiGroups: ["infra.toolkit.fluxcd.io"]
+  - apiGroups: ["infra.contrib.fluxcd.io"]
     resources:
       - terraforms
     verbs: ["get", "list", "watch"]    
