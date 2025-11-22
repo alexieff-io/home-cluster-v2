@@ -3,7 +3,6 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: cloudflare-dns-internal
-  namespace: flux-system
 spec:
   interval: 1h
   path: ./kubernetes/apps/network/cloudflare-dns-internal/app
