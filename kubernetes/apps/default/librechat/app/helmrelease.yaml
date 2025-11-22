@@ -62,6 +62,8 @@ spec:
     # MongoDB configuration
     mongodb:
       enabled: true
+      image:
+        tag: "8.0-debian-12"  # Use stable tag instead of specific version
       auth:
         rootPassword: "" # Will be auto-generated
         username: librechat
