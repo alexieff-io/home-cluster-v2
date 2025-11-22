@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: capacitor
+  namespace: flux-system
+spec:
+  hostnames: ["capacitor.k8s.alexieff.io"]
+  parentRefs:
+    - name: envoy-external
+      namespace: network
+      sectionName: https
+  rules:
+    - backendRefs:
+        - name: capacitor
+          port: 9000
