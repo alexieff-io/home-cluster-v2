@@ -34,9 +34,6 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
-          env:
-            - name: NAMESPACE
-              value: "flux-system"
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
