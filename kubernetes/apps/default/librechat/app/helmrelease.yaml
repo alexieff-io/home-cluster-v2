@@ -62,9 +62,6 @@ spec:
     # MongoDB configuration
     mongodb:
       enabled: true
-      image:
-        registry: public.ecr.aws
-        global.security.allowInsecureImages: true
       auth:
         rootPassword: "" # Will be auto-generated
         username: librechat
