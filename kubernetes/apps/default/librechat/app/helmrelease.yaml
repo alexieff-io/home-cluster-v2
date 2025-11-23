@@ -63,7 +63,7 @@ spec:
     mongodb:
       enabled: true
       image:
-        tag: latest
+        tag: "latest"
       auth:
         rootPassword: "" # Will be auto-generated
         username: librechat
