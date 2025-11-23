@@ -55,7 +55,6 @@ spec:
       - daemonsets
       - deployments
       - endpoints
-      - gotk_resource_info
       - horizontalpodautoscalers
       - ingresses
       - jobs

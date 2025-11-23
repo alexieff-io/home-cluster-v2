@@ -62,10 +62,6 @@ spec:
     # MongoDB configuration
     mongodb:
       enabled: true
-      image:
-        registry: public.ecr.aws
-        repository: bitnami/mongodb
-        tag: "8.0.12"
       auth:
         rootPassword: "" # Will be auto-generated
         username: librechat
