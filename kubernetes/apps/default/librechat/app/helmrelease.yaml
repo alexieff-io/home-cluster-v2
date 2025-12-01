@@ -31,6 +31,26 @@ spec:
                   mountPath: /app/librechat.yaml
                   subPath: librechat.yaml
                   readOnly: true
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: APP_TITLE
+                  value: "LibreChat"
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: ALLOW_EMAIL_LOGIN
+                  value: "true"
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: ALLOW_REGISTRATION
+                  value: "true"
+              - op: add
+                path: /spec/template/spec/containers/0/env/-
+                value:
+                  name: ALLOW_SOCIAL_LOGIN
+                  value: "false"
   values:
     # LibreChat configuration
     config:
@@ -42,19 +62,6 @@ spec:
       allowEmailLogin: true
       allowRegistration: true
       allowSocialLogin: false
-
-    # Environment variables for LibreChat
-    env:
-      - name: APP_TITLE
-        value: "LibreChat"
-      - name: HOST
-        value: "https://chat.k8s.alexieff.io"
-      - name: ALLOW_EMAIL_LOGIN
-        value: "true"
-      - name: ALLOW_REGISTRATION
-        value: "true"
-      - name: ALLOW_SOCIAL_LOGIN
-        value: "false"
 
     # Custom librechat.yaml configuration
     configYamlContent: |
