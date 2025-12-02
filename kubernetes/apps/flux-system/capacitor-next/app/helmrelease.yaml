@@ -54,7 +54,7 @@ spec:
 
     # Use secrets from ExternalSecret
     existingSecret:
-      name: capacitor-next-credentials
+      name: capacitor-next
 
     # Cluster configuration - in-cluster access
     clusters:
