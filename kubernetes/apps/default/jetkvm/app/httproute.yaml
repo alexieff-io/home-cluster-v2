@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jetkvm-cloud-api
+  namespace: default
+  labels:
+    app.kubernetes.io/name: jetkvm-cloud-api
+spec:
+  parentRefs:
+    - name: envoy-external
+      namespace: network
+      sectionName: https
+  hostnames:
+    - "jetkvm-api.k8s.alexieff.io"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: jetkvm-cloud-api
+          port: 3000

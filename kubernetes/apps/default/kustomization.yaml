@@ -8,4 +8,5 @@ components:
 
 resources:
   - ./namespace.yaml
+  - ./jetkvm/ks.yaml
   - ./librechat/ks.yaml
