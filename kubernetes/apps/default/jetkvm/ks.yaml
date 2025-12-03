@@ -21,4 +21,6 @@ spec:
   timeout: 5m
   dependsOn:
     - name: cloudnative-pg
-    - name: external-secrets-stores
+      namespace: flux-system
+    - name: onepassword-secret-store
+      namespace: flux-system
