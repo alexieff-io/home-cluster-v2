@@ -5,3 +5,4 @@ namespace: monitoring
 resources:
   - ./helmrepository.yaml
   - ./helmrelease.yaml
+  - ./vmservicescrape.yaml
