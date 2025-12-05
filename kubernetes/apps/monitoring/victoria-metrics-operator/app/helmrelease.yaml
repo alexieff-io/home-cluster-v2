@@ -50,8 +50,6 @@ spec:
     serviceMonitor:
       enabled: false
 
-    # Admission webhooks
+    # Admission webhooks - disabled due to timing issues with converter
     admissionWebhooks:
-      enabled: true
-      certManager:
-        enabled: true
+      enabled: false
