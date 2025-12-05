@@ -47,7 +47,7 @@ spec:
             jsonData:
               timeInterval: 30s
               httpMethod: POST
-            editable: false
+            editable: true
           - name: VictoriaLogs
             type: victorialogs-datasource
             uid: victorialogs
