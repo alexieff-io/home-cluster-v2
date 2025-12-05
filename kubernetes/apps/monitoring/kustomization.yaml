@@ -5,6 +5,7 @@ resources:
   - ./namespace.yaml
   - ./kube-state-metrics/ks.yaml
   - ./node-exporter/ks.yaml
+  - ./victoria-metrics-operator/ks.yaml
   - ./victoria-metrics/ks.yaml
   - ./victoria-logs/ks.yaml
   - ./grafana/ks.yaml
