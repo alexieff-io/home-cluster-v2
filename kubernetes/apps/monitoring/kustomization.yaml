@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./kube-state-metrics/ks.yaml
+  - ./kubelet-cadvisor/ks.yaml
   - ./node-exporter/ks.yaml
   - ./victoria-metrics-operator/ks.yaml
   - ./vmsingle/ks.yaml
