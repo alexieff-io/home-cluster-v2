@@ -19,3 +19,11 @@ spec:
         lbipam.cilium.io/ips: "10.69.0.26"
       externalTrafficPolicy: Cluster
     watchedResources: ["HTTPRoute", "Service"]
+    metrics:
+      enabled: true
+      port: 9153
+      service:
+        enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s

@@ -88,6 +88,22 @@ spec:
           gnetId: 1860  # Node Exporter Full
           revision: 37
           datasource: VictoriaMetrics
+        etcd:
+          gnetId: 3070  # etcd by Prometheus
+          revision: 3
+          datasource: VictoriaMetrics
+        kubernetes-apiserver:
+          gnetId: 15761  # Kubernetes API Server
+          revision: 17
+          datasource: VictoriaMetrics
+        flux-cluster:
+          gnetId: 16714  # Flux Cluster Stats
+          revision: 1
+          datasource: VictoriaMetrics
+        flux-control-plane:
+          gnetId: 16213  # Flux Control Plane
+          revision: 1
+          datasource: VictoriaMetrics
 
     plugins:
       - grafana-piechart-panel
