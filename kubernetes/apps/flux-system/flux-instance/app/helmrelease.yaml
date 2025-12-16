@@ -25,7 +25,7 @@ spec:
         - notification-controller
       sync:
         kind: GitRepository
-        url: "https://github.com/alexieff/home-cluster-v2.git"
+        url: "https://github.com/alexieff-io/home-cluster-v2.git"
         ref: "refs/heads/main"
         path: kubernetes/flux/cluster
       commonMetadata:
