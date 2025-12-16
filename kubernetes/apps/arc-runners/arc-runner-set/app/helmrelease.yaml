@@ -16,8 +16,8 @@ spec:
     remediation:
       retries: 3
   values:
-    # IMPORTANT: Update this to your repository URL
-    githubConfigUrl: "https://github.com/alexieff/home-cluster-v2"
+    # Organization-level runners for all repos in alexieff-io
+    githubConfigUrl: "https://github.com/alexieff-io"
 
     # GitHub App authentication
     githubConfigSecret: arc-github-app-secret
