@@ -1,0 +1,46 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: arc-runner-set
+spec:
+  chart:
+    spec:
+      chart: gha-runner-scale-set
+      version: 0.x
+      sourceRef:
+        kind: HelmRepository
+        name: actions-runner-controller
+  interval: 1h
+  install:
+    remediation:
+      retries: 3
+  values:
+    # IMPORTANT: Update this to your repository URL
+    githubConfigUrl: "https://github.com/alexieff/home-cluster-v2"
+
+    # GitHub App authentication
+    githubConfigSecret: arc-github-app-secret
+
+    # Runner configuration
+    minRunners: 0
+    maxRunners: 5
+
+    # Runner pod template
+    template:
+      spec:
+        containers:
+          - name: runner
+            image: ghcr.io/actions/actions-runner:latest
+            command: ["/home/runner/run.sh"]
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
+    # Controller service account (in arc-systems namespace)
+    controllerServiceAccount:
+      namespace: arc-systems
+      name: arc-controller-gha-rs-controller
