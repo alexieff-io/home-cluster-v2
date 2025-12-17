@@ -55,7 +55,7 @@ spec:
             url: http://victoria-logs-victoria-logs-single-server:9428/
             jsonData:
               httpMethod: POST
-            editable: false
+            editable: true
 
     dashboardProviders:
       dashboardproviders.yaml:
