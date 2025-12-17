@@ -23,7 +23,7 @@ spec:
     githubConfigSecret: arc-github-app-secret
 
     # Runner configuration
-    minRunners: 0
+    minRunners: 1
     maxRunners: 5
 
     # Runner pod template
