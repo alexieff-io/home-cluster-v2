@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zone-editor
+  namespace: default
+spec:
+  hostnames: ["zone.k8s.alexieff.io"]
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: https
+  rules:
+    - backendRefs:
+        - name: zone-editor-zone-editor
+          port: 8099
