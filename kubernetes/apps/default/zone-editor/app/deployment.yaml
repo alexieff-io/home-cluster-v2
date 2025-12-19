@@ -29,14 +29,9 @@ spec:
             - name: http
               containerPort: 8099
               protocol: TCP
-          env:
-            - name: HA_URL
-              value: "http://homeassistant.local:8123"
-            - name: HA_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: zone-editor
-                  key: HA_TOKEN
+          envFrom:
+            - secretRef:
+                name: zone-editor
           livenessProbe:
             httpGet:
               path: /
