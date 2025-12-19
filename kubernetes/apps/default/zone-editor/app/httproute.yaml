@@ -13,4 +13,4 @@ spec:
   rules:
     - backendRefs:
         - name: zone-editor-zone-editor
-          port: 8099
+          port: 5000
