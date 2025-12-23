@@ -48,8 +48,20 @@ spec:
               - op: add
                 path: /spec/template/spec/containers/0/command
                 value: ["/app/bff-server"]
-              - op: remove
-                path: /spec/template/metadata/labels/control-plane
+          - target:
+              kind: Deployment
+              name: lynq-controller-manager
+            patch: |
+              - op: add
+                path: /spec/template/metadata/labels/app.kubernetes.io~1component
+                value: manager
+          - target:
+              kind: Service
+              name: lynq-webhook-service
+            patch: |
+              - op: add
+                path: /spec/selector/app.kubernetes.io~1component
+                value: manager
           - target:
               kind: ClusterRole
               name: lynq-dashboard
