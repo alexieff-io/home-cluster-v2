@@ -10,6 +10,11 @@ spec:
     name: bitnami-mysql
   interval: 1h
   values:
+    image:
+      registry: docker.io
+      repository: mysql
+      tag: "8.4"
+
     auth:
       database: tenant_registry
       username: tenant_user
