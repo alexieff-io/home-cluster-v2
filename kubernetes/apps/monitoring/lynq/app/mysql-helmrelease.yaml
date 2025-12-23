@@ -5,13 +5,9 @@ metadata:
   name: lynq-mysql
   namespace: lynq-system
 spec:
-  chart:
-    spec:
-      chart: mysql
-      version: "14.x"
-      sourceRef:
-        kind: HelmRepository
-        name: bitnami
+  chartRef:
+    kind: OCIRepository
+    name: bitnami-mysql
   interval: 1h
   values:
     auth:
