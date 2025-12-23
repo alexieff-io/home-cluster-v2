@@ -5,3 +5,8 @@ resources:
   - ./helmrelease.yaml
   - ./helmrepository.yaml
   - ./httproute.yaml
+  - ./mysql-helmrepository.yaml
+  - ./mysql-helmrelease.yaml
+  - ./externalsecret.yaml
+  - ./lynqhub.yaml
+  - ./lynqform.yaml

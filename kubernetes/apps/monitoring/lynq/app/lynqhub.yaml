@@ -1,0 +1,36 @@
+---
+apiVersion: operator.lynq.sh/v1
+kind: LynqHub
+metadata:
+  name: lynq-registry
+  namespace: lynq-system
+spec:
+  source:
+    type: mysql
+    syncInterval: "30s"
+    mysql:
+      host: lynq-mysql.lynq-system.svc.cluster.local
+      port: 3306
+      database: tenant_registry
+      table: nodes
+      username: tenant_user
+      passwordRef:
+        name: lynq-mysql-secret
+        key: mysql-password
+  valueMappings:
+    - column: uid
+      variable: uid
+    - column: activate
+      variable: activate
+    - column: host_or_url
+      variable: nodeUrl
+    - column: deploy_image
+      variable: deployImage
+    - column: plan_id
+      variable: planId
+    - column: max_users
+      variable: maxUsers
+    - column: storage_gb
+      variable: storageGb
+    - column: custom_config
+      variable: customConfig

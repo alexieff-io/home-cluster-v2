@@ -1,0 +1,54 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lynq-mysql
+  namespace: lynq-system
+spec:
+  chart:
+    spec:
+      chart: mysql
+      version: "14.x"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+  interval: 1h
+  values:
+    auth:
+      database: tenant_registry
+      username: tenant_user
+      existingSecret: lynq-mysql-secret
+
+    primary:
+      persistence:
+        enabled: true
+        storageClass: longhorn
+        size: 5Gi
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+
+    initdbScripts:
+      init.sql: |
+        CREATE TABLE IF NOT EXISTS nodes (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          uid VARCHAR(255) NOT NULL UNIQUE,
+          activate BOOLEAN DEFAULT true,
+          host_or_url VARCHAR(255),
+          deploy_image VARCHAR(255) DEFAULT 'nginx:1.21',
+          plan_id VARCHAR(50) DEFAULT 'basic',
+          max_users INT DEFAULT 10,
+          storage_gb INT DEFAULT 5,
+          custom_config TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+
+        -- Insert a sample node for testing
+        INSERT INTO nodes (uid, activate, host_or_url, deploy_image, plan_id, max_users, storage_gb)
+        VALUES ('alexieff-home', true, 'home.alexieff.io', 'nginx:1.21', 'basic', 10, 5)
+        ON DUPLICATE KEY UPDATE uid=uid;
