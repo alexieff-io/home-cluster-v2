@@ -48,3 +48,10 @@ spec:
               - op: add
                 path: /spec/template/spec/containers/0/command
                 value: ["/app/bff-server"]
+          - target:
+              kind: ClusterRole
+              name: lynq-dashboard
+            patch: |
+              - op: replace
+                path: /rules/0/apiGroups/0
+                value: operator.lynq.sh
