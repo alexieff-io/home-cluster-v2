@@ -1,0 +1,34 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lynq
+spec:
+  chart:
+    spec:
+      chart: lynq
+      version: "*"
+      sourceRef:
+        kind: HelmRepository
+        name: lynq
+  interval: 1h
+  values:
+    dashboard:
+      enabled: true
+
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    service:
+      type: ClusterIP
+      port: 80
+
+    ingress:
+      enabled: false
