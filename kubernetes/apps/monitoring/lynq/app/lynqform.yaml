@@ -5,42 +5,41 @@ metadata:
   name: lynq-template
   namespace: lynq-system
 spec:
-  lynqHubRef:
-    name: lynq-registry
-  template:
-    - apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "node-{{ .uid }}"
-        labels:
-          lynq.sh/node-id: "{{ .uid }}"
-          lynq.sh/managed-by: lynq-operator
+  hubId: lynq-registry
 
-    - apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: node-config
-        namespace: "node-{{ .uid }}"
-      data:
-        NODE_UID: "{{ .uid }}"
-        NODE_URL: "{{ .hostOrUrl }}"
-        PLAN_ID: "{{ .planId }}"
-        MAX_USERS: "{{ .maxUsers }}"
-        STORAGE_GB: "{{ .storageGb }}"
-
-    - apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: node-app
-        namespace: "node-{{ .uid }}"
-        labels:
-          app: node-app
-          lynq.sh/node-id: "{{ .uid }}"
+  namespaces:
+    - id: tenant-namespace
+      nameTemplate: "node-{{ .uid }}"
       spec:
-        replicas: 1
+        metadata:
+          labels:
+            lynq.sh/node-id: "{{ .uid }}"
+            lynq.sh/managed-by: lynq-operator
+
+  configMaps:
+    - id: tenant-config
+      nameTemplate: "node-config"
+      targetNamespace: "node-{{ .uid }}"
+      spec:
+        data:
+          NODE_UID: "{{ .uid }}"
+          NODE_URL: "{{ .hostOrUrl }}"
+          PLAN_ID: "{{ .planId }}"
+          MAX_USERS: "{{ .maxUsers }}"
+          STORAGE_GB: "{{ .storageGb }}"
+
+  deployments:
+    - id: tenant-app
+      nameTemplate: "node-app"
+      targetNamespace: "node-{{ .uid }}"
+      dependIds:
+        - tenant-namespace
+        - tenant-config
+      spec:
         selector:
           matchLabels:
             app: node-app
+        replicas: 1
         template:
           metadata:
             labels:
@@ -63,11 +62,12 @@ spec:
                     memory: "128Mi"
                     cpu: "200m"
 
-    - apiVersion: v1
-      kind: Service
-      metadata:
-        name: node-service
-        namespace: "node-{{ .uid }}"
+  services:
+    - id: tenant-service
+      nameTemplate: "node-service"
+      targetNamespace: "node-{{ .uid }}"
+      dependIds:
+        - tenant-app
       spec:
         type: ClusterIP
         selector:
