@@ -8,7 +8,7 @@ spec:
   interval: 1h
   url: oci://registry-1.docker.io/bitnamicharts/mysql
   ref:
-    tag: "14.0.3"
+    tag: "12.3.5"
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
