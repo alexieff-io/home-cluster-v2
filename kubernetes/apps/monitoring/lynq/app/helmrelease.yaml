@@ -48,6 +48,8 @@ spec:
               - op: add
                 path: /spec/template/spec/containers/0/command
                 value: ["/app/bff-server"]
+              - op: remove
+                path: /spec/template/metadata/labels/control-plane
           - target:
               kind: ClusterRole
               name: lynq-dashboard
