@@ -1,0 +1,105 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lynq-mysql-init
+  namespace: lynq-system
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS tenant_registry;
+    USE tenant_registry;
+    CREATE TABLE IF NOT EXISTS nodes (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      uid VARCHAR(255) NOT NULL UNIQUE,
+      activate BOOLEAN DEFAULT true,
+      host_or_url VARCHAR(255),
+      deploy_image VARCHAR(255) DEFAULT 'nginx:1.21',
+      plan_id VARCHAR(50) DEFAULT 'basic',
+      max_users INT DEFAULT 10,
+      storage_gb INT DEFAULT 5,
+      custom_config TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+    INSERT INTO nodes (uid, activate, host_or_url, deploy_image, plan_id, max_users, storage_gb)
+    VALUES ('alexieff-home', true, 'home.alexieff.io', 'nginx:1.21', 'basic', 10, 5)
+    ON DUPLICATE KEY UPDATE uid=uid;
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lynq-mysql-data
+  namespace: lynq-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lynq-mysql
+  namespace: lynq-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lynq-mysql
+  template:
+    metadata:
+      labels:
+        app: lynq-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lynq-mysql-secret
+                  key: mysql-root-password
+            - name: MYSQL_USER
+              value: tenant_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lynq-mysql-secret
+                  key: mysql-password
+            - name: MYSQL_DATABASE
+              value: tenant_registry
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+            - name: init-scripts
+              mountPath: /docker-entrypoint-initdb.d
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: lynq-mysql-data
+        - name: init-scripts
+          configMap:
+            name: lynq-mysql-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lynq-mysql
+  namespace: lynq-system
+spec:
+  selector:
+    app: lynq-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
