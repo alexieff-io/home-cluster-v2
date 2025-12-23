@@ -3,6 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: lynq
+  namespace: monitoring
 spec:
   chart:
     spec:
@@ -13,6 +14,10 @@ spec:
         name: lynq
   interval: 1h
   values:
+    namespace:
+      create: true
+      name: lynq-system
+
     dashboard:
       enabled: true
 
@@ -32,3 +37,14 @@ spec:
 
     ingress:
       enabled: false
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: lynq-dashboard
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/command
+                value: ["/app/bff-server"]
