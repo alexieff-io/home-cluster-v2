@@ -23,7 +23,7 @@ spec:
         namespace: "node-{{ .uid }}"
       data:
         NODE_UID: "{{ .uid }}"
-        NODE_URL: "{{ .nodeUrl }}"
+        NODE_URL: "{{ .hostOrUrl }}"
         PLAN_ID: "{{ .planId }}"
         MAX_USERS: "{{ .maxUsers }}"
         STORAGE_GB: "{{ .storageGb }}"

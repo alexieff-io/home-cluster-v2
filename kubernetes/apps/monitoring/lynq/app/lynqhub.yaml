@@ -18,19 +18,12 @@ spec:
         name: lynq-mysql-secret
         key: mysql-password
   valueMappings:
-    - column: uid
-      variable: uid
-    - column: activate
-      variable: activate
-    - column: host_or_url
-      variable: nodeUrl
-    - column: deploy_image
-      variable: deployImage
-    - column: plan_id
-      variable: planId
-    - column: max_users
-      variable: maxUsers
-    - column: storage_gb
-      variable: storageGb
-    - column: custom_config
-      variable: customConfig
+    uid: uid
+    activate: activate
+    hostOrUrl: host_or_url
+  extraValueMappings:
+    deployImage: deploy_image
+    planId: plan_id
+    maxUsers: max_users
+    storageGb: storage_gb
+    customConfig: custom_config
