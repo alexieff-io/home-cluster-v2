@@ -10,3 +10,4 @@ resources:
   - ./namespace.yaml
   - ./jetkvm/ks.yaml
   - ./librechat/ks.yaml
+  - ./zone-editor/ks.yaml

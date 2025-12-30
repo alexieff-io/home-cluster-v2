@@ -53,7 +53,7 @@ Create a new file `externalsecret.yaml` in your application directory:
 
 ```yaml
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: my-app-secret

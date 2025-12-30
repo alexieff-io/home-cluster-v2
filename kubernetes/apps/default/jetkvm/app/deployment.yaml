@@ -29,7 +29,7 @@ spec:
       # Init container to run Prisma migrations
       initContainers:
         - name: prisma-migrate
-          image: ghcr.io/alexieff/cloud-api:latest
+          image: ghcr.io/alexieff-io/cloud-api:latest
           command:
             - sh
             - -c
@@ -56,7 +56,7 @@ spec:
 
       containers:
         - name: api
-          image: ghcr.io/alexieff/cloud-api:latest
+          image: ghcr.io/alexieff-io/cloud-api:latest
           imagePullPolicy: Always
           ports:
             - name: http

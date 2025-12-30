@@ -49,13 +49,13 @@ spec:
               httpMethod: POST
             editable: true
           - name: VictoriaLogs
-            type: victorialogs-datasource
+            type: victoriametrics-logs-datasource
             uid: victorialogs
             access: proxy
-            url: http://victoria-logs-victoria-logs-single-server:9428/select/logsql/query
+            url: http://victoria-logs-victoria-logs-single-server:9428/
             jsonData:
               httpMethod: POST
-            editable: false
+            editable: true
 
     dashboardProviders:
       dashboardproviders.yaml:

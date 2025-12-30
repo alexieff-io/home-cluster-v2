@@ -1,0 +1,101 @@
+---
+apiVersion: operator.lynq.sh/v1
+kind: LynqForm
+metadata:
+  name: lynq-template
+  namespace: lynq-system
+spec:
+  hubId: lynq-registry
+
+  namespaces:
+    - id: tenant-namespace
+      nameTemplate: "node-{{ .uid }}"
+      spec:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          labels:
+            lynq.sh/node-id: "{{ .uid }}"
+            lynq.sh/managed-by: lynq-operator
+
+  configMaps:
+    - id: tenant-config
+      nameTemplate: "node-config"
+      targetNamespace: "node-{{ .uid }}"
+      dependIds:
+        - tenant-namespace
+      spec:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          labels:
+            lynq.sh/node-id: "{{ .uid }}"
+        data:
+          NODE_UID: "{{ .uid }}"
+          NODE_URL: "{{ .hostOrUrl }}"
+          PLAN_ID: "{{ .planId }}"
+          MAX_USERS: "{{ .maxUsers }}"
+          STORAGE_GB: "{{ .storageGb }}"
+
+  deployments:
+    - id: tenant-app
+      nameTemplate: "node-app"
+      targetNamespace: "node-{{ .uid }}"
+      dependIds:
+        - tenant-namespace
+        - tenant-config
+      waitForReady: true
+      timeoutSeconds: 300
+      spec:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          labels:
+            app: node-app
+            lynq.sh/node-id: "{{ .uid }}"
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: node-app
+          template:
+            metadata:
+              labels:
+                app: node-app
+                lynq.sh/node-id: "{{ .uid }}"
+            spec:
+              containers:
+                - name: app
+                  image: "{{ .deployImage }}"
+                  ports:
+                    - containerPort: 80
+                  envFrom:
+                    - configMapRef:
+                        name: node-config
+                  resources:
+                    requests:
+                      memory: "64Mi"
+                      cpu: "100m"
+                    limits:
+                      memory: "128Mi"
+                      cpu: "200m"
+
+  services:
+    - id: tenant-service
+      nameTemplate: "node-service"
+      targetNamespace: "node-{{ .uid }}"
+      dependIds:
+        - tenant-app
+      spec:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          labels:
+            lynq.sh/node-id: "{{ .uid }}"
+        spec:
+          type: ClusterIP
+          selector:
+            app: node-app
+          ports:
+            - port: 80
+              targetPort: 80
