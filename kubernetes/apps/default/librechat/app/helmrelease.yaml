@@ -146,6 +146,10 @@ spec:
       type: ClusterIP
       port: 3080
 
+    # Disable Ingress - using HTTPRoute with Envoy Gateway instead
+    ingress:
+      enabled: false
+
     # Enable metrics
     metrics:
       enabled: false
