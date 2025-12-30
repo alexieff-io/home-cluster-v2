@@ -28,7 +28,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: capacitor
-          image: ghcr.io/gimlet-io/capacitor:v0.4.5
+          image: ghcr.io/gimlet-io/capacitor:v0.4.8
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

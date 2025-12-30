@@ -14,7 +14,7 @@ spec:
       prometheus.io/port: "8080"
     instance:
       distribution:
-        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.33.0
+        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.37.0
         version: 2.x
       cluster:
         networkPolicy: false
@@ -25,7 +25,7 @@ spec:
         - notification-controller
       sync:
         kind: GitRepository
-        url: "https://github.com/alexieff/home-cluster-v2.git"
+        url: "https://github.com/alexieff-io/home-cluster-v2.git"
         ref: "refs/heads/main"
         path: kubernetes/flux/cluster
       commonMetadata:

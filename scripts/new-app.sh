@@ -870,7 +870,7 @@ if [ "$NEEDS_SECRETS" = true ]; then
     log_info "Generating ExternalSecret..."
     cat > "${APP_PATH}/externalsecret.yaml" << EOF
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: ${APP_NAME}-secret

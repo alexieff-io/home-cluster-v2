@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: kube-state-metrics
-      version: 6.x
+      version: 7.x
       sourceRef:
         kind: HelmRepository
         name: prometheus-community
@@ -37,7 +37,7 @@ spec:
         cpu: 10m
         memory: 64Mi
       limits:
-        memory: 128Mi
+        memory: 512Mi
 
     # Security context
     securityContext:
@@ -55,6 +55,7 @@ spec:
       - daemonsets
       - deployments
       - endpoints
+      - endpointslices
       - horizontalpodautoscalers
       - ingresses
       - jobs
