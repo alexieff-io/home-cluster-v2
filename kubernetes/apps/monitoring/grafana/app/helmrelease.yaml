@@ -12,7 +12,10 @@ spec:
         kind: HelmRepository
         name: grafana
   interval: 1h
+  timeout: 10m
   values:
+    deploymentStrategy:
+      type: Recreate
     replicas: 1
 
     admin:
