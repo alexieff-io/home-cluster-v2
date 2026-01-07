@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./control-plane/ks.yaml
-  - ./falco/ks.yaml
   - ./kube-state-metrics/ks.yaml
   - ./kubelet-cadvisor/ks.yaml
   - ./node-exporter/ks.yaml
