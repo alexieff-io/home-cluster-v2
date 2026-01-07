@@ -13,3 +13,6 @@ spec:
     name: flux-system
   wait: false
   targetNamespace: monitoring
+  dependsOn:
+    - name: onepassword-secret-store
+      namespace: flux-system

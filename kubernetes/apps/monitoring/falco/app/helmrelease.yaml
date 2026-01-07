@@ -51,6 +51,7 @@ spec:
       webui:
         enabled: true
         fullnameOverride: falcosidekick-ui
+        existingSecret: falcosidekick-ui-secret
 
         # Redis for the UI
         redis:
