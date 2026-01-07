@@ -1,0 +1,94 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app falco
+spec:
+  chart:
+    spec:
+      chart: falco
+      version: 4.x
+      sourceRef:
+        kind: HelmRepository
+        name: falcosecurity
+  interval: 1h
+  values:
+    fullnameOverride: *app
+
+    # Use modern eBPF driver (requires kernel 5.8+)
+    driver:
+      kind: modern_ebpf
+
+    # Run on all nodes including control plane
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+
+    # Resource limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+
+    # Enable metrics for Prometheus/VictoriaMetrics scraping
+    metrics:
+      enabled: true
+      service:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "8765"
+
+    # Falcosidekick for event routing and alerting
+    falcosidekick:
+      enabled: true
+      fullnameOverride: falcosidekick
+
+      # Enable the web UI
+      webui:
+        enabled: true
+        fullnameOverride: falcosidekick-ui
+
+        # Redis for the UI
+        redis:
+          enabled: true
+
+      # Resource limits for sidekick
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+
+      # Prometheus metrics
+      config:
+        prometheus:
+          enabled: true
+
+      service:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "2801"
+
+    # Default rules - detect common security threats
+    falcoctl:
+      artifact:
+        install:
+          enabled: true
+        follow:
+          enabled: true
+      config:
+        artifact:
+          install:
+            refs:
+              - falco-rules:3
+          follow:
+            refs:
+              - falco-rules:3
+
+    # Custom rules can be added here
+    customRules: {}
