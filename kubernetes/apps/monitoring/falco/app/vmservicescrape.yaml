@@ -1,0 +1,15 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: falco
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: falco
+  endpoints:
+    - port: metrics
+      interval: 30s
+  namespaceSelector:
+    matchNames:
+      - monitoring
