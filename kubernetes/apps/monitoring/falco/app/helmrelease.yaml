@@ -30,33 +30,12 @@ spec:
         enabled: true
         url: "http://victoria-logs-victoria-logs-single-server:9428/insert/jsonline?_stream_fields=rule,priority&_msg_field=output&_time_field=time"
 
-    # Enable Falco rules for common threats
-    customRules:
-      security-rules.yaml: |
-        # Additional rules for home cluster security
-        - rule: Detect crypto miners
-          desc: Detect cryptocurrency mining processes
-          condition: spawned_process and proc.name in (crypto_miner_names)
-          output: "Crypto miner detected (user=%user.name command=%proc.cmdline container=%container.name)"
-          priority: CRITICAL
-          tags: [cryptominer, mitre_execution]
-
-        - rule: Unexpected outbound connection
-          desc: Detect unexpected outbound connections from containers
-          condition: >
-            outbound and container and
-            not (fd.sport in (allowed_outbound_ports)) and
-            not (proc.name in (known_outbound_processes))
-          output: "Unexpected outbound connection (user=%user.name command=%proc.cmdline connection=%fd.name container=%container.name)"
-          priority: WARNING
-          tags: [network, mitre_exfiltration]
+    # Custom rules can be added later once Falco is running
+    # Default rules already cover most security threats
 
     # Metrics for VictoriaMetrics
     metrics:
       enabled: true
-      service:
-        labels:
-          app.kubernetes.io/name: falco
       serviceMonitor:
         enabled: true
 
