@@ -19,5 +19,5 @@ spec:
   targetNamespace: monitoring
   wait: false
   dependsOn:
-    - name: victoria-metrics
+    - name: vmsingle
     - name: victoria-logs
