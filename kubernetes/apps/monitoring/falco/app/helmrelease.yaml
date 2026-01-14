@@ -1,0 +1,96 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: falco
+spec:
+  chart:
+    spec:
+      chart: falco
+      version: 4.x
+      sourceRef:
+        kind: HelmRepository
+        name: falcosecurity
+  interval: 1h
+  timeout: 15m
+  values:
+    # Use modern eBPF driver for Talos Linux compatibility
+    driver:
+      kind: modern_ebpf
+
+    # Falco configuration
+    falco:
+      grpc:
+        enabled: true
+      grpcOutput:
+        enabled: true
+      jsonOutput: true
+      jsonIncludeOutputProperty: true
+      httpOutput:
+        enabled: true
+        url: "http://victoria-logs-victoria-logs-single-server:9428/insert/jsonline?_stream_fields=rule,priority&_msg_field=output&_time_field=time"
+
+    # Enable Falco rules for common threats
+    customRules:
+      security-rules.yaml: |
+        # Additional rules for home cluster security
+        - rule: Detect crypto miners
+          desc: Detect cryptocurrency mining processes
+          condition: spawned_process and proc.name in (crypto_miner_names)
+          output: "Crypto miner detected (user=%user.name command=%proc.cmdline container=%container.name)"
+          priority: CRITICAL
+          tags: [cryptominer, mitre_execution]
+
+        - rule: Unexpected outbound connection
+          desc: Detect unexpected outbound connections from containers
+          condition: >
+            outbound and container and
+            not (fd.sport in (allowed_outbound_ports)) and
+            not (proc.name in (known_outbound_processes))
+          output: "Unexpected outbound connection (user=%user.name command=%proc.cmdline connection=%fd.name container=%container.name)"
+          priority: WARNING
+          tags: [network, mitre_exfiltration]
+
+    # Metrics for VictoriaMetrics
+    metrics:
+      enabled: true
+      service:
+        labels:
+          app.kubernetes.io/name: falco
+      serviceMonitor:
+        enabled: true
+
+    # Falcosidekick for forwarding alerts
+    falcosidekick:
+      enabled: true
+      config:
+        webhook:
+          address: "http://victoria-logs-victoria-logs-single-server:9428/insert/jsonline?_stream_fields=rule,priority&_msg_field=output&_time_field=time"
+      webui:
+        enabled: true
+        replicaCount: 1
+
+    # Resource limits
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        memory: 1Gi
+
+    # DaemonSet tolerations to run on all nodes including control plane
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+
+    # Security context
+    podSecurityContext:
+      runAsNonRoot: false  # Falco needs root for eBPF
+
+    # Talos Linux specific settings
+    extra:
+      env:
+        - name: HOST_ROOT
+          value: /host

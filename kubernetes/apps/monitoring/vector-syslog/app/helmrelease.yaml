@@ -1,0 +1,162 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vector-syslog
+spec:
+  chart:
+    spec:
+      chart: vector
+      version: 0.x
+      sourceRef:
+        kind: HelmRepository
+        name: vector
+  interval: 1h
+  values:
+    role: Aggregator
+
+    # Vector custom configuration for syslog collection
+    customConfig:
+      data_dir: /vector-data-dir
+
+      # Sources - Syslog listeners for Ubiquiti devices
+      sources:
+        ubiquiti_syslog_udp:
+          type: syslog
+          address: "0.0.0.0:5514"
+          mode: udp
+
+        ubiquiti_syslog_tcp:
+          type: syslog
+          address: "0.0.0.0:5514"
+          mode: tcp
+
+      # Transforms - Parse and enrich Ubiquiti logs
+      transforms:
+        ubiquiti_parse:
+          type: remap
+          inputs:
+            - ubiquiti_syslog_udp
+            - ubiquiti_syslog_tcp
+          source: |
+            # Add source identification
+            .source = "ubiquiti"
+            .cluster = "home-cluster"
+
+            # Parse common Ubiquiti firewall log patterns
+            # Example: [WAN_LOCAL-default-D]IN=eth4 OUT= MAC=... SRC=x.x.x.x DST=y.y.y.y
+            if contains(string!(.message), "[") && contains(string!(.message), "IN=") {
+              .log_type = "firewall"
+
+              # Extract action (A=accept, D=drop)
+              if contains(string!(.message), "-D]") {
+                .action = "DROP"
+                .priority = "warning"
+              } else if contains(string!(.message), "-A]") {
+                .action = "ACCEPT"
+                .priority = "info"
+              }
+
+              # Extract source IP
+              src_match = parse_regex(string!(.message), r'SRC=(?P<src_ip>\d+\.\d+\.\d+\.\d+)') ?? {}
+              if exists(src_match.src_ip) {
+                .src_ip = src_match.src_ip
+              }
+
+              # Extract destination IP
+              dst_match = parse_regex(string!(.message), r'DST=(?P<dst_ip>\d+\.\d+\.\d+\.\d+)') ?? {}
+              if exists(dst_match.dst_ip) {
+                .dst_ip = dst_match.dst_ip
+              }
+
+              # Extract destination port
+              dpt_match = parse_regex(string!(.message), r'DPT=(?P<dst_port>\d+)') ?? {}
+              if exists(dpt_match.dst_port) {
+                .dst_port = dpt_match.dst_port
+              }
+
+              # Extract protocol
+              proto_match = parse_regex(string!(.message), r'PROTO=(?P<protocol>\w+)') ?? {}
+              if exists(proto_match.protocol) {
+                .protocol = proto_match.protocol
+              }
+
+              # Extract interface
+              in_match = parse_regex(string!(.message), r'IN=(?P<in_iface>\w*)') ?? {}
+              if exists(in_match.in_iface) {
+                .in_interface = in_match.in_iface
+              }
+            } else {
+              .log_type = "system"
+              .priority = "info"
+            }
+
+        # Filter for security-relevant events (drops, blocks, threats)
+        ubiquiti_security_filter:
+          type: filter
+          inputs:
+            - ubiquiti_parse
+          condition: |
+            .action == "DROP" || .log_type == "system"
+
+      # Sinks - Send to VictoriaLogs
+      sinks:
+        victoria_logs_all:
+          type: http
+          inputs:
+            - ubiquiti_parse
+          uri: "http://victoria-logs-victoria-logs-single-server:9428/insert/jsonline?_stream_fields=source,log_type,action&_msg_field=message&_time_field=timestamp"
+          encoding:
+            codec: json
+          healthcheck:
+            enabled: false
+
+        victoria_logs_security:
+          type: http
+          inputs:
+            - ubiquiti_security_filter
+          uri: "http://victoria-logs-victoria-logs-single-server:9428/insert/jsonline?_stream_fields=source,log_type,action,priority&_msg_field=message&_time_field=timestamp"
+          encoding:
+            codec: json
+          healthcheck:
+            enabled: false
+
+        # Console output for debugging (can be disabled in production)
+        console_debug:
+          type: console
+          inputs:
+            - ubiquiti_security_filter
+          encoding:
+            codec: json
+
+    # Service to expose syslog ports
+    service:
+      enabled: true
+      type: LoadBalancer
+      ports:
+        - name: syslog-udp
+          port: 5514
+          targetPort: 5514
+          protocol: UDP
+        - name: syslog-tcp
+          port: 5514
+          targetPort: 5514
+          protocol: TCP
+
+    # Resources
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
+    # Persistence for buffer
+    persistence:
+      enabled: true
+      storageClassName: longhorn
+      size: 10Gi
+
+    # Pod monitor for metrics
+    podMonitor:
+      enabled: true

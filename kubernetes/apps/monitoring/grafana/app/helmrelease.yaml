@@ -107,6 +107,19 @@ spec:
           gnetId: 16213  # Flux Control Plane
           revision: 1
           datasource: VictoriaMetrics
+        # Security dashboards
+        falco-dashboard:
+          gnetId: 11914  # Falco Dashboard
+          revision: 1
+          datasource: VictoriaMetrics
+        hubble-overview:
+          gnetId: 16611  # Hubble L7 HTTP metrics by workload
+          revision: 1
+          datasource: VictoriaMetrics
+        cilium-agent:
+          gnetId: 16612  # Cilium Agent Metrics
+          revision: 1
+          datasource: VictoriaMetrics
 
     plugins:
       - grafana-piechart-panel
