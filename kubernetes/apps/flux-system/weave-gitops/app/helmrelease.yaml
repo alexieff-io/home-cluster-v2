@@ -13,15 +13,12 @@ spec:
         name: ww-gitops
   interval: 1h
   values:
-    # Admin user - uses external secret
+    # Admin user - uses cluster-user-auth secret from ExternalSecret
     adminUser:
       create: true
       createClusterRole: true
       createSecret: false
       username: admin
-
-    # Reference the external secret for admin credentials
-    existingSecret: weave-gitops-admin
 
     # Resources
     resources:
