@@ -1,0 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kubetail
+spec:
+  chart:
+    spec:
+      chart: kubetail
+      version: 0.x
+      sourceRef:
+        kind: HelmRepository
+        name: kubetail
+  interval: 1h
+  values:
+    # Dashboard configuration
+    kubetail:
+      dashboard:
+        runtime:
+          # Use cluster auth mode for internal access
+          authMode: cluster
+        service:
+          type: ClusterIP
+          port: 8080
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+
+      # Cluster API configuration
+      clusterAPI:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+
+      # Cluster Agent (DaemonSet) configuration
+      clusterAgent:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        # Run on all nodes including control plane
+        podTemplate:
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+            - key: node-role.kubernetes.io/master
+              operator: Exists
+              effect: NoSchedule
