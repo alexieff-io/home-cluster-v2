@@ -14,11 +14,12 @@ spec:
   interval: 1h
   values:
     # Admin user - uses cluster-user-auth secret from ExternalSecret
+    # Username must match the value in 1Password/cluster-user-auth secret
     adminUser:
       create: true
       createClusterRole: true
       createSecret: false
-      username: admin
+      username: mikea
 
     # Resources
     resources:
