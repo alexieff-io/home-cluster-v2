@@ -11,3 +11,4 @@ resources:
   - ./flux-instance/ks.yaml
   - ./flux-operator/ks.yaml
   - ./monitoring/ks.yaml
+  - ./weave-gitops/ks.yaml
