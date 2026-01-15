@@ -5,3 +5,6 @@ resources:
   - ./helmrelease.yaml
   - ./helmrepository.yaml
   - ./httproute.yaml
+  - ./httproute-external.yaml
+  - ./securitypolicy.yaml
+  - ./externalsecret.yaml
