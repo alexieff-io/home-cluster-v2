@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:9.5
+          image: mysql:9.6
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
