@@ -12,6 +12,6 @@ resources:
   - ./victoria-logs/ks.yaml
   - ./grafana/ks.yaml
 #  - ./lynq/ks.yaml
-  - ./falco/ks.yaml
+#  - ./falco/ks.yaml
   - ./vector-syslog/ks.yaml
   - ./kubetail/ks.yaml
