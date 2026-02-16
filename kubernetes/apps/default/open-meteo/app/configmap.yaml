@@ -22,7 +22,7 @@ data:
 
     for model in $MODELS; do
       echo "Starting sync for $model"
-      openmeteo-api sync "$model" "$VARIABLES" \
+      /app/openmeteo-api sync "$model" "$VARIABLES" \
         --past-days 3 \
         --repeat-interval 5 \
         --concurrent 2 &
