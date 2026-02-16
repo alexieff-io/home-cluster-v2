@@ -15,7 +15,7 @@ spec:
           app:
             image:
               repository: ghcr.io/open-meteo/open-meteo
-              tag: 2.0.6
+              tag: 1.5.1
             args: ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8080"]
             probes:
               liveness: &probes
@@ -39,7 +39,7 @@ spec:
           sync:
             image:
               repository: ghcr.io/open-meteo/open-meteo
-              tag: 2.0.6
+              tag: 1.5.1
             command: ["/bin/sh", "/scripts/sync-entrypoint.sh"]
             resources:
               requests:
