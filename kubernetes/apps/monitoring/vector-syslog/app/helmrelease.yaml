@@ -21,12 +21,12 @@ spec:
 
       # Sources - Syslog listeners for Ubiquiti devices
       sources:
-        ubiquiti_syslog_udp:
+        ubi_syslog_udp:
           type: syslog
           address: "0.0.0.0:5514"
           mode: udp
 
-        ubiquiti_syslog_tcp:
+        ubi_syslog_tcp:
           type: syslog
           address: "0.0.0.0:5514"
           mode: tcp
@@ -36,8 +36,8 @@ spec:
         ubiquiti_parse:
           type: remap
           inputs:
-            - ubiquiti_syslog_udp
-            - ubiquiti_syslog_tcp
+            - ubi_syslog_udp
+            - ubi_syslog_tcp
           source: |
             # Add source identification
             .source = "ubiquiti"

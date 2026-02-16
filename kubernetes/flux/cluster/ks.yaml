@@ -36,16 +36,12 @@ spec:
                 spec:
                   install:
                     crds: CreateReplace
-                    strategy:
-                      name: RetryOnFailure
                   rollback:
                     cleanupOnFail: true
                     recreate: true
                   upgrade:
                     cleanupOnFail: true
                     crds: CreateReplace
-                    strategy:
-                      name: RemediateOnFailure
                     remediation:
                       remediateLastFailure: true
                       retries: 2
