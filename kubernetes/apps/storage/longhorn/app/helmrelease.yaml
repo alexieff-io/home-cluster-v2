@@ -30,8 +30,8 @@ spec:
       allowRecurringJobWhileVolumeDetached: false
       createDefaultDiskLabeledNodes: false
       defaultDataPath: /var/lib/longhorn
-      defaultDataLocality: disabled
-      replicaSoftAntiAffinity: true
+      defaultDataLocality: best-effort
+      replicaSoftAntiAffinity: false
       replicaAutoBalance: best-effort
       storageOverProvisioningPercentage: 200
       storageMinimalAvailablePercentage: 25
@@ -55,8 +55,8 @@ spec:
       allowNodeDrainWithLastHealthyReplica: false
       mkfsExt4Parameters: ""
       disableReplicaRebuild: false
-      replicaReplenishmentWaitInterval: 600
-      concurrentReplicaRebuildPerNodeLimit: 5
+      replicaReplenishmentWaitInterval: 300
+      concurrentReplicaRebuildPerNodeLimit: 2
       concurrentVolumeBackupRestorePerNodeLimit: 5
       disableRevisionCounter: true
       systemManagedPodsImagePullPolicy: if-not-present
@@ -71,13 +71,13 @@ spec:
       orphanAutoDeletion: true
       storageNetwork: ""
       deletingConfirmationFlag: true
-      engineReplicaTimeout: 8
+      engineReplicaTimeout: 30
       snapshotDataIntegrity: disabled
       snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: false
       snapshotDataIntegrityCronjob: "0 0 */7 * *"
       removeSnapshotsDuringFilesystemTrim: true
-      fastReplicaRebuildEnabled: false
-      replicaFileSyncHttpClientTimeout: 30
+      fastReplicaRebuildEnabled: true
+      replicaFileSyncHttpClientTimeout: 120
 
     # Longhorn UI service
     service:
