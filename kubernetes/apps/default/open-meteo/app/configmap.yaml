@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: open-meteo-sync-scripts
+data:
+  sync-entrypoint.sh: |
+    #!/bin/sh
+    set -e
+
+    MODELS="dwd_icon dwd_icon_eu dwd_icon_d2 ncep_gfs013 ncep_gfs025 ecmwf_ifs025 jma_gsm gem_global bom_access_global met_nordic"
+    VARIABLES="temperature_2m,dew_point_2m,relative_humidity_2m,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,snow_depth,snowfall,visibility,uv_index,cape,sunshine_duration,soil_temperature_0cm,shortwave_radiation"
+
+    cleanup() {
+      echo "Caught signal, stopping sync processes..."
+      kill -- -$$ 2>/dev/null || true
+      wait
+      exit 0
+    }
+
+    trap cleanup TERM INT
+
+    for model in $MODELS; do
+      echo "Starting sync for $model"
+      openmeteo-api sync "$model" "$VARIABLES" \
+        --past-days 3 \
+        --repeat-interval 5 \
+        --concurrent 2 &
+    done
+
+    wait

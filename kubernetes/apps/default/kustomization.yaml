@@ -10,4 +10,5 @@ resources:
   - ./namespace.yaml
   - ./jetkvm/ks.yaml
   - ./librechat/ks.yaml
+  - ./open-meteo/ks.yaml
   - ./zone-editor/ks.yaml
