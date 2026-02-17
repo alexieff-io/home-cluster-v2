@@ -122,14 +122,8 @@ spec:
           gnetId: 11914  # Falco Dashboard
           revision: 1
           datasource: VictoriaMetrics
-        hubble-overview:
-          gnetId: 16611  # Hubble L7 HTTP metrics by workload
-          revision: 1
-          datasource: VictoriaMetrics
-        cilium-agent:
-          gnetId: 16612  # Cilium Agent Metrics
-          revision: 1
-          datasource: VictoriaMetrics
+        # cilium-agent and hubble-overview are provided via ConfigMaps
+        # by the Cilium Helm chart (sidecar picks them up automatically)
 
     plugins:
       - grafana-piechart-panel
