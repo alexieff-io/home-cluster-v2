@@ -6,3 +6,4 @@ resources:
   - ./vmsingle.yaml
   - ./vmagent.yaml
   - ./vmagent-rbac.yaml
+  - ./httproute.yaml
