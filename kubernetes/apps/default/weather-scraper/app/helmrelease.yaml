@@ -26,7 +26,7 @@ spec:
       enabled: true
 
     locations:
-      - name: "Raleigh, NC"
+      - name: Raleigh NC
         latitude: 35.78
         longitude: -78.64
         timezone: America/New_York
