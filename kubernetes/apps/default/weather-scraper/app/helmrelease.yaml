@@ -14,7 +14,7 @@ spec:
       tag: main
 
     openMeteo:
-      url: http://open-meteo-app.default.svc.cluster.local:8080
+      url: https://weather.k8s.alexieff.io
 
     victoriaMetrics:
       url: http://vmsingle-vmsingle.monitoring.svc.cluster.local:8428
