@@ -23,7 +23,7 @@ spec:
       enabled: true
 
     grafanaDashboards:
-      enabled: false
+      enabled: true
 
     locations:
       - name: Raleigh NC
