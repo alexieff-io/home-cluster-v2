@@ -1,0 +1,32 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: weather-scraper
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: weather-scraper
+  interval: 1h
+  values:
+    image:
+      repository: ghcr.io/alexieff-io/open-meteo-scrapper
+      tag: main
+
+    openMeteo:
+      url: http://open-meteo-app.default.svc.cluster.local:8080
+
+    victoriaMetrics:
+      url: http://vmsingle-vmsingle.monitoring.svc.cluster.local:8428
+
+    serviceMonitor:
+      enabled: true
+
+    grafanaDashboards:
+      enabled: true
+
+    locations:
+      - name: "Raleigh, NC"
+        latitude: 35.78
+        longitude: -78.64
+        timezone: America/New_York
