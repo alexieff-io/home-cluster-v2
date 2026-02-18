@@ -5,7 +5,5 @@ resources:
   - ./deployment.yaml
   - ./externalsecret.yaml
   - ./rbac.yaml
-  - ./routes/homeassistant.yaml
-  - ./routes/plex.yaml
   - ./service.yaml
   - ./servicemonitor.yaml
