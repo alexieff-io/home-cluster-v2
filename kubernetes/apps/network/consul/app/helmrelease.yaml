@@ -1,0 +1,78 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: consul
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: consul
+  interval: 1h
+  values:
+    controllers:
+      consul:
+        containers:
+          app:
+            image:
+              repository: hashicorp/consul
+              tag: "1.20"
+            args:
+              - "agent"
+              - "-server"
+              - "-bootstrap-expect=1"
+              - "-ui"
+              - "-client=0.0.0.0"
+              - "-data-dir=/consul/data"
+              - "-config-dir=/consul/config"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/status/leader
+                    port: &port 8500
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 6
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/status/leader
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        type: LoadBalancer
+        ports:
+          http:
+            port: *port
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        storageClass: longhorn
+        globalMounts:
+          - path: /consul/data
+      config:
+        type: secret
+        name: consul-secret
+        globalMounts:
+          - path: /consul/config
