@@ -23,7 +23,7 @@ spec:
               - "-ui"
               - "-client=0.0.0.0"
               - "-data-dir=/consul/data"
-              - "-config-dir=/consul/config"
+              - "-config-dir=/consul/acl"
             probes:
               liveness:
                 enabled: true
@@ -71,8 +71,8 @@ spec:
         storageClass: longhorn
         globalMounts:
           - path: /consul/data
-      config:
+      acl:
         type: secret
         name: consul-secret
         globalMounts:
-          - path: /consul/config
+          - path: /consul/acl
