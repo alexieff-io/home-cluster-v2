@@ -6,31 +6,30 @@ set -euo pipefail
 # Prerequisites:
 #   1. consul CLI installed (https://developer.hashicorp.com/consul/install)
 #   2. jq installed
-#   3. kubectl configured with cluster access
-#   4. 1Password item "consul-acl-token" exists with a "credential" field
-#      containing the management token (a UUID you pre-generated).
-#      This is used by the ExternalSecret to set initial_management.
+#   3. kubectl configured with cluster access (to look up LoadBalancer IP)
 #
 # Usage:
-#   ./scripts/setup-consul-acl.sh
+#   ./scripts/setup-consul-acl.sh <management-token>
+#
+#   The management token is the value you stored in 1Password
+#   (consul-acl-token, credential field) before deploying Consul.
 
-CONSUL_LB_IP=$(kubectl -n network get svc consul -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-export CONSUL_HTTP_ADDR="http://${CONSUL_LB_IP}:8500"
-
-echo "Consul address: ${CONSUL_HTTP_ADDR}"
-echo ""
-
-# Read the management token from the k8s secret (synced from 1Password)
-MGMT_TOKEN=$(kubectl -n network get secret consul-secret -o jsonpath='{.data.CONSUL_BOOTSTRAP_TOKEN}' 2>/dev/null | base64 -d 2>/dev/null || true)
-
-if [[ -z "${MGMT_TOKEN}" ]]; then
-    echo "ERROR: Could not read management token from consul-secret."
-    echo "Ensure the 1Password item 'consul-acl-token' has a 'credential' field"
-    echo "and the ExternalSecret has synced successfully."
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <management-token>"
+    echo ""
+    echo "  management-token: The ACL bootstrap token from 1Password"
+    echo "                    (consul-acl-token, credential field)"
     exit 1
 fi
 
+MGMT_TOKEN="$1"
+
+CONSUL_LB_IP=$(kubectl -n network get svc consul -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export CONSUL_HTTP_ADDR="http://${CONSUL_LB_IP}:8500"
 export CONSUL_HTTP_TOKEN="${MGMT_TOKEN}"
+
+echo "Consul address: ${CONSUL_HTTP_ADDR}"
+echo ""
 
 # Verify connectivity
 echo "Verifying Consul connectivity..."
