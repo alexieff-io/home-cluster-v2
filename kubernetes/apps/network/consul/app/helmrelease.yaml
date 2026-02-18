@@ -63,6 +63,17 @@ spec:
         ports:
           http:
             port: *port
+    route:
+      app:
+        hostnames: ["consul.k8s.alexieff.io"]
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port
     persistence:
       data:
         type: persistentVolumeClaim
