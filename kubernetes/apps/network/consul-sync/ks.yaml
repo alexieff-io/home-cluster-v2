@@ -25,4 +25,4 @@ spec:
     - name: onepassword-secret-store
       namespace: flux-system
     - name: envoy-gateway
-      namespace: flux-system
+      namespace: network
