@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: consul-sync
-          image: ghcr.io/alexieff-io/consul-sync:latest
+          image: ghcr.io/alexieff-io/consul-sync:sha-1effc1d
           imagePullPolicy: Always
           env:
             - name: CONSUL_ADDR
