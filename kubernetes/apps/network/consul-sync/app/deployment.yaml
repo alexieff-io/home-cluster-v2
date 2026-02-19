@@ -30,7 +30,7 @@ spec:
       containers:
         - name: consul-sync
           image: ghcr.io/alexieff-io/consul-sync:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: CONSUL_ADDR
               value: "http://consul.network.svc.cluster.local:8500"
