@@ -8,8 +8,8 @@ data:
   librechat.yaml: |
     version: 1.3.1
     cache: true
-    interface:
-      endpointsMenu: false
+    #interface:
+    #  endpointsMenu: false
     # Custom endpoints for alternative API URLs
     endpoints:
       custom:
