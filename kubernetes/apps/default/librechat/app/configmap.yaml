@@ -16,7 +16,7 @@ data:
         # Example: Custom OpenAI-compatible endpoint
         - name: "LiteLLM OpenAI"
           apiKey: "${OPENAI_API_KEY}"
-          baseURL: "https://llm.lan.haxrcorp.com/v1"
+          baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
             default: ["gpt-5"]
             fetch: true
