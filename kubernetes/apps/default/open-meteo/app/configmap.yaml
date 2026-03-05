@@ -8,9 +8,6 @@ data:
     #!/bin/sh
     set -e
 
-    MODELS="dwd_icon ncep_gfs013 ncep_gfs025 ecmwf_ifs025 jma_gsm bom_access_global cams_global copernicus_era5_land cams_europe copernicus_era5"
-    VARIABLES="temperature_2m,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,dew_point_2m,relative_humidity_2m,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,snow_depth,snowfall,visibility,uv_index,cape,sunshine_duration,soil_temperature_0cm,apparent_temperature,shortwave_radiation,pm10,pm2_5,nitrogen_dioxide,carbon_monoxide,ozone,sulphur_dioxide,european_aqi,us_aqi,ozone,nitrogen_dioxide"
-
     cleanup() {
       echo "Caught signal, stopping sync processes..."
       kill -- -$$ 2>/dev/null || true
@@ -20,12 +17,44 @@ data:
 
     trap cleanup TERM INT
 
-    for model in $MODELS; do
+    sync_model() {
+      model="$1"
+      variables="$2"
       echo "Starting sync for $model"
-      /app/openmeteo-api sync "$model" "$VARIABLES" \
+      /app/openmeteo-api sync "$model" "$variables" \
         --past-days 3 \
         --repeat-interval 5 \
         --concurrent 2 &
-    done
+    }
+
+    # DWD ICON - German Weather Service global model
+    sync_model "dwd_icon" "cape,cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,convective_cloud_base,convective_cloud_top,diffuse_radiation,direct_radiation,freezing_level_height,latent_heat_flux,precipitation,pressure_msl,rain,relative_humidity_2m,sensible_heat_flux,showers,snow_depth,snowfall_convective_water_equivalent,snowfall_water_equivalent,soil_moisture_0_to_1cm,soil_moisture_1_to_3cm,soil_moisture_3_to_9cm,soil_moisture_9_to_27cm,soil_moisture_27_to_81cm,soil_temperature_0cm,soil_temperature_6cm,soil_temperature_18cm,soil_temperature_54cm,temperature_2m,temperature_80m,temperature_120m,temperature_180m,weather_code,wind_gusts_10m,wind_u_component_10m,wind_u_component_80m,wind_u_component_120m,wind_u_component_180m,wind_v_component_10m,wind_v_component_80m,wind_v_component_120m,wind_v_component_180m"
+
+    # NCEP GFS 0.13 degree
+    sync_model "ncep_gfs013" "boundary_layer_height,cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,diffuse_radiation,frozen_precipitation_percent,latent_heat_flux,precipitation,relative_humidity_2m,sensible_heat_flux,shortwave_radiation,showers,snow_depth,snowfall_water_equivalent,soil_moisture_0_to_10cm,soil_moisture_10_to_40cm,soil_moisture_40_to_100cm,soil_moisture_100_to_200cm,soil_temperature_0_to_10cm,soil_temperature_10_to_40cm,soil_temperature_40_to_100cm,soil_temperature_100_to_200cm,surface_temperature,temperature_2m,total_column_integrated_water_vapour,uv_index,uv_index_clear_sky,wind_u_component_10m,wind_v_component_10m"
+
+    # NCEP GFS 0.25 degree
+    sync_model "ncep_gfs025" "cape,categorical_freezing_rain,convective_inhibition,freezing_level_height,lifted_index,pressure_msl,temperature_80m,temperature_100m,visibility,wind_gusts_10m,wind_u_component_80m,wind_u_component_100m,wind_v_component_80m,wind_v_component_100m"
+
+    # ECMWF IFS 0.25 degree
+    sync_model "ecmwf_ifs025" "cape,cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,ocean_u_current,ocean_v_current,precipitation,precipitation_type,pressure_msl,relative_humidity_2m,runoff,sea_ice_thickness,sea_level_height_msl,shortwave_radiation,snow_depth,snow_depth_water_equivalent,snowfall_water_equivalent,soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm,soil_moisture_100_to_255cm,soil_temperature_0_to_7cm,soil_temperature_7_to_28cm,soil_temperature_28_to_100cm,soil_temperature_100_to_255cm,surface_pressure,surface_temperature,temperature_2m,temperature_2m_max,temperature_2m_min,total_column_integrated_water_vapour,wind_gusts_10m,wind_u_component_10m,wind_u_component_100m,wind_v_component_10m,wind_v_component_100m"
+
+    # JMA GSM - Japan Meteorological Agency global model
+    sync_model "jma_gsm" "cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,precipitation,pressure_msl,relative_humidity_2m,temperature_2m,wind_u_component_10m,wind_v_component_10m"
+
+    # BOM ACCESS Global - Australian Bureau of Meteorology
+    sync_model "bom_access_global" "cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,direct_radiation,precipitation,pressure_msl,relative_humidity_2m,shortwave_radiation,showers,snow_depth,snowfall_water_equivalent,soil_moisture_0_to_10cm,soil_moisture_10_to_35cm,soil_moisture_35_to_100cm,soil_moisture_100_to_300cm,soil_temperature_0_to_10cm,soil_temperature_10_to_35cm,soil_temperature_35_to_100cm,soil_temperature_100_to_300cm,surface_temperature,temperature_2m,visibility,weather_code,wind_direction_10m,wind_direction_40m,wind_direction_80m,wind_direction_120m,wind_gusts_10m,wind_speed_10m,wind_speed_40m,wind_speed_80m,wind_speed_120m"
+
+    # CAMS Global - Copernicus Atmosphere Monitoring Service
+    sync_model "cams_global" "aerosol_optical_depth,carbon_monoxide,dust,formaldehyde,glyoxal,nitrogen_dioxide,nitrogen_monoxide,ozone,peroxyacyl_nitrates,pm10,pm2_5,sea_salt_aerosol,sulphur_dioxide,uv_index,uv_index_clear_sky"
+
+    # CAMS Europe - Copernicus Atmosphere Monitoring Service (European)
+    sync_model "cams_europe" "alder_pollen,ammonia,birch_pollen,carbon_monoxide,dust,formaldehyde,glyoxal,grass_pollen,mugwort_pollen,nitrogen_dioxide,nitrogen_monoxide,non_methane_volatile_organic_compounds,olive_pollen,ozone,peroxyacyl_nitrates,pm10,pm10_wildfires,pm2_5,pm2_5_total_organic_matter,ragweed_pollen,residential_elementary_carbon,sea_salt_aerosol,secondary_inorganic_aerosol,sulphur_dioxide,total_elementary_carbon"
+
+    # Copernicus ERA5 - ECMWF reanalysis
+    sync_model "copernicus_era5" "boundary_layer_height,cloud_cover,cloud_cover_high,cloud_cover_low,cloud_cover_mid,dew_point_2m,direct_radiation,precipitation,pressure_msl,sea_surface_temperature,shortwave_radiation,snowfall_water_equivalent,soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm,soil_moisture_100_to_255cm,soil_temperature_0_to_7cm,soil_temperature_7_to_28cm,soil_temperature_28_to_100cm,soil_temperature_100_to_255cm,temperature_2m,total_column_integrated_water_vapour,wind_gusts_10m,wind_u_component_10m,wind_u_component_100m,wind_v_component_10m,wind_v_component_100m"
+
+    # Copernicus ERA5-Land - ECMWF land reanalysis
+    sync_model "copernicus_era5_land" "dew_point_2m,snow_depth,soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm,soil_moisture_100_to_255cm,soil_temperature_0_to_7cm,soil_temperature_7_to_28cm,soil_temperature_28_to_100cm,soil_temperature_100_to_255cm,temperature_2m"
 
     wait
