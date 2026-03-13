@@ -65,19 +65,18 @@ spec:
       # Custom endpoints for alternative API URLs
       endpoints:
         custom:
-          # Example: Custom OpenAI-compatible endpoint
-          - name: "LiteLLM OpenAI"
+          - name: "LiteLLM"
             apiKey: "${OPENAI_API_KEY}"
             baseURL: "https://litellm.lan.haxrcorp.com/v1"
             models:
-              default: ["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"]
+              default: ["anthropic/claude-opus-4-6", "anthropic/claude-sonnet-4-6"]
               fetch: true
             titleConvo: true
-            titleModel: "gpt-3.5-turbo"
+            titleModel: "anthropic/claude-sonnet-4-6"
             summarize: false
-            summaryModel: "gpt-3.5-turbo"
+            summaryModel: "anthropic/claude-sonnet-4-6"
             forcePrompt: false
-            modelDisplayLabel: "Custom OpenAI"
+            modelDisplayLabel: "LiteLLM"
 
           # Example: Custom Anthropic endpoint
           #- name: "LiteLLM Anthropic"
