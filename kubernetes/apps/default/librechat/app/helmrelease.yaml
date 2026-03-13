@@ -36,6 +36,8 @@ spec:
                             value: "false"
                           - name: ALLOW_SOCIAL_LOGIN
                             value: "false"
+                          - name: ENDPOINTS
+                            value: "My Agents, Custom"
                         volumeMounts:
                           - name: config-volume
                             mountPath: /app/librechat.yaml
