@@ -23,6 +23,8 @@ spec:
               metadata:
                 name: librechat-librechat
               spec:
+                strategy:
+                  type: Recreate
                 template:
                   spec:
                     containers:
