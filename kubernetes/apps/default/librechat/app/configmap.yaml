@@ -10,7 +10,7 @@ data:
     cache: true
     endpoints:
       custom:
-        - name: "OpenAI"
+        - name: "OpenAI_"
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
@@ -21,7 +21,7 @@ data:
           summarize: false
           modelDisplayLabel: "OpenAI"
 
-        - name: "Anthropic"
+        - name: "Anthropic_"
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
@@ -32,7 +32,7 @@ data:
           summarize: false
           modelDisplayLabel: "Anthropic"
 
-        - name: "Google"
+        - name: "Google_"
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
