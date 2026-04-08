@@ -23,8 +23,7 @@ spec:
         app.kubernetes.io/name: jetkvm-cloud-api
         app.kubernetes.io/component: api
       annotations:
-        # Force rolling update when secrets change
-        checksum/secret: "{{ include (print $.Template.BasePath \"/app-externalsecret.yaml\") . | sha256sum }}"
+        reloader.stakater.com/auto: "true"
     spec:
       # Init container to run Prisma migrations
       initContainers:
