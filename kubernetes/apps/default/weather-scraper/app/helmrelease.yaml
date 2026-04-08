@@ -17,7 +17,7 @@ spec:
       url: https://weather.k8s.alexieff.io
 
     victoriaMetrics:
-      url: http://vmsingle-vmsingle.monitoring.svc.cluster.local:8428
+      url: http://vmsingle-vmsingle.monitoring.svc.cluster.local:8429
 
     serviceMonitor:
       enabled: true

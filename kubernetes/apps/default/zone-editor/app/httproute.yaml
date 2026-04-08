@@ -12,5 +12,5 @@ spec:
       sectionName: https
   rules:
     - backendRefs:
-        - name: zone-editor-zone-editor
-          port: 5000
+        - name: zone-editor
+          port: 8099
