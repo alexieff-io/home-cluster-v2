@@ -29,6 +29,10 @@ rules:
     resources:
       - endpointslices
     verbs: ["get", "list", "watch"]
+  # Allow scraping control plane components (kube-controller-manager, kube-scheduler)
+  # that delegate /metrics authorization to the API server
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
