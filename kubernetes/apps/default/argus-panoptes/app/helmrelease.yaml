@@ -78,6 +78,10 @@ spec:
     # Use the ExternalSecret-created secret for the Argus daemon
     existingSecret: argus-panoptes-secrets
 
+    # Chart NetworkPolicy blocks inter-component traffic (flow-api→CH:8123, ingestor→CH:9000)
+    networkPolicy:
+      enabled: false
+
     # ── Argus daemon ──────────────────────────────────────────────────────────
     # Pin image tag — chart appVersion is a dev tag that doesn't match published images
     image:
@@ -86,6 +90,7 @@ spec:
       # Fix service URL — Helm names the service argus-panoptes-flow-api, not flow-api
       ARGUS_FLOW_URL: "http://argus-panoptes-flow-api:8080"
       ARGUS_WATCH_ORDERS_FILE: "/etc/argus/watch-orders.yaml"
+      ARGUS_FLOW_ALLOW_HTTP: "true"
       ARGUS_ORACLE_BASE_URL: "https://api.openai.com/v1"
       ARGUS_ORACLE_MODEL: "gpt-4o"
       ARGUS_LOG_FORMAT: "json"
