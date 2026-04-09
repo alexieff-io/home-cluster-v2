@@ -5,14 +5,9 @@ metadata:
   name: argus-panoptes
   namespace: default
 spec:
-  chart:
-    spec:
-      chart: charts/argus-panoptes
-      version: "1.0.1"
-      sourceRef:
-        kind: GitRepository
-        name: argus-panoptes-network
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: argus-panoptes
   interval: 1h
   install:
     remediation:
