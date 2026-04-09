@@ -4,6 +4,8 @@ kind: Kustomization
 metadata:
   name: cloudflare-dns-internal
 spec:
+  dependsOn:
+    - name: cloudflare-dns
   interval: 1h
   path: ./kubernetes/apps/network/cloudflare-dns-internal/app
   prune: true
@@ -11,5 +13,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: network  
+  targetNamespace: network
   wait: false

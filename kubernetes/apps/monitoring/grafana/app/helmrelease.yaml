@@ -117,11 +117,6 @@ spec:
           gnetId: 16213  # Flux Control Plane
           revision: 1
           datasource: VictoriaMetrics
-        # Security dashboards
-        falco-dashboard:
-          gnetId: 11914  # Falco Dashboard
-          revision: 1
-          datasource: VictoriaMetrics
         # cilium-agent and hubble-overview are provided via ConfigMaps
         # by the Cilium Helm chart (sidecar picks them up automatically)
 
