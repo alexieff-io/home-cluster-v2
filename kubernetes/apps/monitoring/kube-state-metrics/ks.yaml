@@ -5,6 +5,8 @@ metadata:
   name: kube-state-metrics
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: node-exporter
   interval: 1h
   path: ./kubernetes/apps/monitoring/kube-state-metrics/app
   prune: true
