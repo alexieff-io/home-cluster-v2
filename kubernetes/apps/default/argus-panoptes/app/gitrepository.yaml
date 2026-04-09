@@ -1,0 +1,11 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: argus-panoptes-network
+  namespace: flux-system
+spec:
+  interval: 1h
+  ref:
+    tag: 1.0.1
+  url: https://github.com/alexieff-io/argus-panoptes-network

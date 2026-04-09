@@ -1,0 +1,68 @@
+---
+# Watch Orders for Argus Panoptes
+# Edit the watch-orders.yaml key to add/modify Eyes.
+# After editing: kubectl exec deploy/argus-panoptes -n default -- kill -SIGHUP 1
+# Or use the Dashboard > Watch Orders > Reload Argus button.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argus-panoptes-watch-orders
+  namespace: default
+data:
+  watch-orders.yaml: |
+    defaults:
+      window_minutes: 5
+      baseline_hours: 24
+      cooldown_minutes: 15
+      severity: medium
+      units: bps
+      investigate: true
+      analyze: true
+
+    eyes:
+
+      # ─── SURGE: Traffic spike vs rolling baseline ─────────────────────────
+      - name: "Transit Link Surge"
+        description: "Traffic on any transit link exceeds 2x its 24-hour baseline"
+        type: surge
+        enabled: true
+        severity: high
+        config:
+          dimension: ExporterName
+          filter: "InIfProvider = 'transit' OR OutIfProvider = 'transit'"
+          multiplier: 2.0
+          min_traffic_bps: 1000000
+          baseline_hours: 24
+          window_minutes: 5
+        herald_channels: [slack, dashboard]
+        cooldown_minutes: 15
+
+      # ─── LIMIT: Absolute threshold check ──────────────────────────────────
+      - name: "WAN Capacity Warning"
+        description: "WAN uplink exceeds 8 Gbps (80% of 10G capacity)"
+        type: limit
+        enabled: false
+        severity: high
+        config:
+          dimension: ExporterName
+          filter: "ExporterName = 'edge-router-01'"
+          direction: above
+          threshold_bps: 8000000000
+          window_minutes: 5
+        herald_channels: [slack, dashboard]
+        cooldown_minutes: 10
+
+      # ─── VOID: Expected traffic missing ───────────────────────────────────
+      - name: "Uplink Traffic Lost"
+        description: "Uplink traffic drops to near zero after having traffic"
+        type: void
+        enabled: false
+        severity: critical
+        config:
+          dimension: ExporterName
+          floor_bps: 100000
+          window_minutes: 5
+          min_baseline_bps: 1000000
+          baseline_hours: 24
+        herald_channels: [slack, dashboard]
+        cooldown_minutes: 5

@@ -1,0 +1,137 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: argus-panoptes
+  namespace: default
+spec:
+  chart:
+    spec:
+      chart: charts/argus-panoptes
+      version: "1.0.1"
+      sourceRef:
+        kind: GitRepository
+        name: argus-panoptes-network
+        namespace: flux-system
+  interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  # Inject secrets from ExternalSecret-created K8s Secret into Helm values
+  valuesFrom:
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: FLOW_API_JWT_SECRET
+      targetPath: flowApi.secrets.FLOW_API_JWT_SECRET
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: FLOW_API_CLICKHOUSE_USER
+      targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_USER
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: FLOW_API_CLICKHOUSE_PASSWORD
+      targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_PASSWORD
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: FLOW_API_LLM_API_KEY
+      targetPath: flowApi.secrets.FLOW_API_LLM_API_KEY
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_USER
+      targetPath: clickhouse.secrets.CLICKHOUSE_USER
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_PASSWORD
+      targetPath: clickhouse.secrets.CLICKHOUSE_PASSWORD
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_USER
+      targetPath: ingestor.secrets.CLICKHOUSE_USER
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_PASSWORD
+      targetPath: ingestor.secrets.CLICKHOUSE_PASSWORD
+  # Mount watch-orders ConfigMap into the argus daemon deployment.
+  # The Helm chart does not include this volume, so we patch it post-render.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: argus-panoptes
+            patch: |-
+              - op: add
+                path: /spec/template/spec/volumes/-
+                value:
+                  name: watch-orders
+                  configMap:
+                    name: argus-panoptes-watch-orders
+                    items:
+                      - key: watch-orders.yaml
+                        path: watch-orders.yaml
+              - op: add
+                path: /spec/template/spec/containers/0/volumeMounts/-
+                value:
+                  name: watch-orders
+                  mountPath: /etc/argus
+                  readOnly: true
+  values:
+    # Use the ExternalSecret-created secret for the Argus daemon
+    existingSecret: argus-panoptes-secrets
+
+    # ── Argus daemon ──────────────────────────────────────────────────────────
+    config:
+      # Fix service URL — Helm names the service argus-panoptes-flow-api, not flow-api
+      ARGUS_FLOW_URL: "http://argus-panoptes-flow-api:8080"
+      ARGUS_WATCH_ORDERS_FILE: "/etc/argus/watch-orders.yaml"
+      ARGUS_ORACLE_BASE_URL: "https://api.openai.com/v1"
+      ARGUS_ORACLE_MODEL: "gpt-4o"
+      ARGUS_LOG_FORMAT: "json"
+
+    # ── Flow API ──────────────────────────────────────────────────────────────
+    flowApi:
+      persistence:
+        storageClass: longhorn
+        size: 5Gi
+      config:
+        # Fix ClickHouse hostname — Helm names the service argus-panoptes-clickhouse
+        FLOW_API_CLICKHOUSE_HOST: "argus-panoptes-clickhouse"
+        FLOW_API_CLICKHOUSE_TABLE: "flows_v2"
+        # Set CORS to dashboard's external URL (for browser → flow-api direct calls)
+        FLOW_API_CORS_ORIGINS: "https://argus.${SECRET_DOMAIN}"
+        FLOW_API_SECURE_COOKIES: "true"
+        FLOW_API_LLM_MODEL: "gpt-4o-mini"
+        FLOW_API_SQLITE_PATH: "/data/dashboard.db"
+        FLOW_API_LOG_FORMAT: "json"
+
+    # ── Dashboard ─────────────────────────────────────────────────────────────
+    dashboard:
+      config:
+        # Internal service URL — Next.js proxies all API calls server-side
+        API_URL: "http://argus-panoptes-flow-api:8080"
+
+    # ── ClickHouse ────────────────────────────────────────────────────────────
+    clickhouse:
+      persistence:
+        storageClass: longhorn
+        size: 50Gi
+
+    # ── Argus Ingestor (NetFlow/sFlow → ClickHouse) ───────────────────────────
+    # The ingestor service is type LoadBalancer so network devices can reach it.
+    # Configure your MetalLB pool or add metallb.universe.tf/loadBalancerIPs
+    # annotation via a postRenderers patch if you need a specific IP.
+    ingestor:
+      config:
+        CLICKHOUSE_ADDR: "argus-panoptes-clickhouse:9000"
+        CLICKHOUSE_DATABASE: "default"
+        LISTEN_NETFLOW: ":2055"
+        LISTEN_SFLOW: ":6343"
+        ENRICHMENT_RDNS_ENABLED: "true"
+        ENRICHMENT_THREAT_ENABLED: "true"
+      persistence:
+        storageClass: longhorn
+        size: 5Gi
