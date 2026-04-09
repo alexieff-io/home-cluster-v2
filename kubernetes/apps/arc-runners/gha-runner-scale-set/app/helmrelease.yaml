@@ -10,8 +10,7 @@ spec:
   interval: 1h
   values:
     githubConfigUrl: https://github.com/alexieff-io
-    githubConfigSecret:
-      name: arc-github-pat
+    githubConfigSecret: arc-github-pat
     runnerScaleSetName: *name
     minRunners: 0
     maxRunners: 5
