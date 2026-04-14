@@ -10,9 +10,11 @@ spec:
     name: argus-panoptes
   interval: 1h
   install:
+    timeout: 15m
     remediation:
       retries: 3
   upgrade:
+    timeout: 15m
     cleanupOnFail: true
     remediation:
       retries: 3
@@ -74,6 +76,17 @@ spec:
                   name: watch-orders
                   mountPath: /etc/argus
                   readOnly: true
+          # Increase flow-api probe timeouts — chart hardcodes 1s which is too tight
+          - target:
+              kind: Deployment
+              name: argus-panoptes-flow-api
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/readinessProbe/timeoutSeconds
+                value: 5
+              - op: add
+                path: /spec/template/spec/containers/0/livenessProbe/timeoutSeconds
+                value: 5
   values:
     # Use the ExternalSecret-created secret for the Argus daemon
     existingSecret: argus-panoptes-secrets
