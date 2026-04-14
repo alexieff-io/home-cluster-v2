@@ -85,7 +85,7 @@ spec:
     # ── Argus daemon ──────────────────────────────────────────────────────────
     # Pin image tag — chart appVersion is a dev tag that doesn't match published images
     image:
-      tag: "1.1.1"
+      tag: "1.1.3"
     config:
       # Fix service URL — Helm names the service argus-panoptes-flow-api, not flow-api
       ARGUS_FLOW_URL: "http://argus-panoptes-flow-api:8080"
@@ -98,7 +98,7 @@ spec:
     # ── Flow API ──────────────────────────────────────────────────────────────
     flowApi:
       image:
-        tag: "1.1.1"
+        tag: "1.1.3"
       persistence:
         storageClass: longhorn
         size: 5Gi
@@ -116,7 +116,7 @@ spec:
     # ── Dashboard ─────────────────────────────────────────────────────────────
     dashboard:
       image:
-        tag: "1.1.1"
+        tag: "1.1.3"
       config:
         # Internal service URL — Next.js proxies all API calls server-side
         API_URL: "http://argus-panoptes-flow-api:8080"
@@ -133,7 +133,7 @@ spec:
     # annotation via a postRenderers patch if you need a specific IP.
     ingestor:
       image:
-        tag: "1.1.1"
+        tag: "1.1.3"
       config:
         CLICKHOUSE_ADDR: "argus-panoptes-clickhouse:9000"
         CLICKHOUSE_DATABASE: "default"
