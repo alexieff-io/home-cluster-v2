@@ -9,6 +9,9 @@ spec:
     name: gha-runner-scale-set
   interval: 1h
   values:
+    controllerServiceAccount:
+      name: gha-runner-scale-set-controller
+      namespace: arc-systems
     githubConfigUrl: https://github.com/alexieff-io
     githubConfigSecret: arc-github-pat
     runnerScaleSetName: *name
