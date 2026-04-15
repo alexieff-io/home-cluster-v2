@@ -139,6 +139,13 @@ spec:
       persistence:
         storageClass: longhorn
         size: 50Gi
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1Gi
+        limits:
+          cpu: "2"
+          memory: 6Gi
 
     # ── Argus Ingestor (NetFlow/sFlow → ClickHouse) ───────────────────────────
     # The ingestor service is type LoadBalancer so network devices can reach it.
