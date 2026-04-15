@@ -1,0 +1,47 @@
+# Secrets and credentials
+*.key
+*.pub
+*.decrypted~*.yaml
+*.sops.yaml
+cloudflare-tunnel.json
+kubeconfig
+
+# Generated Talos node configs (derived from talconfig.yaml)
+talos/clusterconfig/
+
+# Private templates
+.private/
+
+# Python virtual environment
+.venv/
+
+# Task runner cache
+.task/
+
+# Editor / IDE config
+.vscode/
+.editorconfig
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Git internals
+.git/
+.gitattributes
+
+# GitHub PR labeling (not relevant to cluster logic)
+.github/labeler.yaml
+.github/labels.yaml
+.github/release.yaml
+.github/workflows/label-sync.yaml
+.github/workflows/labeler.yaml
+
+# Docs (prose, not config)
+docs/
+
+# Renovate config (dependency bot rules)
+.renovaterc.json5
+
+# Shell lint config
+.shellcheckrc
