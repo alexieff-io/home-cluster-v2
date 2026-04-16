@@ -152,6 +152,7 @@ spec:
         LISTEN_SFLOW: ":6343"
         ENRICHMENT_RDNS_ENABLED: "true"
         ENRICHMENT_THREAT_ENABLED: "true"
+        FLOW_API_URL: "http://flow-api:8080"
       persistence:
         storageClass: longhorn
         size: 5Gi
