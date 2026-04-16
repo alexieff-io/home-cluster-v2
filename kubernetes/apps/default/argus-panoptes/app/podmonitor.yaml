@@ -1,0 +1,19 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: argus-panoptes
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: watcher
+  podMetricsEndpoints:
+    - targetPort: 9090
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

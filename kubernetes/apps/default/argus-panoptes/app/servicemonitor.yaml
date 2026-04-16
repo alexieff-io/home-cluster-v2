@@ -1,0 +1,19 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argus-panoptes-ingestor
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: ingestor
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

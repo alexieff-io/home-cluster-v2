@@ -7,3 +7,5 @@ resources:
   - ./configmap-watch-orders.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
+  - ./podmonitor.yaml
+  - ./servicemonitor.yaml
