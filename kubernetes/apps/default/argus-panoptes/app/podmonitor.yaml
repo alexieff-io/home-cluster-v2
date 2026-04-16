@@ -1,6 +1,10 @@
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
+# Native VMPodScrape instead of PodMonitor: the argus daemon container does not
+# declare a named port, so a PodMonitor/targetPort generates a keep-filter on
+# __meta_kubernetes_pod_container_port_number that drops all pods. Using
+# VMPodScrape with explicit address relabeling scrapes port 9090 directly.
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
 metadata:
   name: argus-panoptes
   namespace: default
@@ -13,7 +17,10 @@ spec:
       app.kubernetes.io/instance: argus-panoptes
       app.kubernetes.io/component: watcher
   podMetricsEndpoints:
-    - targetPort: 9090
-      path: /metrics
-      interval: 30s
+    - interval: 30s
       scrapeTimeout: 10s
+      path: /metrics
+      relabelConfigs:
+        - sourceLabels: [__meta_kubernetes_pod_ip]
+          targetLabel: __address__
+          replacement: "$1:9090"
