@@ -1,0 +1,180 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-ngx
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: paperless-ngx
+  interval: 1h
+  timeout: 15m
+  values:
+    controllers:
+      paperless-ngx:
+        strategy: Recreate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: "2.20.14"
+            env:
+              PAPERLESS_REDIS: redis://:$(REDIS_PASSWORD)@paperless-ngx-redis-master.default.svc.cluster.local:6379
+              PAPERLESS_DBHOST: paperless-ngx-postgres-rw.default.svc.cluster.local
+              PAPERLESS_DBPORT: "5432"
+              PAPERLESS_DBNAME: paperless
+              PAPERLESS_URL: "https://paperless.${SECRET_DOMAIN}"
+              PAPERLESS_ALLOWED_HOSTS: "paperless.${SECRET_DOMAIN}"
+              PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://paperless.${SECRET_DOMAIN}"
+              PAPERLESS_TIME_ZONE: America/New_York
+              PAPERLESS_OCR_LANGUAGE: eng
+              PAPERLESS_TIKA_ENABLED: "1"
+              PAPERLESS_TIKA_ENDPOINT: http://localhost:9998
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://localhost:3000
+              PAPERLESS_ADMIN_USER: admin
+              USERMAP_UID: "1000"
+              USERMAP_GID: "1000"
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-ngx-postgres-app
+                    key: username
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-ngx-postgres-app
+                    key: password
+              REDIS_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: paperless-ngx-redis-auth
+                    key: password
+            envFrom:
+              - secretRef:
+                  name: paperless-ngx-secrets
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/
+                    port: &port 8000
+                  initialDelaySeconds: 90
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 5
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+          gotenberg:
+            image:
+              repository: docker.io/gotenberg/gotenberg
+              tag: "8"
+            args:
+              - gotenberg
+              - --chromium-disable-javascript=true
+              - --chromium-allow-list=file:///tmp/.*
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+          tika:
+            image:
+              repository: docker.io/apache/tika
+              tag: latest-full
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: false
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: paperless-ngx
+        ports:
+          http:
+            port: *port
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        advancedMounts:
+          paperless-ngx:
+            app:
+              - path: /usr/src/paperless/data
+      media:
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        accessMode: ReadWriteOnce
+        size: 100Gi
+        advancedMounts:
+          paperless-ngx:
+            app:
+              - path: /usr/src/paperless/media
+      consume:
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        advancedMounts:
+          paperless-ngx:
+            app:
+              - path: /usr/src/paperless/consume
+      export:
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        accessMode: ReadWriteOnce
+        size: 5Gi
+        advancedMounts:
+          paperless-ngx:
+            app:
+              - path: /usr/src/paperless/export
+    route:
+      app:
+        hostnames: ["paperless.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port

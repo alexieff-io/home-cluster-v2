@@ -1,0 +1,40 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-ngx-redis
+  namespace: default
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: redis
+      version: 24.x
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: default
+  values:
+    architecture: standalone
+    auth:
+      enabled: true
+      existingSecret: paperless-ngx-redis-auth
+      existingSecretPasswordKey: password
+    commonConfiguration: |-
+      appendonly yes
+      save ""
+    master:
+      persistence:
+        enabled: true
+        storageClass: longhorn
+        size: 8Gi
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+    replica:
+      replicaCount: 0
+    metrics:
+      enabled: false
