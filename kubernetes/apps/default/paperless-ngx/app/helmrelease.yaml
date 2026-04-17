@@ -79,6 +79,7 @@ spec:
               readOnlyRootFilesystem: false
               capabilities:
                 drop: ["ALL"]
+                add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETUID", "SETGID"]
           gotenberg:
             image:
               repository: docker.io/gotenberg/gotenberg
