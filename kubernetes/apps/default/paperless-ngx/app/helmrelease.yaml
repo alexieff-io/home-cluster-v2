@@ -23,7 +23,7 @@ spec:
               PAPERLESS_DBPORT: "5432"
               PAPERLESS_DBNAME: paperless
               PAPERLESS_URL: "https://paperless.${SECRET_DOMAIN}"
-              PAPERLESS_ALLOWED_HOSTS: "paperless.${SECRET_DOMAIN}"
+              PAPERLESS_ALLOWED_HOSTS: "*"
               PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://paperless.${SECRET_DOMAIN}"
               PAPERLESS_TIME_ZONE: America/New_York
               PAPERLESS_OCR_LANGUAGE: eng
