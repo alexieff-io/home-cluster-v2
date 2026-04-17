@@ -19,7 +19,6 @@ spec:
               repository: ghcr.io/paperless-ngx/paperless-ngx
               tag: "2.20.14"
             env:
-              PAPERLESS_REDIS: redis://:$(REDIS_PASSWORD)@paperless-ngx-redis-master.default.svc.cluster.local:6379
               PAPERLESS_DBHOST: paperless-ngx-postgres-rw.default.svc.cluster.local
               PAPERLESS_DBPORT: "5432"
               PAPERLESS_DBNAME: paperless
@@ -43,11 +42,6 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: paperless-ngx-postgres-app
-                    key: password
-              REDIS_PASSWORD:
-                valueFrom:
-                  secretKeyRef:
-                    name: paperless-ngx-redis-auth
                     key: password
             envFrom:
               - secretRef:
