@@ -11,6 +11,7 @@ resources:
   - ./argus-panoptes/ks.yaml
   - ./jetkvm/ks.yaml
   - ./librechat/ks.yaml
+  - ./node-hp-scan-to/ks.yaml
   - ./open-meteo/ks.yaml
   - ./paperless-ngx/ks.yaml
   - ./weather-scraper/ks.yaml
