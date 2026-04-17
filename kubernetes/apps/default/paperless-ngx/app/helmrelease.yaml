@@ -9,11 +9,20 @@ spec:
     name: paperless-ngx
   interval: 1h
   timeout: 15m
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: paperless-ngx
+            patch: |
+              - op: replace
+                path: /spec/progressDeadlineSeconds
+                value: 1200
   values:
     controllers:
       paperless-ngx:
         strategy: Recreate
-        progressDeadlineSeconds: 1200
         containers:
           app:
             image:
