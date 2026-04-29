@@ -50,6 +50,9 @@ spec:
                         configMap:
                           name: librechat-config
   values:
+    image:
+      tag: v0.8.5
+
     # LibreChat configuration
     config:
       # App URL for external access
