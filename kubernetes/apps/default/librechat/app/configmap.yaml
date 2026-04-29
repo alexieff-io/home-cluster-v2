@@ -14,7 +14,7 @@ data:
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
-            default: ["gpt-5.4", "gpt-5.2", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4.1-mini"]
+            default: [["gpt-5.5","gpt-5.4", "gpt-5.2", "gpt-5-mini", "gpt-5-nano", "gpt-4.1", "gpt-4.1-mini"]
             fetch: false
           titleConvo: true
           titleModel: "gpt-5-mini"
@@ -25,7 +25,7 @@ data:
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
-            default: ["anthropic/claude-opus-4-6", "anthropic/claude-sonnet-4-6", "anthropic/claude-sonnet-4-5", "anthropic/claude-haiku-4-5"]
+            default: ["anthropic/claude-opus-4-7","anthropic/claude-opus-4-6", "anthropic/claude-sonnet-4-6", "anthropic/claude-sonnet-4-5", "anthropic/claude-haiku-4-5"]
             fetch: false
           titleConvo: true
           titleModel: "anthropic/claude-sonnet-4-6"
@@ -36,7 +36,7 @@ data:
           apiKey: "${OPENAI_API_KEY}"
           baseURL: "https://litellm.lan.haxrcorp.com/v1"
           models:
-            default: ["gemini/gemini-3.1-pro-preview", "gemini/gemini-3-flash-preview", "gemini/gemini-3.1-flash-lite-preview", "gemini/gemini-2.5-pro", "gemini/gemini-2.5-flash"]
+            default: ["gemini/gemini-3-pro-latest","gemini/gemini-3.1-pro-preview", "gemini/gemini-3-flash-preview", "gemini/gemini-3.1-flash-lite-preview", "gemini/gemini-2.5-pro", "gemini/gemini-2.5-flash"]
             fetch: false
           titleConvo: true
           titleModel: "gemini/gemini-3-flash-preview"
