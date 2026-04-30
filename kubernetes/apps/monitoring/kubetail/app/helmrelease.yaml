@@ -19,6 +19,13 @@ spec:
         runtime:
           # Use cluster auth mode for internal access
           authMode: cluster
+        runtimeConfig:
+          # Allow same-origin WebSocket upgrades when running behind the
+          # Envoy Gateway with these hostnames. Without these the dashboard
+          # rejects /graphql websocket subscriptions with HTTP 403.
+          allowedOrigins:
+            - "https://kubetail.${SECRET_DOMAIN}"
+            - "https://logs.${SECRET_DOMAIN}"
         service:
           type: ClusterIP
           port: 8080
