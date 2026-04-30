@@ -103,7 +103,7 @@ Install all with: `mise install`
 ## Operational Quick-Reference
 
 - Always verify container image tags exist before specifying them (`docker manifest inspect`)
-- Cluster nodes: 3 control planes at 10.69.0.10-12, VIP at 10.69.0.25
+- Cluster nodes: 4 control planes (`node1`–`node4`) at 10.69.0.10-13, VIP at 10.69.0.25
 - Pod CIDR: 10.42.0.0/16, Service CIDR: 10.43.0.0/16
 - Cilium provides CNI and LoadBalancer IP allocation (`lbipam.cilium.io/ips` annotation)
 - Environment variables `KUBECONFIG`, `SOPS_AGE_KEY_FILE`, and `TALOSCONFIG` are set via `.mise.toml` and `Taskfile.yaml`

@@ -19,7 +19,7 @@ This document describes the key patterns and conventions used in this GitOps Kub
 
 ## Cluster Topology
 
-Three Talos control-plane nodes (10.69.0.10-12) behind a VIP at 10.69.0.25. Pod CIDR is 10.42.0.0/16, service CIDR is 10.43.0.0/16. Cilium handles load balancer IP assignment via the `lbipam.cilium.io/ips` annotation on services.
+Four Talos control-plane nodes (`node1`–`node4`, 10.69.0.10-13) behind a VIP at 10.69.0.25. Pod CIDR is 10.42.0.0/16, service CIDR is 10.43.0.0/16. Cilium handles load balancer IP assignment via the `lbipam.cilium.io/ips` annotation on services.
 
 ## GitOps Reconciliation Model
 
@@ -168,6 +168,21 @@ flux-operator -> flux-instance
 
 cloudflare-dns -> cloudflare-dns-internal
 ```
+
+#### Cross-namespace dependsOn
+
+`dependsOn` defaults to the same namespace as the dependent Flux Kustomization. That sounds simple, but the *Kustomization's* namespace is not always `flux-system` even when `metadata.namespace: flux-system` is set in the file — `kubernetes/apps/kube-system/kustomization.yaml` declares `namespace: kube-system` at the top, which Kustomize uses to rewrite the namespace of every Flux Kustomization underneath. Result: every app under `kube-system/` (cilium, coredns, metrics-server, reloader, spegel, vertical-pod-autoscaler) ends up in the `kube-system` namespace, not `flux-system`.
+
+When an app in another folder depends on one of these, it must spell out the namespace explicitly:
+
+```yaml
+spec:
+  dependsOn:
+    - name: vertical-pod-autoscaler
+      namespace: kube-system          # required — VPA lives in kube-system
+```
+
+To check which namespace a Flux Kustomization actually lives in: `kubectl get kustomization -A | grep <name>`.
 
 ## Helm Chart Patterns
 
