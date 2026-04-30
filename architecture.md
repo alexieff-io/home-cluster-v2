@@ -96,6 +96,28 @@ This pulls in `cluster-secrets.sops.yaml` which provides variables for Flux `pos
 
 **Current namespaces using the SOPS component:** default, cert-manager, flux-system, kube-system, network
 
+#### Folder ↔ namespace name
+
+Most folders under `kubernetes/apps/` match their namespace name. Two do not — the operator chart names the namespace, and we keep the folder named for what's deployed there:
+
+| Folder | Namespace |
+|---|---|
+| `database/` | `cnpg-system` (CloudNativePG operator) |
+| `storage/` | `longhorn-system` |
+| (everything else) | matches folder name |
+
+#### `prune: disabled` annotation
+
+Foundational platform namespaces carry `kustomize.toolkit.fluxcd.io/prune: disabled` on their `Namespace` resource:
+
+- `cert-manager`
+- `default`
+- `flux-system`
+- `kube-system`
+- `network`
+
+This tells Flux not to delete the namespace (and everything inside it) if the manifest is ever removed or renamed. Application-only namespaces (`monitoring`, `cnpg-system`, `longhorn-system`, `arc-runners`, `arc-systems`, `external-secrets`) do not carry the annotation and can be cleanly torn down by removing their kustomization entry.
+
 ### The ks.yaml Pattern
 
 Every app has a Flux Kustomization at `<namespace>/<app>/ks.yaml`:
@@ -316,7 +338,7 @@ kind: HTTPRoute
 metadata:
   name: grafana
 spec:
-  hostnames: ["grafana.k8s.alexieff.io"]
+  hostnames: ["grafana.${SECRET_DOMAIN}"]
   parentRefs:
     - name: envoy-external
       namespace: network
@@ -326,6 +348,19 @@ spec:
         - name: grafana
           port: 80
 ```
+
+#### Hostname convention
+
+Always use the substituted form `"<app>.${SECRET_DOMAIN}"`, never a hardcoded hostname like `"grafana.k8s.alexieff.io"`. The substituted form is portable (the cluster could be renamed without editing every route) and keeps the domain in one place (`cluster-secrets.sops.yaml`).
+
+For substitution to work, the app's `ks.yaml` must include:
+```yaml
+postBuild:
+  substituteFrom:
+    - name: cluster-secrets
+      kind: Secret
+```
+The same applies anywhere `${SECRET_DOMAIN}` appears in HelmRelease values (e.g., `GF_SERVER_ROOT_URL` in Grafana) — Flux performs the substitution before the manifest is sent to the API server, so the running pod sees the resolved value.
 
 ### DNS Flow
 
@@ -415,6 +450,40 @@ Node syslogs
       -> Grafana (via victoriametrics-logs-datasource plugin)
 ```
 
+### Resource Recommendations (VPA + Goldilocks)
+
+A Vertical Pod Autoscaler (Fairwinds chart, `kube-system/vertical-pod-autoscaler`) runs in **recommender-only** mode. The updater and admission-controller are deliberately disabled, so VPA only writes recommendations into the status of `VerticalPodAutoscaler` objects — it never restarts pods.
+
+[Goldilocks](https://goldilocks.docs.fairwinds.com/) (`monitoring/goldilocks`) sits on top of VPA. Its controller watches all namespaces labeled
+
+```yaml
+metadata:
+  labels:
+    goldilocks.fairwinds.com/enabled: "true"
+```
+
+and auto-creates a `VerticalPodAutoscaler` (in `Off` mode) for every Deployment / StatefulSet inside. Recommendations populate after the recommender has 24–48 hours of metrics-server history per workload.
+
+**All cluster namespaces are currently opted in** (label applied at the `Namespace` resource), so every workload gets a recommendation without per-app YAML edits.
+
+#### Reading recommendations
+
+- **Dashboard:** `https://goldilocks.${SECRET_DOMAIN}` (envoy-internal)
+- **CLI:**
+  ```bash
+  kubectl get vpa -A
+  kubectl describe vpa <name> -n <ns>          # full recommendation block
+  ```
+
+#### Flipping a workload to Auto
+
+VPA in `Auto` mode will evict pods to apply recommended requests. Two ways to enable:
+
+- **Per-workload:** edit the VPA's `updatePolicy.updateMode: Off` → `Auto` (or `Initial`)
+- **Per-namespace default:** add `goldilocks.fairwinds.com/vpa-update-mode: "auto"` to the namespace label set, and Goldilocks will create new VPAs in Auto mode
+
+The recommender is the only VPA component running, so flipping to `Auto` will not actually do anything until the updater + admission-controller are also enabled in the VPA HelmRelease values. Doing that is a deliberate operational decision — keep the recommender-only setup until recommendations have soaked.
+
 ## Bootstrap Sequence
 
 Initial cluster bring-up uses helmfile (`bootstrap/helmfile.d/01-apps.yaml`) with explicit dependency ordering:
@@ -439,6 +508,8 @@ Runs on weekends. Auto-merges minor/patch updates for GitHub Actions and mise to
 ### CI Validation
 
 The `flux-local` GitHub Action validates all HelmReleases and Kustomizations on PRs, posting diffs as comments. This catches templating errors and value mismatches before merge.
+
+Run the same checks locally with `task validate` before pushing — see `docs/local-validation.md` for the full runbook (including how to render a single HelmRelease and the WSL/Docker gotchas).
 
 ### Scaffolding
 

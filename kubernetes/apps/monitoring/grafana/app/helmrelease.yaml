@@ -25,7 +25,7 @@ spec:
 
     env:
       GF_EXPLORE_ENABLED: true
-      GF_SERVER_ROOT_URL: "https://grafana.k8s.alexieff.io"
+      GF_SERVER_ROOT_URL: "https://grafana.${SECRET_DOMAIN}"
       GF_AUTH_ANONYMOUS_ENABLED: false
       GF_SECURITY_ALLOW_EMBEDDING: true
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true

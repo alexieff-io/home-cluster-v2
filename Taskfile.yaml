@@ -11,6 +11,7 @@ vars:
   TALOS_DIR: '{{.ROOT_DIR}}/talos'
   PRIVATE_DIR: '{{.ROOT_DIR}}/.private'
   TALOSCONFIG: '{{.ROOT_DIR}}/talos/clusterconfig/talosconfig'
+  FLUX_LOCAL_IMAGE: 'ghcr.io/allenporter/flux-local:v8.0.1'
 
 env:
   KUBECONFIG: '{{.ROOT_DIR}}/kubeconfig'
@@ -31,3 +32,22 @@ tasks:
     preconditions:
       - test -f {{.KUBECONFIG}}
       - which flux
+
+  validate:
+    desc: Run flux-local test locally (matches the CI flux-local job). See docs/local-validation.md.
+    dir: '{{.ROOT_DIR}}'
+    cmd: |
+      docker run --rm \
+        -u "$(id -u):$(id -g)" \
+        -v "{{.ROOT_DIR}}:/workspace" \
+        -v /tmp:/tmp \
+        -w /workspace \
+        -e HOME=/tmp \
+        --entrypoint sh \
+        {{.FLUX_LOCAL_IMAGE}} -c '
+          git config --global --add safe.directory /workspace &&
+          flux-local test --enable-helm --all-namespaces --path kubernetes/flux/cluster
+        '
+    preconditions:
+      - sh: which docker
+        msg: "docker is required for task validate (see docs/local-validation.md)"
