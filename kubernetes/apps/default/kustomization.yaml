@@ -9,6 +9,7 @@ components:
 resources:
   - ./namespace.yaml
   - ./argus-panoptes/ks.yaml
+  - ./cobalt/ks.yaml
   - ./jetkvm/ks.yaml
   - ./librechat/ks.yaml
   - ./node-hp-scan-to/ks.yaml
