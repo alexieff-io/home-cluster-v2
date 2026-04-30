@@ -10,6 +10,7 @@ resources:
   - ./victoria-metrics-operator/ks.yaml
   - ./vmsingle/ks.yaml
   - ./victoria-logs/ks.yaml
+  - ./goldilocks/ks.yaml
   - ./grafana/ks.yaml
   - ./vector-syslog/ks.yaml
   - ./kubetail/ks.yaml

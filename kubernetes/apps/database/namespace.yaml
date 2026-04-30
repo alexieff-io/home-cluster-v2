@@ -5,3 +5,4 @@ metadata:
   name: cnpg-system
   labels:
     name: cnpg-system
+    goldilocks.fairwinds.com/enabled: "true"
