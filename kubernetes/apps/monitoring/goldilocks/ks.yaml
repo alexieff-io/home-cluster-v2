@@ -20,3 +20,4 @@ spec:
   wait: false
   dependsOn:
     - name: vertical-pod-autoscaler
+      namespace: kube-system
