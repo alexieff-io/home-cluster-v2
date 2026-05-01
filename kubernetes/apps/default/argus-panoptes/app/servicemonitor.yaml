@@ -17,3 +17,42 @@ spec:
       path: /metrics
       interval: 30s
       scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argus-panoptes-syslog-ingestor
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: syslog-ingestor
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argus-panoptes-flow-api
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: flow-api
+  endpoints:
+    # flow-api exposes /metrics on the same http port as the API itself
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
