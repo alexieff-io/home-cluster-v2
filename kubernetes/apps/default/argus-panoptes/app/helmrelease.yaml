@@ -52,6 +52,14 @@ spec:
       name: argus-panoptes-secrets
       valuesKey: CLICKHOUSE_PASSWORD
       targetPath: ingestor.secrets.CLICKHOUSE_PASSWORD
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_USER
+      targetPath: syslogIngestor.secrets.CLICKHOUSE_USER
+    - kind: Secret
+      name: argus-panoptes-secrets
+      valuesKey: CLICKHOUSE_PASSWORD
+      targetPath: syslogIngestor.secrets.CLICKHOUSE_PASSWORD
   # Mount watch-orders ConfigMap into the argus daemon deployment.
   # The Helm chart does not include this volume, so we patch it post-render.
   postRenderers:
@@ -156,3 +164,16 @@ spec:
       persistence:
         storageClass: longhorn
         size: 5Gi
+
+    # ── Syslog Ingestor (UDP 514 / TCP 6514 → ClickHouse events_v1) ───────────
+    # External Service uses Cilium LBIPAM for a stable IP at 10.69.0.4 so
+    # network devices can target it without DNS.
+    syslogIngestor:
+      enabled: true
+      config:
+        # Chart default points at "argus-clickhouse:9000"; this release names it
+        # argus-panoptes-clickhouse, matching the daemon and flow-api overrides above.
+        CLICKHOUSE_ADDR: "argus-panoptes-clickhouse:9000"
+      service:
+        annotations:
+          lbipam.cilium.io/ips: "10.69.0.4"
