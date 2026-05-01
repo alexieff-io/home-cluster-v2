@@ -123,14 +123,16 @@ spec:
           gnetId: 1860  # Node Exporter Full
           revision: 37
           datasource: VictoriaMetrics
-        flux-cluster:
-          gnetId: 16714  # Flux Cluster Stats
+        flux2:
+          gnetId: 16714  # "Flux2" dashboard — FluxCD reconciliation overview
           revision: 1
           datasource: VictoriaMetrics
-        flux-control-plane:
-          gnetId: 16213  # Flux Control Plane
-          revision: 1
-          datasource: VictoriaMetrics
+        # NOTE: gnetId 16213 was previously listed here as "Flux Control Plane"
+        # but it actually publishes a Minecraft Server dashboard. Removed.
+        # The canonical Flux Control Plane dashboard is shipped in the fluxcd/
+        # flux2-monitoring-example repo and would need to be loaded via a
+        # ConfigMap with the grafana_dashboard=1 label.
+        #
         # cilium-agent and hubble-overview are provided via ConfigMaps
         # by the Cilium Helm chart (sidecar picks them up automatically)
 
