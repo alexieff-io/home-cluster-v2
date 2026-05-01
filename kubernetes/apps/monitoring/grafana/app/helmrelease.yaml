@@ -59,6 +59,15 @@ spec:
             jsonData:
               httpMethod: POST
             editable: true
+          - name: Alertmanager
+            type: alertmanager
+            uid: alertmanager
+            access: proxy
+            url: http://vmalertmanager-alertmanager:9093
+            jsonData:
+              implementation: prometheus
+              handleGrafanaManagedAlerts: false
+            editable: true
 
     sidecar:
       dashboards:
@@ -89,25 +98,30 @@ spec:
           gnetId: 11176  # VictoriaMetrics overview
           revision: 18
           datasource: VictoriaMetrics
-        kubernetes-cluster:
-          gnetId: 7249  # Kubernetes Cluster
-          revision: 1
+        # dotdc kubernetes views — built for kube-state-metrics + Prometheus/VM
+        kubernetes-views-global:
+          gnetId: 15757  # Kubernetes / Views / Global
+          revision: 43
           datasource: VictoriaMetrics
-        kubernetes-pods:
-          gnetId: 6417  # Kubernetes Pods
-          revision: 1
+        kubernetes-views-namespaces:
+          gnetId: 15758  # Kubernetes / Views / Namespaces
+          revision: 42
+          datasource: VictoriaMetrics
+        kubernetes-views-nodes:
+          gnetId: 15759  # Kubernetes / Views / Nodes
+          revision: 37
+          datasource: VictoriaMetrics
+        kubernetes-views-pods:
+          gnetId: 15760  # Kubernetes / Views / Pods
+          revision: 36
+          datasource: VictoriaMetrics
+        kubernetes-apiserver:
+          gnetId: 15761  # Kubernetes / System / API Server
+          revision: 17
           datasource: VictoriaMetrics
         node-exporter:
           gnetId: 1860  # Node Exporter Full
           revision: 37
-          datasource: VictoriaMetrics
-        etcd:
-          gnetId: 3070  # etcd by Prometheus
-          revision: 3
-          datasource: VictoriaMetrics
-        kubernetes-apiserver:
-          gnetId: 15761  # Kubernetes API Server
-          revision: 17
           datasource: VictoriaMetrics
         flux-cluster:
           gnetId: 16714  # Flux Cluster Stats
@@ -121,8 +135,6 @@ spec:
         # by the Cilium Helm chart (sidecar picks them up automatically)
 
     plugins:
-      - grafana-piechart-panel
-      - grafana-worldmap-panel
       - victoriametrics-logs-datasource
     persistence:
       enabled: true

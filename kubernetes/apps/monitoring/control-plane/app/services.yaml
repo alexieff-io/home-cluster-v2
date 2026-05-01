@@ -38,23 +38,3 @@ spec:
   selector:
     component: kube-scheduler
     tier: control-plane
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: etcd
-  namespace: kube-system
-  labels:
-    component: etcd
-    tier: control-plane
-spec:
-  type: ClusterIP
-  clusterIP: None
-  ports:
-    - name: http-metrics
-      port: 2381
-      protocol: TCP
-      targetPort: 2381
-  selector:
-    component: etcd
-    tier: control-plane

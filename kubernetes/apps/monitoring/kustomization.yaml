@@ -9,6 +9,7 @@ resources:
   - ./node-exporter/ks.yaml
   - ./victoria-metrics-operator/ks.yaml
   - ./vmsingle/ks.yaml
+  - ./vmalert/ks.yaml
   - ./victoria-logs/ks.yaml
   - ./goldilocks/ks.yaml
   - ./grafana/ks.yaml

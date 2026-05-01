@@ -157,6 +157,7 @@ spec:
       storageClassName: longhorn
       size: 10Gi
 
-    # Pod monitor for metrics
+    # Vector self-metrics aren't exposed (no internal_metrics source / prom-exporter
+    # port in customConfig above), so the PodMonitor would discover zero targets.
     podMonitor:
-      enabled: true
+      enabled: false

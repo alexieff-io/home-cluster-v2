@@ -20,4 +20,5 @@ spec:
   wait: false
   dependsOn:
     - name: vmsingle
+    - name: vmalert
     - name: victoria-logs
