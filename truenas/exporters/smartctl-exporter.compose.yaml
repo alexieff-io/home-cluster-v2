@@ -14,5 +14,9 @@ services:
     command:
       - --web.listen-address=:9633
       - --smartctl.interval=120s
+      # Auto-probe every device returned by `smartctl --scan` instead of
+      # requiring a hand-maintained device list. Without this flag v0.14.0
+      # reports smartctl_devices=N but emits zero per-device metrics.
+      - --smartctl.rescan=15m
     volumes:
       - /dev:/dev

@@ -1,0 +1,641 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "datasource", "uid": "grafana" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Single-pane overview of TrueNAS host metrics: system health, CPU, memory, network, disk I/O, ZFS pools and datasets, ARC cache, and SMART drive health. Sources: node_exporter + zfs_exporter + smartctl_exporter.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "pluginVersion": "10.x",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "time() - node_boot_time_seconds{job=\"truenas-node\",instance=\"$instance\"}",
+          "refId": "A" }
+      ],
+      "title": "Uptime",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "max": 100, "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]},
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{job=\"truenas-node\",instance=\"$instance\",mode=\"idle\"}[2m])) * 100)",
+          "refId": "A" }
+      ],
+      "title": "CPU Used",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "max": 100, "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 80 },
+            { "color": "red", "value": 95 }
+          ]},
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{job=\"truenas-node\",instance=\"$instance\"} / node_memory_MemTotal_bytes{job=\"truenas-node\",instance=\"$instance\"}))",
+          "refId": "A" }
+      ],
+      "title": "Memory Used",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "decimals": 2,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 4 },
+            { "color": "red", "value": 8 }
+          ]},
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "node_load1{job=\"truenas-node\",instance=\"$instance\"}",
+          "refId": "A" }
+      ],
+      "title": "Load (1m)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "id": 5,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "count(zfs_pool_health{job=\"truenas-zfs\",instance=\"$instance\"})",
+          "refId": "A" }
+      ],
+      "title": "ZFS Pools",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "red", "value": 1 }
+          ]},
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "id": 6,
+      "options": { "colorMode": "value", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "count(zfs_pool_health{job=\"truenas-zfs\",instance=\"$instance\"} > 0) OR on() vector(0)",
+          "refId": "A" }
+      ],
+      "title": "Pools Not Healthy",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "panels": [],
+      "title": "CPU & Load",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 30, "lineWidth": 1, "stacking": { "mode": "normal" } },
+          "min": 0, "max": 100,
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 6 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+          "expr": "sum by (mode) (rate(node_cpu_seconds_total{job=\"truenas-node\",instance=\"$instance\",mode!=\"idle\"}[2m])) / scalar(count(count by (cpu) (node_cpu_seconds_total{job=\"truenas-node\",instance=\"$instance\"}))) * 100",
+          "legendFormat": "{{mode}}",
+          "refId": "A" }
+      ],
+      "title": "CPU Usage by Mode",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "min": 0,
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "id": 11,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "node_load1{job=\"truenas-node\",instance=\"$instance\"}", "legendFormat": "1m", "refId": "A" },
+        { "expr": "node_load5{job=\"truenas-node\",instance=\"$instance\"}", "legendFormat": "5m", "refId": "B" },
+        { "expr": "node_load15{job=\"truenas-node\",instance=\"$instance\"}", "legendFormat": "15m", "refId": "C" }
+      ],
+      "title": "Load Average",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 102,
+      "panels": [],
+      "title": "Memory & Swap",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 30, "lineWidth": 1, "stacking": { "mode": "normal" } },
+          "min": 0,
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 15 },
+      "id": 20,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "node_memory_MemTotal_bytes{job=\"truenas-node\",instance=\"$instance\"} - node_memory_MemFree_bytes{job=\"truenas-node\",instance=\"$instance\"} - node_memory_Cached_bytes{job=\"truenas-node\",instance=\"$instance\"} - node_memory_Buffers_bytes{job=\"truenas-node\",instance=\"$instance\"} - (node_memory_Slab_bytes{job=\"truenas-node\",instance=\"$instance\"} or vector(0))",
+          "legendFormat": "used", "refId": "A" },
+        { "expr": "node_memory_Cached_bytes{job=\"truenas-node\",instance=\"$instance\"} + (node_memory_Buffers_bytes{job=\"truenas-node\",instance=\"$instance\"} or vector(0))",
+          "legendFormat": "cache+buffers", "refId": "B" },
+        { "expr": "node_zfs_arcstats_size{job=\"truenas-node\",instance=\"$instance\"} or vector(0)",
+          "legendFormat": "zfs ARC", "refId": "C" },
+        { "expr": "node_memory_MemFree_bytes{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "free", "refId": "D" }
+      ],
+      "title": "Memory Breakdown",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 1 },
+          "min": 0,
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 15 },
+      "id": 21,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "node_memory_SwapTotal_bytes{job=\"truenas-node\",instance=\"$instance\"} - node_memory_SwapFree_bytes{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "swap used", "refId": "A" },
+        { "expr": "node_memory_SwapTotal_bytes{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "swap total", "refId": "B" }
+      ],
+      "title": "Swap",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 103,
+      "panels": [],
+      "title": "Network",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "unit": "binBps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "id": 30,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "rate(node_network_receive_bytes_total{job=\"truenas-node\",instance=\"$instance\",device!~\"lo|docker.*|veth.*|br-.*\"}[2m])",
+          "legendFormat": "{{device}} rx", "refId": "A" },
+        { "expr": "-rate(node_network_transmit_bytes_total{job=\"truenas-node\",instance=\"$instance\",device!~\"lo|docker.*|veth.*|br-.*\"}[2m])",
+          "legendFormat": "{{device}} tx", "refId": "B" }
+      ],
+      "title": "Network Throughput (rx + / tx −)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "id": 104,
+      "panels": [],
+      "title": "Disks & I/O",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "unit": "binBps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 33 },
+      "id": 40,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "rate(node_disk_read_bytes_total{job=\"truenas-node\",instance=\"$instance\",device!~\"loop.*|dm-.*|zd.*|sr.*\"}[2m])",
+          "legendFormat": "{{device}} read", "refId": "A" },
+        { "expr": "-rate(node_disk_written_bytes_total{job=\"truenas-node\",instance=\"$instance\",device!~\"loop.*|dm-.*|zd.*|sr.*\"}[2m])",
+          "legendFormat": "{{device}} write", "refId": "B" }
+      ],
+      "title": "Disk Throughput (read + / write −)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "min": 0, "max": 100,
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 33 },
+      "id": 41,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "rate(node_disk_io_time_seconds_total{job=\"truenas-node\",instance=\"$instance\",device!~\"loop.*|dm-.*|zd.*|sr.*\"}[2m]) * 100",
+          "legendFormat": "{{device}}", "refId": "A" }
+      ],
+      "title": "Disk Utilisation %",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 41 },
+      "id": 105,
+      "panels": [],
+      "title": "ZFS",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "align": "left", "displayMode": "auto" },
+          "mappings": [
+            { "type": "value", "options": {
+              "0": { "color": "green", "text": "ONLINE" },
+              "1": { "color": "orange", "text": "DEGRADED" },
+              "2": { "color": "red", "text": "FAULTED" },
+              "3": { "color": "red", "text": "OFFLINE" },
+              "4": { "color": "red", "text": "UNAVAIL" },
+              "5": { "color": "red", "text": "REMOVED" },
+              "6": { "color": "red", "text": "SUSPENDED" }
+            } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "size" }, "properties": [{ "id": "unit", "value": "bytes" }] },
+          { "matcher": { "id": "byName", "options": "allocated" }, "properties": [{ "id": "unit", "value": "bytes" }] },
+          { "matcher": { "id": "byName", "options": "free" }, "properties": [{ "id": "unit", "value": "bytes" }] },
+          { "matcher": { "id": "byName", "options": "frag" }, "properties": [{ "id": "unit", "value": "percentunit" }] },
+          { "matcher": { "id": "byName", "options": "dedup" }, "properties": [{ "id": "unit", "value": "none" }, { "id": "decimals", "value": 2 }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 42 },
+      "id": 50,
+      "options": { "showHeader": true },
+      "pluginVersion": "10.x",
+      "targets": [
+        { "expr": "zfs_pool_health{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "A" },
+        { "expr": "zfs_pool_size_bytes{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "B" },
+        { "expr": "zfs_pool_allocated_bytes{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "C" },
+        { "expr": "zfs_pool_free_bytes{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "D" },
+        { "expr": "zfs_pool_fragmentation_ratio{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "E" },
+        { "expr": "zfs_pool_deduplication_ratio{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "F" }
+      ],
+      "title": "ZFS Pools",
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "pool", "mode": "outer" } },
+        { "id": "filterFieldsByName", "options": { "include": { "names": ["pool", "Value #A", "Value #B", "Value #C", "Value #D", "Value #E", "Value #F"] } } },
+        { "id": "organize", "options": {
+          "excludeByName": {},
+          "renameByName": {
+            "Value #A": "health",
+            "Value #B": "size",
+            "Value #C": "allocated",
+            "Value #D": "free",
+            "Value #E": "frag",
+            "Value #F": "dedup"
+          }
+        } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "max": 1, "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 0.8 },
+            { "color": "red", "value": 0.95 }
+          ]},
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 42 },
+      "id": 51,
+      "options": { "orientation": "horizontal", "displayMode": "gradient", "showUnfilled": true },
+      "targets": [
+        { "expr": "zfs_pool_allocated_bytes{job=\"truenas-zfs\",instance=\"$instance\"} / zfs_pool_size_bytes{job=\"truenas-zfs\",instance=\"$instance\"}",
+          "legendFormat": "{{pool}}", "refId": "A" }
+      ],
+      "title": "Pool Capacity Used",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 1 },
+          "min": 0, "max": 1,
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 50 },
+      "id": 52,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "rate(node_zfs_arcstats_hits{job=\"truenas-node\",instance=\"$instance\"}[5m]) / (rate(node_zfs_arcstats_hits{job=\"truenas-node\",instance=\"$instance\"}[5m]) + rate(node_zfs_arcstats_misses{job=\"truenas-node\",instance=\"$instance\"}[5m]))",
+          "legendFormat": "ARC hit ratio", "refId": "A" },
+        { "expr": "rate(node_zfs_arcstats_l2_hits{job=\"truenas-node\",instance=\"$instance\"}[5m]) / (rate(node_zfs_arcstats_l2_hits{job=\"truenas-node\",instance=\"$instance\"}[5m]) + rate(node_zfs_arcstats_l2_misses{job=\"truenas-node\",instance=\"$instance\"}[5m]))",
+          "legendFormat": "L2ARC hit ratio", "refId": "B" }
+      ],
+      "title": "ARC / L2ARC Hit Ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 30, "lineWidth": 1 },
+          "min": 0,
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 50 },
+      "id": 53,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
+      "targets": [
+        { "expr": "node_zfs_arcstats_size{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "ARC size", "refId": "A" },
+        { "expr": "node_zfs_arcstats_c{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "ARC target (c)", "refId": "B" },
+        { "expr": "node_zfs_arcstats_c_max{job=\"truenas-node\",instance=\"$instance\"}",
+          "legendFormat": "ARC max", "refId": "C" }
+      ],
+      "title": "ARC Size",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "align": "left", "displayMode": "auto" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "used" }, "properties": [{ "id": "unit", "value": "bytes" }] },
+          { "matcher": { "id": "byName", "options": "available" }, "properties": [{ "id": "unit", "value": "bytes" }] }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 58 },
+      "id": 54,
+      "options": { "showHeader": true },
+      "targets": [
+        { "expr": "topk(20, zfs_dataset_used_bytes{job=\"truenas-zfs\",instance=\"$instance\"})", "format": "table", "instant": true, "refId": "A" },
+        { "expr": "zfs_dataset_available_bytes{job=\"truenas-zfs\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "B" }
+      ],
+      "title": "Top 20 Datasets by Used Space",
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "name", "mode": "outer" } },
+        { "id": "filterFieldsByName", "options": { "include": { "names": ["name", "pool", "Value #A", "Value #B"] } } },
+        { "id": "organize", "options": {
+          "renameByName": { "Value #A": "used", "Value #B": "available" }
+        } },
+        { "id": "sortBy", "options": { "fields": {}, "sort": [{ "field": "used", "desc": true }] } }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 67 },
+      "id": 106,
+      "panels": [],
+      "title": "SMART Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "align": "left", "displayMode": "auto" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "smart_passed" }, "properties": [
+            { "id": "mappings", "value": [{ "type": "value", "options": {
+              "1": { "color": "green", "text": "PASSED" },
+              "0": { "color": "red", "text": "FAILED" }
+            } }] },
+            { "id": "custom.cellOptions", "value": { "type": "color-text" } }
+          ]},
+          { "matcher": { "id": "byName", "options": "temperature_c" }, "properties": [
+            { "id": "unit", "value": "celsius" },
+            { "id": "thresholds", "value": { "mode": "absolute", "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 45 },
+              { "color": "red", "value": 55 }
+            ]}},
+            { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "gradient" } }
+          ]},
+          { "matcher": { "id": "byName", "options": "power_on_hours" }, "properties": [{ "id": "unit", "value": "h" }] }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 68 },
+      "id": 60,
+      "options": { "showHeader": true },
+      "targets": [
+        { "expr": "smartctl_device_smart_status{job=\"truenas-smartctl\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "A" },
+        { "expr": "smartctl_device_temperature{job=\"truenas-smartctl\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "B" },
+        { "expr": "smartctl_device_power_on_seconds{job=\"truenas-smartctl\",instance=\"$instance\"} / 3600", "format": "table", "instant": true, "refId": "C" },
+        { "expr": "smartctl_device_power_cycle_count{job=\"truenas-smartctl\",instance=\"$instance\"}", "format": "table", "instant": true, "refId": "D" }
+      ],
+      "title": "Drive Health",
+      "transformations": [
+        { "id": "joinByField", "options": { "byField": "device", "mode": "outer" } },
+        { "id": "filterFieldsByName", "options": { "include": { "names": ["device", "model_name", "serial_number", "Value #A", "Value #B", "Value #C", "Value #D"] } } },
+        { "id": "organize", "options": {
+          "renameByName": {
+            "model_name": "model",
+            "serial_number": "serial",
+            "Value #A": "smart_passed",
+            "Value #B": "temperature_c",
+            "Value #C": "power_on_hours",
+            "Value #D": "power_cycles"
+          }
+        } }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 0, "lineWidth": 1 },
+          "min": 20, "max": 70,
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 45 },
+            { "color": "red", "value": 55 }
+          ]},
+          "unit": "celsius"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 78 },
+      "id": 61,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max", "lastNotNull"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "expr": "smartctl_device_temperature{job=\"truenas-smartctl\",instance=\"$instance\"}",
+          "legendFormat": "{{device}}", "refId": "A" }
+      ],
+      "title": "Drive Temperatures",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["truenas", "node-exporter", "zfs", "smartctl"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "truenas", "value": "truenas" },
+        "datasource": { "type": "prometheus", "uid": "victoriametrics" },
+        "definition": "label_values(node_boot_time_seconds{job=\"truenas-node\"}, instance)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": { "query": "label_values(node_boot_time_seconds{job=\"truenas-node\"}, instance)", "refId": "StandardVariableQuery" },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "TrueNAS Overview",
+  "uid": "truenas-overview",
+  "version": 1,
+  "weekStart": ""
+}

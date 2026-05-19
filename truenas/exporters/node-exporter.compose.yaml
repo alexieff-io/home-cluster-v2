@@ -14,8 +14,15 @@ services:
     pid: host
     command:
       - --path.rootfs=/host
+      # procfs/sysfs need explicit paths because the /:/host bind doesn't
+      # carry procfs/sysfs submounts; without these the zfs collector finds
+      # no /proc/spl/kstat/zfs and silently emits nothing.
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
       - --collector.zfs                          # ARC stats from /proc/spl/kstat/zfs
       - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc|var/db)($$|/)
       - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$$
     volumes:
       - /:/host:ro,rslave
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
