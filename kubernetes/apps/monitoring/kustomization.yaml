@@ -16,3 +16,4 @@ resources:
   - ./vector-syslog/ks.yaml
   - ./kubetail/ks.yaml
   - ./truenas-graphite-exporter/ks.yaml
+  - ./truenas-exporters/ks.yaml

@@ -120,8 +120,18 @@ spec:
           revision: 17
           datasource: VictoriaMetrics
         node-exporter:
-          gnetId: 1860  # Node Exporter Full
+          gnetId: 1860  # Node Exporter Full — works for cluster nodes and the
+                        # TrueNAS host (switch via the dashboard's "job" picker:
+                        # job=truenas-node for the NAS).
           revision: 37
+          datasource: VictoriaMetrics
+        zfs-pools:
+          gnetId: 7845  # ZFS (pdf/zfs_exporter) — pools, datasets, ARC, L2ARC
+          revision: 4
+          datasource: VictoriaMetrics
+        smart-monitoring:
+          gnetId: 12993  # SMART monitoring (smartctl_exporter)
+          revision: 6
           datasource: VictoriaMetrics
         flux2:
           gnetId: 16714  # "Flux2" dashboard — FluxCD reconciliation overview
