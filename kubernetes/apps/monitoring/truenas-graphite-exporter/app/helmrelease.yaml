@@ -12,6 +12,8 @@ spec:
     controllers:
       truenas-graphite-exporter:
         strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
@@ -74,3 +76,15 @@ spec:
         endpoints:
           - port: metrics
             interval: 30s
+    # Override the upstream image's baked-in mapping at /config/graphite_mapping.conf
+    # with our patched copy (greedy regexes fixed — see file header for details).
+    persistence:
+      mapping:
+        type: configMap
+        name: truenas-graphite-exporter-mapping
+        advancedMounts:
+          truenas-graphite-exporter:
+            app:
+              - path: /config/graphite_mapping.conf
+                subPath: graphite_mapping.conf
+                readOnly: true
