@@ -1,0 +1,30 @@
+---
+# TrueNAS Custom App — Prometheus zfs_exporter (pdf/zfs_exporter)
+#
+# NOTE: This compose uses `build:` because the upstream image is Alpine-based
+# and cannot exec TrueNAS's glibc-linked zpool/zfs binaries. The accompanying
+# zfs-exporter.Dockerfile builds a Debian image with zfsutils-linux bundled.
+#
+# Deploy via shell (TrueNAS Apps "Install via YAML" does not support `build:`):
+#   1. SSH into TrueNAS.
+#   2. Copy this file + zfs-exporter.Dockerfile into the same directory, e.g.
+#      mkdir -p /mnt/<pool>/apps/zfs-exporter
+#      cp zfs-exporter.compose.yaml /mnt/<pool>/apps/zfs-exporter/compose.yaml
+#      cp zfs-exporter.Dockerfile  /mnt/<pool>/apps/zfs-exporter/
+#   3. cd /mnt/<pool>/apps/zfs-exporter && docker compose up -d --build
+services:
+  zfs-exporter:
+    build:
+      context: .
+      dockerfile: zfs-exporter.Dockerfile
+    image: zfs-exporter:local
+    container_name: zfs-exporter
+    restart: unless-stopped
+    network_mode: host
+    # Needs the host's zfs ioctl interface; binaries (zpool/zfs) are baked
+    # into the image so no bind-mount is required for those.
+    devices:
+      - /dev/zfs:/dev/zfs
+    command:
+      - --web.listen-address=:9134
+      - --collector.dataset-snapshot

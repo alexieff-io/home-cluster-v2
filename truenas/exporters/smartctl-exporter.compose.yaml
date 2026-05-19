@@ -1,0 +1,18 @@
+---
+# TrueNAS Custom App — Prometheus smartctl_exporter
+# Install: TrueNAS UI → Apps → Custom App → Install via YAML, paste this file.
+#
+# Reads SMART attributes from every block device via the smartctl binary baked
+# into the image. Needs privileged + raw /dev access to talk to controllers.
+services:
+  smartctl-exporter:
+    image: quay.io/prometheuscommunity/smartctl-exporter:v0.14.0
+    container_name: smartctl-exporter
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    command:
+      - --web.listen-address=:9633
+      - --smartctl.interval=120s
+    volumes:
+      - /dev:/dev

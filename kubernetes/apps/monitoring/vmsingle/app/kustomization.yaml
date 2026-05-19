@@ -7,4 +7,3 @@ resources:
   - ./vmagent.yaml
   - ./vmagent-rbac.yaml
   - ./httproute.yaml
-  - ./service-graphite.yaml
