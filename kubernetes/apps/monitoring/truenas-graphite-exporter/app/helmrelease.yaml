@@ -72,10 +72,15 @@ spec:
             protocol: UDP
     serviceMonitor:
       app:
-        serviceName: truenas-graphite-exporter
+        serviceName: truenas-graphite-exporter-app
         endpoints:
+          # honorLabels keeps the job=truenas and instance=<host> labels that
+          # graphite_exporter applies via the mapping file. Without this, the
+          # scrape config's own job/instance win and the upstream TrueNAS
+          # dashboards' {job="truenas"} selector matches nothing.
           - port: metrics
             interval: 30s
+            honorLabels: true
     # Override the upstream image's baked-in mapping at /config/graphite_mapping.conf
     # with our patched copy (greedy regexes fixed — see file header for details).
     persistence:
