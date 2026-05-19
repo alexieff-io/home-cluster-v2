@@ -61,7 +61,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -122,7 +122,7 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         }
       ],
@@ -132,7 +132,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -193,7 +193,7 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         }
       ],
@@ -203,7 +203,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -264,7 +264,7 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         }
       ],
@@ -274,7 +274,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -335,7 +335,7 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         }
       ],
@@ -427,7 +427,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_cpu_usage{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -444,7 +444,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -531,7 +531,7 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         }
       ],
@@ -541,7 +541,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -628,13 +628,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_cpu_some_pressure{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -651,7 +651,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -738,13 +738,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_cpu_some_pressure_stall_time{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -761,7 +761,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -848,13 +848,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_mem_some_pressure{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -871,7 +871,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -958,13 +958,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_mem_some_pressure_stall_time{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -981,7 +981,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -1068,13 +1068,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_io_some_pressure{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -1091,7 +1091,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_MIMIR}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -1178,13 +1178,13 @@
           "refId": "A",
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "cgroup_io_some_pressure_stall_time{job=\"$job\", instance=\"$instance\", cgroup=~\"$cgroup\"}",
@@ -1238,7 +1238,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "definition": "label_values(uptime{job=\"$job\"},instance)",
         "includeAll": false,

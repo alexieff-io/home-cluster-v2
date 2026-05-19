@@ -73,7 +73,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -155,7 +155,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -172,7 +172,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -225,7 +225,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "k3s_pod_mem{instance=~\"$instance\"}",
@@ -241,7 +241,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -342,7 +342,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "sum(increase(k3s_pod_net{instance=~\"$instance\"}[$__rate_interval])) by (instance,direction)",
@@ -373,7 +373,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "description": "",
       "fieldConfig": {
@@ -430,7 +430,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "k3s_pod_cpu{instance=~\"$instance\", pod=~\"$pod\"} / 1000000000",
@@ -446,7 +446,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -525,7 +525,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "k3s_pod_cpu{instance=~\"$instance\", pod=~\"$pod\"} / 1000000000",
@@ -541,7 +541,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -621,7 +621,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "k3s_pod_mem{instance=~\"$instance\", pod=~\"$pod\"}",
@@ -637,7 +637,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -734,7 +734,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "sum(increase(k3s_pod_net{instance=~\"$instance\", pod=~\"$pod\"}[$__rate_interval])) by (direction)",
@@ -750,7 +750,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "description": "",
       "fieldConfig": {
@@ -799,7 +799,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "rate(k3s_pod_net{instance=~\"$instance\", pod=~\"$pod\", direction=\"incoming\"}[$__rate_interval])",
@@ -815,7 +815,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -864,7 +864,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "k3s_pod_mem{instance=~\"$instance\", pod=~\"$pod\"}",
@@ -880,7 +880,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "victoriametrics"
       },
       "description": "",
       "fieldConfig": {
@@ -929,7 +929,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "victoriametrics"
           },
           "editorMode": "code",
           "expr": "rate(k3s_pod_net{instance=~\"$instance\", pod=~\"$pod\", direction=\"outgoing\"}[$__rate_interval])",
@@ -954,7 +954,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "victoriametrics"
         },
         "definition": "label_values(uptime,job)",
         "hide": 0,
@@ -977,7 +977,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "victoriametrics"
         },
         "definition": "label_values(uptime{job=\"$job\"},instance)",
         "hide": 0,
@@ -1000,7 +1000,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "victoriametrics"
         },
         "definition": "label_values(k3s_pod_cpu{instance=\"$instance\"},pod)",
         "hide": 0,

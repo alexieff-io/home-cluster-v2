@@ -68,7 +68,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -122,7 +122,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "uptime{instance=~\"$instance\"}",
@@ -138,7 +138,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -192,7 +192,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "uptime{instance=~\"$instance\"}",
@@ -221,7 +221,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -278,7 +278,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_utilization{instance=~\"$instance\"}",
@@ -294,7 +294,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -380,7 +380,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_utilization{instance=~\"$instance\"}",
@@ -409,7 +409,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -497,7 +497,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_io{instance=~\"$instance\", disk=~\"$disk\"}",
@@ -513,7 +513,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -600,7 +600,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "abs(disk_iotime{instance=~\"$instance\", disk=~\"$disk\"})",
@@ -616,7 +616,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -703,7 +703,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "abs(disk_io_ops{instance=~\"$instance\", disk=~\"$disk\"})",
@@ -732,7 +732,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -819,7 +819,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "abs(disk_await{instance=~\"$instance\", disk=~\"$disk\"})",
@@ -835,7 +835,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -922,7 +922,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_io_backlog{instance=~\"$instance\", disk=~\"$disk\"}",
@@ -934,7 +934,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_busy{instance=~\"$instance\", disk=~\"$disk\"}",
@@ -951,7 +951,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -1038,7 +1038,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "disk_qops{instance=~\"$instance\", disk=~\"$disk\"}",
@@ -1054,7 +1054,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_MIMIR}"
+          "uid": "victoriametrics"
         },
         "fieldConfig": {
           "defaults": {
@@ -1141,7 +1141,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_MIMIR}"
+              "uid": "victoriametrics"
             },
             "editorMode": "code",
             "expr": "abs(disk_io_size{instance=~\"$instance\", disk=~\"$disk\"})",
@@ -1166,7 +1166,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "definition": "label_values(uptime,job)",
           "hide": 0,
@@ -1189,7 +1189,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "definition": "label_values(uptime{job=\"$job\"},instance)",
           "hide": 0,
@@ -1213,7 +1213,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_MIMIR}"
+            "uid": "victoriametrics"
           },
           "definition": "label_values(disk_io{instance=\"$instance\", job=\"$job\"},disk)",
           "hide": 0,
