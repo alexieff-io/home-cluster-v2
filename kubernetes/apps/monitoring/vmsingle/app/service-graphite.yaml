@@ -1,0 +1,26 @@
+---
+# LAN-internal LoadBalancer for the VMSingle Graphite receiver.
+# Cilium LBIPAM assigns a stable IP from the 10.69.0.0/24 pool — this address
+# is reachable only from the home network, not the public internet.
+apiVersion: v1
+kind: Service
+metadata:
+  name: vmsingle-graphite
+  namespace: monitoring
+  annotations:
+    lbipam.cilium.io/ips: "10.69.0.29"
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: vmsingle
+    app.kubernetes.io/instance: vmsingle
+    managed-by: vm-operator
+  ports:
+    - name: graphite-tcp
+      port: 2003
+      targetPort: 2003
+      protocol: TCP
+    - name: graphite-udp
+      port: 2003
+      targetPort: 2003
+      protocol: UDP

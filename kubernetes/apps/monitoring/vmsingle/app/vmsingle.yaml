@@ -8,6 +8,13 @@ spec:
   # Retention period
   retentionPeriod: "365d"
 
+  # Enable Graphite plaintext receiver on TCP+UDP 2003.
+  # Exposed in-cluster via the operator-managed Service below, and on the LAN
+  # via the separate LoadBalancer Service in service-graphite.yaml.
+  extraArgs:
+    graphiteListenAddr: ":2003"
+    graphite.sanitizeMetricName: "true"
+
   # Storage configuration
   storage:
     storageClassName: longhorn
@@ -42,6 +49,14 @@ spec:
         - name: http
           port: 8429
           targetPort: http
+        - name: graphite-tcp
+          port: 2003
+          targetPort: 2003
+          protocol: TCP
+        - name: graphite-udp
+          port: 2003
+          targetPort: 2003
+          protocol: UDP
 
   # Ingress (disabled - using HTTPRoute)
   ingress:
