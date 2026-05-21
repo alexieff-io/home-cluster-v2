@@ -71,6 +71,11 @@ spec:
     mongodb:
       enabled: true
       image:
+        # Chart 2.0.3 switched the default to bitnamilegacy/mongodb, which only
+        # publishes up to 8.0.13. Override back to bitnami/mongodb so the rolling
+        # `latest` tag (currently 8.2.x) is used — required because the existing
+        # PVC is at FCV 8.2 and cannot downgrade to 8.0.x.
+        repository: bitnami/mongodb
         tag: "latest"
       auth:
         rootPassword: "" # Will be auto-generated
