@@ -55,7 +55,7 @@ kubernetes/apps/coroot/
 │   └── app/
 │       ├── kustomization.yaml
 │       ├── helmrepository.yaml     # https://coroot.github.io/helm-charts
-│       └── helmrelease.yaml        # chart: coroot-operator, version: 1.x
+│       └── helmrelease.yaml        # chart: coroot-operator, version: 0.x (appVersion 1.9.x)
 └── coroot/
     ├── ks.yaml                     # dependsOn coroot-operator; substituteFrom cluster-secrets
     └── app/
@@ -77,11 +77,13 @@ kubernetes/apps/coroot/
   annotation (cleanly removable).
 
 ### Chart / image versioning
-- Operator chart `coroot-operator` pinned to floating minor `1.x` (matches the
-  grafana `10.x` / vm-operator `0.x` convention) so Renovate manages updates.
-- `communityEdition.image.name` pinned to a **specific** `ghcr.io/coroot/coroot`
-  tag (never `latest`, per CLAUDE.md). The exact tag is verified to exist with
-  `docker manifest inspect` before commit.
+- Operator chart `coroot-operator` pinned to floating minor `0.x` (chart is on
+  `0.x`; current `0.9.6` with `appVersion` `1.9.5`) — matches the vm-operator `0.x`
+  convention so Renovate manages updates.
+- `communityEdition.image.name` pinned to `ghcr.io/coroot/coroot:1.22.0` — note the
+  registry tag has **no** `v` prefix even though git tags do (`docker manifest
+  inspect ghcr.io/coroot/coroot:1.22.0` confirmed; `v1.22.0` does **not** exist).
+  Never `latest`, per CLAUDE.md.
 
 ### Storage (bundled stores, all on Longhorn)
 | Component | Size | Notes |
