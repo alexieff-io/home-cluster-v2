@@ -1,0 +1,33 @@
+---
+apiVersion: coroot.com/v1
+kind: Coroot
+metadata:
+  name: coroot
+spec:
+  communityEdition:
+    image:
+      name: ghcr.io/coroot/coroot:1.22.0
+      pullPolicy: IfNotPresent
+  storage:
+    size: 10Gi
+    className: longhorn
+  prometheus:
+    retention: 2d
+    storage:
+      size: 10Gi
+      className: longhorn
+  clickhouse:
+    shards: 1
+    replicas: 1
+    storage:
+      size: 10Gi
+      className: longhorn
+  nodeAgent:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+  clusterAgent: {}
