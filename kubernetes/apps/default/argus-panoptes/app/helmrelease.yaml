@@ -139,7 +139,7 @@ spec:
     clickhouse:
       persistence:
         storageClass: longhorn
-        size: 50Gi
+        size: 100Gi
       resources:
         requests:
           cpu: 500m
