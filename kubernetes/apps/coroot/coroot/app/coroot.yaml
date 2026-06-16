@@ -4,10 +4,10 @@ kind: Coroot
 metadata:
   name: coroot
 spec:
-  communityEdition:
-    image:
-      name: ghcr.io/coroot/coroot:1.22.0
-      pullPolicy: IfNotPresent
+  enterpriseEdition:
+    licenseKeySecret:
+      name: coroot-license
+      key: license-key
   storage:
     size: 10Gi
     className: longhorn
