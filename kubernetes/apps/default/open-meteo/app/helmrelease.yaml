@@ -60,7 +60,7 @@ spec:
       data:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
-        size: 200Gi
+        size: 500Gi
         storageClass: longhorn
         globalMounts:
           - path: /app/data
