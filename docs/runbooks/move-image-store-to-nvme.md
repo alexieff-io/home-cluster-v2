@@ -62,11 +62,19 @@ Longhorn replicas are fully rebuilt. `IP` = node address, `NODE` = kubectl name.
 1. **Pre-checks** — node `Ready`, all Longhorn volumes healthy, and **no volume
    has its only healthy replica on this node** (wiping would lose data).
 
-2. **Cordon + drain**
+2. **Cordon + drain.** Longhorn puts a PDB (`minAvailable: 1`) on every
+   `instance-manager` pod; under the default `block-if-contains-last-replica`
+   policy a plain `kubectl drain` hangs on `Cannot evict pod ... instance-manager`
+   even when the node holds no last replica. Temporarily relax the drain policy
+   (safe because pre-flight confirmed redundancy elsewhere), then restore it:
    ```bash
    kubectl cordon <NODE>
+   orig=$(kubectl -n longhorn-system get settings.longhorn.io node-drain-policy -o jsonpath='{.value}')
+   kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy --type=merge -p '{"value":"always-allow"}'
    kubectl drain <NODE> --ignore-daemonsets --delete-emptydir-data --timeout=15m
+   kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy --type=merge -p "{\"value\":\"${orig}\"}"
    ```
+   (The script does this automatically, restoring the policy even on failure.)
 
 3. **Confirm Longhorn redundancy after drain** — no volume is
    degraded-without-redundancy. If a volume's only healthy replica was on this
