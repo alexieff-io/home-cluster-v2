@@ -2,4 +2,15 @@ machine:
   disks:
     - device: /dev/nvme0n1 # The name of the disk to use.
       partitions:
-        - mountpoint: /var/lib/longhorn # Where to mount the partition.    
+        # Longhorn replica storage. Pinned to a fixed size (was: unset = whole
+        # disk) so a second partition can hold the container image store.
+        - mountpoint: /var/lib/longhorn
+          size: 1800GiB
+        # Container image store (containerd) relocated off the ~29 GB SD-card
+        # EPHEMERAL partition (/dev/mmcblk0p6), which was hitting imagefs/nodefs
+        # eviction pressure and starving etcd of IOPS. No size = use the
+        # remaining ~200 GB of the NVMe.
+        # NOTE: applying this to an already-partitioned NVMe requires wiping the
+        # disk — see docs/runbooks/move-image-store-to-nvme.md and run
+        # scripts/move-image-store-to-nvme.sh (node-by-node).
+        - mountpoint: /var/lib/containerd
