@@ -125,44 +125,24 @@ kubectl cordon "$NODE"
 pass "cordoned"
 
 # Longhorn places a PodDisruptionBudget (minAvailable=1) on every instance-manager
-# pod. Under the default 'block-if-contains-last-replica' policy that PDB does NOT
-# release for a plain `kubectl drain` — eviction of the instance-manager is denied
-# and the drain hangs — even when the node holds no last replica. The supported
-# lever is the node-drain-policy setting: relax it so Longhorn drops the PDB, drain,
-# then restore it. STEP 1d already verified every volume has a healthy replica on
-# another node, so allowing the instance-manager eviction here is data-safe; the
-# replicas on this node are about to be wiped and rebuilt from peers anyway.
-ORIG_DRAIN_POLICY="$(kubectl -n longhorn-system get settings.longhorn.io node-drain-policy -o jsonpath='{.value}' 2>/dev/null || true)"
-restore_drain_policy() {
-    [[ -z "${ORIG_DRAIN_POLICY:-}" ]] && return 0
-    if kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy \
-        --type=merge -p "{\"value\":\"${ORIG_DRAIN_POLICY}\"}" >/dev/null 2>&1; then
-        note "restored Longhorn node-drain-policy to '${ORIG_DRAIN_POLICY}'"
-    else
-        log warn "could not restore node-drain-policy — set it back to '${ORIG_DRAIN_POLICY}' manually" \
-            "setting=node-drain-policy"
-    fi
-}
-if [[ -n "$ORIG_DRAIN_POLICY" && "$ORIG_DRAIN_POLICY" != "always-allow" ]]; then
-    note "Longhorn node-drain-policy='${ORIG_DRAIN_POLICY}'; temporarily setting 'always-allow' so instance-manager PDBs release"
-    # Ensure the original policy is restored even if the drain fails or is aborted.
-    trap restore_drain_policy EXIT
-    kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy \
-        --type=merge -p '{"value":"always-allow"}' >/dev/null
-    pass "node-drain-policy set to always-allow (will restore on exit)"
-else
-    note "Longhorn node-drain-policy='${ORIG_DRAIN_POLICY:-unknown}' — leaving as-is"
-fi
-
-note "draining (timeout ${DRAIN_TIMEOUT})…"
-kubectl drain "$NODE" --ignore-daemonsets --delete-emptydir-data --timeout="$DRAIN_TIMEOUT"
+# pod and keeps it as long as the pod hosts running replicas — so a normal
+# `kubectl drain` hangs forever on "Cannot evict pod ... instance-manager", and
+# (observed on this cluster) flipping node-drain-policy to always-allow does NOT
+# reliably release it when the node's longhorn-manager is unhealthy.
+#
+# We drain with --disable-eviction, which issues DELETE instead of using the
+# eviction API and therefore bypasses the PDB. This is data-safe here because
+# STEP 1d already verified every volume with a replica on this node has a healthy
+# replica elsewhere, and this node's replicas are about to be wiped and rebuilt
+# from peers regardless. --force lets the controller-less instance-manager pod be
+# removed. Volumes with a replica here will go *degraded* (not faulted) until the
+# rebuild in STEP 9 — that is expected.
+note "draining (timeout ${DRAIN_TIMEOUT}, --disable-eviction to bypass Longhorn instance-manager PDB)…"
+kubectl drain "$NODE" \
+    --ignore-daemonsets --delete-emptydir-data \
+    --disable-eviction --force \
+    --timeout="$DRAIN_TIMEOUT"
 pass "drained"
-
-# Restore immediately so protection isn't relaxed any longer than the drain needs.
-if [[ -n "$ORIG_DRAIN_POLICY" && "$ORIG_DRAIN_POLICY" != "always-allow" ]]; then
-    restore_drain_policy
-    trap - EXIT
-fi
 
 # ── STEP 3: redundancy recheck after drain ───────────────────────────────────
 

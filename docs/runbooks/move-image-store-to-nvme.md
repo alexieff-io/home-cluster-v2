@@ -63,18 +63,20 @@ Longhorn replicas are fully rebuilt. `IP` = node address, `NODE` = kubectl name.
    has its only healthy replica on this node** (wiping would lose data).
 
 2. **Cordon + drain.** Longhorn puts a PDB (`minAvailable: 1`) on every
-   `instance-manager` pod; under the default `block-if-contains-last-replica`
-   policy a plain `kubectl drain` hangs on `Cannot evict pod ... instance-manager`
-   even when the node holds no last replica. Temporarily relax the drain policy
-   (safe because pre-flight confirmed redundancy elsewhere), then restore it:
+   `instance-manager` pod and keeps it while the pod hosts running replicas, so a
+   plain `kubectl drain` hangs on `Cannot evict pod ... instance-manager` even
+   when the node holds no last replica. Flipping `node-drain-policy` to
+   `always-allow` does **not** reliably release it (observed on this cluster when
+   the node's longhorn-manager was unhealthy). Use `--disable-eviction`, which
+   issues DELETE instead of the eviction API and bypasses the PDB — safe because
+   pre-flight confirmed every affected volume has a healthy replica elsewhere, and
+   this node's replicas are about to be wiped anyway:
    ```bash
    kubectl cordon <NODE>
-   orig=$(kubectl -n longhorn-system get settings.longhorn.io node-drain-policy -o jsonpath='{.value}')
-   kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy --type=merge -p '{"value":"always-allow"}'
-   kubectl drain <NODE> --ignore-daemonsets --delete-emptydir-data --timeout=15m
-   kubectl -n longhorn-system patch settings.longhorn.io node-drain-policy --type=merge -p "{\"value\":\"${orig}\"}"
+   kubectl drain <NODE> --ignore-daemonsets --delete-emptydir-data --disable-eviction --force --timeout=15m
    ```
-   (The script does this automatically, restoring the policy even on failure.)
+   Volumes with a replica on this node go **degraded** (not faulted) until the
+   rebuild in step 8 — that is expected.
 
 3. **Confirm Longhorn redundancy after drain** — no volume is
    degraded-without-redundancy. If a volume's only healthy replica was on this
