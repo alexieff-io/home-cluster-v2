@@ -3,14 +3,23 @@ machine:
     - device: /dev/nvme0n1 # The name of the disk to use.
       partitions:
         # Longhorn replica storage. Pinned to a fixed size (was: unset = whole
-        # disk) so a second partition can hold the container image store.
+        # disk) so the other two partitions below have room. Longhorn uses well
+        # under 1 TB today, so 1700 GiB is ample headroom.
         - mountpoint: /var/lib/longhorn
-          size: 1800GiB
-        # Container image store (containerd) relocated off the ~29 GB SD-card
-        # EPHEMERAL partition (/dev/mmcblk0p6), which was hitting imagefs/nodefs
-        # eviction pressure and starving etcd of IOPS. No size = use the
-        # remaining ~200 GB of the NVMe.
+          size: 1700GiB
+        # etcd data directory relocated off the ~29 GB SD-card EPHEMERAL
+        # partition (/dev/mmcblk0p6). The SD card's low IOPS were starving etcd's
+        # WAL fsync, causing "etcd health check ... context deadline exceeded"
+        # flaps and no-leader outages (2026-06-06, node3 2026-06-25). 32 GiB is
+        # generous (the DB is ~250 MB) and leaves defrag/growth headroom.
+        - mountpoint: /var/lib/etcd
+          size: 32GiB
+        # Container image store (containerd) relocated off the same SD-card
+        # EPHEMERAL partition, which was hitting imagefs/nodefs eviction pressure.
+        # No size = use the remaining ~130 GiB of the NVMe.
         # NOTE: applying this to an already-partitioned NVMe requires wiping the
-        # disk — see docs/runbooks/move-image-store-to-nvme.md and run
-        # scripts/move-image-store-to-nvme.sh (node-by-node).
+        # disk — see docs/runbooks/move-etcd-image-store-to-nvme.md and run
+        # scripts/move-etcd-image-store-to-nvme.sh (node-by-node). Wiping also clears
+        # this node's etcd data; it re-syncs from the other members on rejoin, so
+        # do ONE node at a time with healthy etcd quorum.
         - mountpoint: /var/lib/containerd
