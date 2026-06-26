@@ -7,7 +7,12 @@ metadata:
 spec:
   instances: 3
 
-  imageName: ghcr.io/cloudnative-pg/postgresql:16.3
+  # Pinned to the arm64 manifest digest (= tag 16.3). The cluster's registry
+  # mirror (Spegel) was serving a stale amd64 variant for the :16.3 tag, causing
+  # "exec format error" on the arm64 nodes. Pulling by digest is content-addressed
+  # and bypasses the broken tag resolution. Revert to the plain tag once the
+  # mirror/tag resolution is healthy again. (2026-06-26)
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.3@sha256:e05e2d5dc0a87696b1d75e5b3ac39611444c6e34e8f2d3c29efa452fb5aa52aa
 
   postgresql:
     parameters:
