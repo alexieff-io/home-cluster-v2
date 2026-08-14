@@ -1,0 +1,10 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: weather-scraper
+spec:
+  interval: 12h
+  url: oci://ghcr.io/alexieff-io/charts/weather-scraper
+  ref:
+    semver: "*"

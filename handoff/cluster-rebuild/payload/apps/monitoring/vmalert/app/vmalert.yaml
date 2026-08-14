@@ -1,0 +1,37 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: vmalert
+  namespace: monitoring
+spec:
+  replicaCount: 1
+  evaluationInterval: 30s
+  datasource:
+    url: http://vmsingle-vmsingle.monitoring.svc:8429
+  remoteWrite:
+    url: http://vmsingle-vmsingle.monitoring.svc:8429
+  remoteRead:
+    url: http://vmsingle-vmsingle.monitoring.svc:8429
+  notifiers:
+    - url: http://vmalertmanager-alertmanager.monitoring.svc:9093
+  externalLabels:
+    cluster: home-cluster
+  # Pick up every VMRule cluster-wide.
+  ruleSelector: {}
+  ruleNamespaceSelector: {}
+  selectAllByDefault: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+  serviceSpec:
+    spec:
+      type: ClusterIP

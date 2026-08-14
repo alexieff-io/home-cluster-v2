@@ -1,0 +1,2574 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: ApplicationInventory
+metadata:
+  count: 50
+  sourcePattern: kubernetes/apps/*/*/ks.yaml
+applications:
+  - id: arc-runners/gha-runner-scale-set
+    application: gha-runner-scale-set
+    sourceFolder: arc-runners
+    targetNamespace: arc-runners
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/arc-runners/gha-runner-scale-set
+    payloadPath: payload/apps/arc-runners/gha-runner-scale-set
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: arc-runner-set
+        file: kubernetes/apps/arc-runners/gha-runner-scale-set/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: gha-runner-scale-set
+      - kind: OCIRepository
+        name: gha-runner-scale-set
+        file: kubernetes/apps/arc-runners/gha-runner-scale-set/app/ocirepository.yaml
+        url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+        interval: 15m
+        ref:
+          tag: 0.14.2
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets:
+      - name: arc-github-pat
+        file: kubernetes/apps/arc-runners/gha-runner-scale-set/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: arc-github-pat
+        remoteRefs:
+          - secretKey: github_token
+            key: arc-github-pat
+            property: token
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: gha-runner-scale-set-controller
+        namespace: flux-system
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: arc-systems/gha-runner-scale-set-controller
+    application: gha-runner-scale-set-controller
+    sourceFolder: arc-systems
+    targetNamespace: arc-systems
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/arc-systems/gha-runner-scale-set-controller
+    payloadPath: payload/apps/arc-systems/gha-runner-scale-set-controller
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: gha-runner-scale-set-controller
+        file: kubernetes/apps/arc-systems/gha-runner-scale-set-controller/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: gha-runner-scale-set-controller
+      - kind: OCIRepository
+        name: gha-runner-scale-set-controller
+        file: kubernetes/apps/arc-systems/gha-runner-scale-set-controller/app/ocirepository.yaml
+        url: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+        interval: 15m
+        ref:
+          tag: 0.14.2
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: cert-manager/cert-manager
+    application: cert-manager
+    sourceFolder: cert-manager
+    targetNamespace: cert-manager
+    fluxNamespace: cert-manager
+    sourcePath: kubernetes/apps/cert-manager/cert-manager
+    payloadPath: payload/apps/cert-manager/cert-manager
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ClusterIssuer
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cert-manager
+        file: kubernetes/apps/cert-manager/cert-manager/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cert-manager
+      - kind: OCIRepository
+        name: cert-manager
+        file: kubernetes/apps/cert-manager/cert-manager/app/ocirepository.yaml
+        url: oci://quay.io/jetstack/charts/cert-manager
+        interval: 15m
+        ref:
+          tag: v1.20.2
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets:
+      - name: cert-manager-secret
+        file: kubernetes/apps/cert-manager/cert-manager/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: cert-manager-secret
+        remoteRefs:
+          - secretKey: api-token
+            key: cloudflare-api-token
+            property: password
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: coroot/coroot
+    application: coroot
+    sourceFolder: coroot
+    targetNamespace: coroot
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/coroot/coroot
+    payloadPath: payload/apps/coroot/coroot
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Coroot
+      - ExternalSecret
+      - HTTPRoute
+      - Kustomization
+      - SecurityPolicy
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: coroot-external
+        file: kubernetes/apps/coroot/coroot/app/httproute-external.yaml
+        hostnames:
+          - coroot-ext.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+      - name: coroot
+        file: kubernetes/apps/coroot/coroot/app/httproute.yaml
+        hostnames:
+          - coroot.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: coroot-license
+        file: kubernetes/apps/coroot/coroot/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: coroot-license
+        remoteRefs:
+          - secretKey: license-key
+            key: coroot
+            property: license-key
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: coroot-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: coroot/coroot-operator
+    application: coroot-operator
+    sourceFolder: coroot
+    targetNamespace: coroot
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/coroot/coroot-operator
+    payloadPath: payload/apps/coroot/coroot-operator
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: coroot-operator
+        file: kubernetes/apps/coroot/coroot-operator/app/helmrelease.yaml
+        chart:
+          chart: coroot-operator
+          version: 0.x
+          sourceRef:
+            kind: HelmRepository
+            name: coroot
+      - kind: HelmRepository
+        name: coroot
+        file: kubernetes/apps/coroot/coroot-operator/app/helmrepository.yaml
+        url: https://coroot.github.io/helm-charts
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/coroot/coroot-operator/app/helmrelease.yaml
+        kind: HelmRepository
+        name: coroot
+    valuesFrom: []
+  - id: database/cloudnative-pg
+    application: cloudnative-pg
+    sourceFolder: database
+    targetNamespace: cnpg-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/database/cloudnative-pg
+    payloadPath: payload/apps/database/cloudnative-pg
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cloudnative-pg
+        file: kubernetes/apps/database/cloudnative-pg/app/helmrelease.yaml
+        chart:
+          chart: cloudnative-pg
+          version: 0.x
+          sourceRef:
+            kind: HelmRepository
+            name: cloudnative-pg
+      - kind: HelmRepository
+        name: cloudnative-pg
+        file: kubernetes/apps/database/cloudnative-pg/app/helmrepository.yaml
+        url: https://cloudnative-pg.github.io/charts
+        interval: 12h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/database/cloudnative-pg/app/helmrelease.yaml
+        kind: HelmRepository
+        name: cloudnative-pg
+    valuesFrom: []
+  - id: default/argus-panoptes
+    application: argus-panoptes
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/argus-panoptes
+    payloadPath: payload/apps/default/argus-panoptes
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ConfigMap
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+      - ServiceMonitor
+      - VMPodScrape
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: argus-panoptes
+        file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: argus-panoptes
+      - kind: OCIRepository
+        name: argus-panoptes
+        file: kubernetes/apps/default/argus-panoptes/app/ocirepository.yaml
+        url: oci://ghcr.io/alexieff-io/charts/argus-panoptes
+        interval: 12h
+        ref:
+          semver: ^1.2.0
+    images: []
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: argus-panoptes
+        file: kubernetes/apps/default/argus-panoptes/app/httproute.yaml
+        hostnames:
+          - argus.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: argus-panoptes
+        file: kubernetes/apps/default/argus-panoptes/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: argus-panoptes-secrets
+        remoteRefs:
+          - secretKey: oracleApiKey
+            key: argus-panoptes
+            property: oracle_api_key
+          - secretKey: heraldSlackWebhook
+            key: argus-panoptes
+            property: herald_slack_webhook
+          - secretKey: flowApiJwtSecret
+            key: argus-panoptes
+            property: flow_api_jwt_secret
+          - secretKey: clickhouseUser
+            key: argus-panoptes
+            property: clickhouse_user
+          - secretKey: clickhousePassword
+            key: argus-panoptes
+            property: clickhouse_password
+          - secretKey: flowApiLlmApiKey
+            key: argus-panoptes
+            property: flow_api_llm_api_key
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom:
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_JWT_SECRET
+        targetPath: flowApi.secrets.FLOW_API_JWT_SECRET
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_CLICKHOUSE_USER
+        targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_CLICKHOUSE_PASSWORD
+        targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_LLM_API_KEY
+        targetPath: flowApi.secrets.FLOW_API_LLM_API_KEY
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: clickhouse.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: clickhouse.secrets.CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: ingestor.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: ingestor.secrets.CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: syslogIngestor.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: syslogIngestor.secrets.CLICKHOUSE_PASSWORD
+  - id: default/cobalt
+    application: cobalt
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/cobalt
+    payloadPath: payload/apps/default/cobalt
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cobalt
+        file: kubernetes/apps/default/cobalt/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cobalt
+      - kind: OCIRepository
+        name: cobalt
+        file: kubernetes/apps/default/cobalt/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: ghcr.io/imputnet/cobalt
+        tag: "11"
+    storageClasses: []
+    persistenceEvidence:
+      - file: kubernetes/apps/default/cobalt/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: cobalt
+        file: kubernetes/apps/default/cobalt/app/helmrelease.yaml
+        hostnames:
+          - cobalt.${SECRET_DOMAIN}
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+    externalSecrets:
+      - name: cobalt
+        file: kubernetes/apps/default/cobalt/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: cobalt-keys
+        remoteRefs:
+          - secretKey: keysJson
+            key: cobalt
+            property: keys_json
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/echo
+    application: echo
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/echo
+    payloadPath: payload/apps/default/echo
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: echo
+        file: kubernetes/apps/default/echo/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: echo
+      - kind: OCIRepository
+        name: echo
+        file: kubernetes/apps/default/echo/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: ghcr.io/mendhak/http-https-echo
+        tag: "41"
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: echo
+        file: kubernetes/apps/default/echo/app/helmrelease.yaml
+        hostnames:
+          - '{{ .Release.Name }}.${SECRET_DOMAIN}'
+        parentRefs:
+          - - name: envoy-external
+              namespace: network
+              sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/librechat
+    application: librechat
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/librechat
+    payloadPath: payload/apps/default/librechat
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ConfigMap
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: librechat
+        file: kubernetes/apps/default/librechat/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: librechat
+          namespace: default
+      - kind: OCIRepository
+        name: librechat
+        file: kubernetes/apps/default/librechat/app/helmrepository.yaml
+        url: oci://ghcr.io/danny-avila/librechat-chart/librechat
+        interval: 12h
+        ref:
+          semver: '*'
+    images:
+      - repository: bitnami/mongodb
+        tag: latest
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/default/librechat/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: librechat
+        file: kubernetes/apps/default/librechat/app/httproute.yaml
+        hostnames:
+          - chat.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: librechat-secrets
+        file: kubernetes/apps/default/librechat/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: librechat-credentials-env
+        remoteRefs:
+          - dataFrom:
+              extract:
+                key: librechat
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/node-hp-scan-to
+    application: node-hp-scan-to
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/node-hp-scan-to
+    payloadPath: payload/apps/default/node-hp-scan-to
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: node-hp-scan-to
+        file: kubernetes/apps/default/node-hp-scan-to/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: node-hp-scan-to
+      - kind: OCIRepository
+        name: node-hp-scan-to
+        file: kubernetes/apps/default/node-hp-scan-to/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: docker.io/manuc66/node-hp-scan-to
+        tag: master
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/default/node-hp-scan-to/app/helmrelease.yaml
+        kind: configuration
+    routes: []
+    externalSecrets:
+      - name: node-hp-scan-to-secrets
+        file: kubernetes/apps/default/node-hp-scan-to/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: node-hp-scan-to-secrets
+        remoteRefs:
+          - secretKey: PAPERLESS_TOKEN
+            key: paperless-ngx-api
+            property: token
+    secretReferences:
+      - kind: secretRef
+        name: node-hp-scan-to-secrets
+    secretManifestFiles: []
+    dependencies:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/open-meteo
+    application: open-meteo
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/open-meteo
+    payloadPath: payload/apps/default/open-meteo
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ConfigMap
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: open-meteo
+        file: kubernetes/apps/default/open-meteo/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: open-meteo
+      - kind: OCIRepository
+        name: open-meteo
+        file: kubernetes/apps/default/open-meteo/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: ghcr.io/open-meteo/open-meteo
+        tag: 1.5.2
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/default/open-meteo/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: open-meteo
+        file: kubernetes/apps/default/open-meteo/app/helmrelease.yaml
+        hostnames:
+          - weather.k8s.alexieff.io
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/paperless-ngx
+    application: paperless-ngx
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/paperless-ngx
+    payloadPath: payload/apps/default/paperless-ngx
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - Cluster
+      - ExternalSecret
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: paperless-ngx
+        file: kubernetes/apps/default/paperless-ngx/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: paperless-ngx
+      - kind: HelmRepository
+        name: bitnami
+        file: kubernetes/apps/default/paperless-ngx/app/helmrepository.yaml
+        url: oci://registry-1.docker.io/bitnamicharts
+        interval: 24h
+      - kind: OCIRepository
+        name: paperless-ngx
+        file: kubernetes/apps/default/paperless-ngx/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+      - kind: HelmRelease
+        name: paperless-ngx-redis
+        file: kubernetes/apps/default/paperless-ngx/app/redis-helmrelease.yaml
+        chart:
+          chart: redis
+          version: 24.x
+          sourceRef:
+            kind: HelmRepository
+            name: bitnami
+            namespace: default
+    images:
+      - repository: ghcr.io/paperless-ngx/paperless-ngx
+        tag: 2.20.15
+      - repository: docker.io/gotenberg/gotenberg
+        tag: "8"
+      - repository: docker.io/apache/tika
+        tag: latest-full
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/default/paperless-ngx/app/helmrelease.yaml
+        kind: configuration
+      - file: kubernetes/apps/default/paperless-ngx/app/redis-helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: paperless-ngx
+        file: kubernetes/apps/default/paperless-ngx/app/helmrelease.yaml
+        hostnames:
+          - paperless.${SECRET_DOMAIN}
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+    externalSecrets:
+      - name: paperless-ngx
+        file: kubernetes/apps/default/paperless-ngx/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: paperless-ngx-secrets
+        remoteRefs:
+          - secretKey: secret_key
+            key: paperless-ngx
+            property: secret_key
+          - secretKey: admin_password
+            key: paperless-ngx
+            property: admin_password
+          - secretKey: redis_password
+            key: paperless-ngx
+            property: redis_password
+      - name: paperless-ngx-postgres-superuser
+        file: kubernetes/apps/default/paperless-ngx/app/postgres-externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: paperless-ngx-postgres-superuser
+        remoteRefs:
+          - dataFrom:
+              extract:
+                key: paperless-ngx-postgres
+      - name: paperless-ngx-postgres-app
+        file: kubernetes/apps/default/paperless-ngx/app/postgres-externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: paperless-ngx-postgres-app
+        remoteRefs:
+          - dataFrom:
+              extract:
+                key: paperless-ngx-postgres
+      - name: paperless-ngx-redis
+        file: kubernetes/apps/default/paperless-ngx/app/redis-externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: paperless-ngx-redis-auth
+        remoteRefs:
+          - secretKey: redis_password
+            key: paperless-ngx
+            property: redis_password
+    secretReferences:
+      - kind: secretKeyRef
+        name: paperless-ngx-postgres-app
+        key: username
+      - kind: secretKeyRef
+        name: paperless-ngx-postgres-app
+        key: password
+      - kind: secretRef
+        name: paperless-ngx-secrets
+    secretManifestFiles: []
+    dependencies:
+      - name: cloudnative-pg
+        namespace: flux-system
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/default/paperless-ngx/app/redis-helmrelease.yaml
+        kind: HelmRepository
+        name: bitnami
+        namespace: default
+    valuesFrom: []
+  - id: default/weather-scraper
+    application: weather-scraper
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/weather-scraper
+    payloadPath: payload/apps/default/weather-scraper
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: weather-scraper
+        file: kubernetes/apps/default/weather-scraper/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: weather-scraper
+      - kind: OCIRepository
+        name: weather-scraper
+        file: kubernetes/apps/default/weather-scraper/app/ocirepository.yaml
+        url: oci://ghcr.io/alexieff-io/charts/weather-scraper
+        interval: 12h
+        ref:
+          semver: '*'
+    images:
+      - repository: ghcr.io/alexieff-io/open-meteo-scrapper
+        tag: main
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: open-meteo
+        namespace: default
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: default/zone-editor
+    application: zone-editor
+    sourceFolder: default
+    targetNamespace: default
+    fluxNamespace: default
+    sourcePath: kubernetes/apps/default/zone-editor
+    payloadPath: payload/apps/default/zone-editor
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Deployment
+      - ExternalSecret
+      - HTTPRoute
+      - Kustomization
+      - Service
+    chartAndManifestSources: []
+    images:
+      - image: ghcr.io/sensy-one/zone-editor:latest
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: zone-editor
+        file: kubernetes/apps/default/zone-editor/app/httproute.yaml
+        hostnames:
+          - zone.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: zone-editor
+        file: kubernetes/apps/default/zone-editor/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: zone-editor
+        remoteRefs:
+          - secretKey: haUrl
+            key: zone-editor
+            property: ha_url
+          - secretKey: haToken
+            key: zone-editor
+            property: ha_token
+    secretReferences:
+      - kind: secretRef
+        name: zone-editor
+    secretManifestFiles: []
+    dependencies:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: external-secrets/external-secrets-operator
+    application: external-secrets-operator
+    sourceFolder: external-secrets
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/external-secrets/external-secrets-operator
+    payloadPath: payload/apps/external-secrets/external-secrets-operator
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: external-secrets-operator
+        file: kubernetes/apps/external-secrets/external-secrets-operator/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: external-secrets-operator
+      - kind: OCIRepository
+        name: external-secrets-operator
+        file: kubernetes/apps/external-secrets/external-secrets-operator/app/ocirepository.yaml
+        url: oci://ghcr.io/external-secrets/charts/external-secrets
+        interval: 15m
+        ref:
+          tag: 2.6.0
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: external-secrets/onepassword-connect
+    application: onepassword-connect
+    sourceFolder: external-secrets
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/external-secrets/onepassword-connect
+    payloadPath: payload/apps/external-secrets/onepassword-connect
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+      - Secret
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: onepassword-connect
+        file: kubernetes/apps/external-secrets/onepassword-connect/app/helmrelease.yaml
+        chart:
+          chart: connect
+          version: 2.4.1
+          sourceRef:
+            kind: HelmRepository
+            name: onepassword
+      - kind: HelmRepository
+        name: onepassword
+        file: kubernetes/apps/external-secrets/onepassword-connect/app/helmrepository.yaml
+        url: https://1password.github.io/connect-helm-charts/
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles:
+      - file: kubernetes/apps/external-secrets/onepassword-connect/app/secret.sops.yaml
+        sopsEncrypted: true
+    dependencies:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/external-secrets/onepassword-connect/app/helmrelease.yaml
+        kind: HelmRepository
+        name: onepassword
+    valuesFrom: []
+  - id: external-secrets/onepassword-secret-store
+    application: onepassword-secret-store
+    sourceFolder: external-secrets
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/external-secrets/onepassword-secret-store
+    payloadPath: payload/apps/external-secrets/onepassword-secret-store
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ClusterSecretStore
+      - Kustomization
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: external-secrets-operator
+        namespace: flux-system
+      - name: onepassword-connect
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: flux-system/capacitor
+    application: capacitor
+    sourceFolder: flux-system
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/flux-system/capacitor
+    payloadPath: payload/apps/flux-system/capacitor
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ClusterRole
+      - ClusterRoleBinding
+      - Deployment
+      - HTTPRoute
+      - Kustomization
+      - Service
+      - ServiceAccount
+    chartAndManifestSources: []
+    images:
+      - image: ghcr.io/gimlet-io/capacitor:v0.4.8
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: capacitor
+        file: kubernetes/apps/flux-system/capacitor/app/httproute.yaml
+        hostnames:
+          - capacitor.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: flux-system/flux-instance
+    application: flux-instance
+    sourceFolder: flux-system
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/flux-system/flux-instance
+    payloadPath: payload/apps/flux-system/flux-instance
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+      - Receiver
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: flux-instance
+        file: kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: flux-instance
+      - kind: OCIRepository
+        name: flux-instance
+        file: kubernetes/apps/flux-system/flux-instance/app/ocirepository.yaml
+        url: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-instance
+        interval: 15m
+        ref:
+          tag: 0.52.0
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: github-webhook
+        file: kubernetes/apps/flux-system/flux-instance/app/httproute.yaml
+        hostnames:
+          - flux-webhook.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: github-webhook-token-secret
+        file: kubernetes/apps/flux-system/flux-instance/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: github-webhook-token-secret
+        remoteRefs:
+          - secretKey: token
+            key: github-webhook-token
+            property: password
+    secretReferences:
+      - kind: secretRef
+        name: github-webhook-token-secret
+    secretManifestFiles: []
+    dependencies:
+      - name: flux-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: flux-system/flux-operator
+    application: flux-operator
+    sourceFolder: flux-system
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/flux-system/flux-operator
+    payloadPath: payload/apps/flux-system/flux-operator
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: flux-operator
+        file: kubernetes/apps/flux-system/flux-operator/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: flux-operator
+      - kind: OCIRepository
+        name: flux-operator
+        file: kubernetes/apps/flux-system/flux-operator/app/ocirepository.yaml
+        url: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+        interval: 15m
+        ref:
+          tag: 0.52.0
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: flux-system/monitoring
+    application: monitoring
+    sourceFolder: flux-system
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/flux-system/monitoring
+    payloadPath: payload/apps/flux-system/monitoring
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Kustomization
+      - Service
+      - ServiceMonitor
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: flux-system/weave-gitops
+    application: weave-gitops
+    sourceFolder: flux-system
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/flux-system/weave-gitops
+    payloadPath: payload/apps/flux-system/weave-gitops
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: weave-gitops
+        file: kubernetes/apps/flux-system/weave-gitops/app/helmrelease.yaml
+        chart:
+          chart: weave-gitops
+          version: 4.x
+          sourceRef:
+            kind: HelmRepository
+            name: ww-gitops
+      - kind: HelmRepository
+        name: ww-gitops
+        file: kubernetes/apps/flux-system/weave-gitops/app/helmrepository.yaml
+        url: oci://ghcr.io/weaveworks/charts
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: weave-gitops
+        file: kubernetes/apps/flux-system/weave-gitops/app/httproute.yaml
+        hostnames:
+          - gitops.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: cluster-user-auth
+        file: kubernetes/apps/flux-system/weave-gitops/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: cluster-user-auth
+        remoteRefs:
+          - secretKey: username
+            key: weave-gitops-admin
+            property: username
+          - secretKey: password
+            key: weave-gitops-admin
+            property: password
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/flux-system/weave-gitops/app/helmrelease.yaml
+        kind: HelmRepository
+        name: ww-gitops
+    valuesFrom: []
+  - id: kube-system/cilium
+    application: cilium
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/cilium
+    payloadPath: payload/apps/kube-system/cilium
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - CiliumL2AnnouncementPolicy
+      - CiliumLoadBalancerIPPool
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cilium
+        file: kubernetes/apps/kube-system/cilium/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cilium
+      - kind: OCIRepository
+        name: cilium
+        file: kubernetes/apps/kube-system/cilium/app/ocirepository.yaml
+        url: oci://ghcr.io/home-operations/charts-mirror/cilium
+        interval: 15m
+        ref:
+          tag: 1.18.6
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: hubble-ui
+        file: kubernetes/apps/kube-system/cilium/app/httproute.yaml
+        hostnames:
+          - hubble.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: kube-system/coredns
+    application: coredns
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/coredns
+    payloadPath: payload/apps/kube-system/coredns
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: coredns
+        file: kubernetes/apps/kube-system/coredns/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: coredns
+      - kind: OCIRepository
+        name: coredns
+        file: kubernetes/apps/kube-system/coredns/app/ocirepository.yaml
+        url: oci://ghcr.io/coredns/charts/coredns
+        interval: 15m
+        ref:
+          tag: 1.46.0
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: kube-system/metrics-server
+    application: metrics-server
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/metrics-server
+    payloadPath: payload/apps/kube-system/metrics-server
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: metrics-server
+        file: kubernetes/apps/kube-system/metrics-server/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: metrics-server
+      - kind: OCIRepository
+        name: metrics-server
+        file: kubernetes/apps/kube-system/metrics-server/app/ocirepository.yaml
+        url: oci://ghcr.io/home-operations/charts-mirror/metrics-server
+        interval: 15m
+        ref:
+          tag: 3.13.1
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: kube-system/reloader
+    application: reloader
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/reloader
+    payloadPath: payload/apps/kube-system/reloader
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: reloader
+        file: kubernetes/apps/kube-system/reloader/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: reloader
+      - kind: OCIRepository
+        name: reloader
+        file: kubernetes/apps/kube-system/reloader/app/ocirepository.yaml
+        url: oci://ghcr.io/stakater/charts/reloader
+        interval: 15m
+        ref:
+          tag: 2.2.12
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: kube-system/spegel
+    application: spegel
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/spegel
+    payloadPath: payload/apps/kube-system/spegel
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: spegel
+        file: kubernetes/apps/kube-system/spegel/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: spegel
+      - kind: OCIRepository
+        name: spegel
+        file: kubernetes/apps/kube-system/spegel/app/ocirepository.yaml
+        url: oci://ghcr.io/spegel-org/helm-charts/spegel
+        interval: 15m
+        ref:
+          tag: 0.7.2
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: kube-system/vertical-pod-autoscaler
+    application: vertical-pod-autoscaler
+    sourceFolder: kube-system
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    sourcePath: kubernetes/apps/kube-system/vertical-pod-autoscaler
+    payloadPath: payload/apps/kube-system/vertical-pod-autoscaler
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: vertical-pod-autoscaler
+        file: kubernetes/apps/kube-system/vertical-pod-autoscaler/app/helmrelease.yaml
+        chart:
+          chart: vpa
+          version: 4.x
+          sourceRef:
+            kind: HelmRepository
+            name: fairwinds-stable
+      - kind: HelmRepository
+        name: fairwinds-stable
+        file: kubernetes/apps/kube-system/vertical-pod-autoscaler/app/helmrepository.yaml
+        url: https://charts.fairwinds.com/stable
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: metrics-server
+        namespace: kube-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/kube-system/vertical-pod-autoscaler/app/helmrelease.yaml
+        kind: HelmRepository
+        name: fairwinds-stable
+    valuesFrom: []
+  - id: monitoring/control-plane
+    application: control-plane
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/control-plane
+    payloadPath: payload/apps/monitoring/control-plane
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Kustomization
+      - Service
+      - ServiceMonitor
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: monitoring/goldilocks
+    application: goldilocks
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/goldilocks
+    payloadPath: payload/apps/monitoring/goldilocks
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HTTPRoute
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: goldilocks
+        file: kubernetes/apps/monitoring/goldilocks/app/helmrelease.yaml
+        chart:
+          chart: goldilocks
+          version: 10.x
+          sourceRef:
+            kind: HelmRepository
+            name: fairwinds-stable
+      - kind: HelmRepository
+        name: fairwinds-stable
+        file: kubernetes/apps/monitoring/goldilocks/app/helmrepository.yaml
+        url: https://charts.fairwinds.com/stable
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: goldilocks
+        file: kubernetes/apps/monitoring/goldilocks/app/httproute.yaml
+        hostnames:
+          - goldilocks.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: vertical-pod-autoscaler
+        namespace: kube-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/goldilocks/app/helmrelease.yaml
+        kind: HelmRepository
+        name: fairwinds-stable
+    valuesFrom: []
+  - id: monitoring/grafana
+    application: grafana
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/grafana
+    payloadPath: payload/apps/monitoring/grafana
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: grafana
+        file: kubernetes/apps/monitoring/grafana/app/helmrelease.yaml
+        chart:
+          chart: grafana
+          version: 10.x
+          sourceRef:
+            kind: HelmRepository
+            name: grafana
+      - kind: HelmRepository
+        name: grafana
+        file: kubernetes/apps/monitoring/grafana/app/helmrepository.yaml
+        url: https://grafana.github.io/helm-charts
+        interval: 1h
+    images: []
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/monitoring/grafana/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: grafana
+        file: kubernetes/apps/monitoring/grafana/app/httproute.yaml
+        hostnames:
+          - grafana.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: grafana-secret
+        file: kubernetes/apps/monitoring/grafana/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: grafana-secret
+        remoteRefs:
+          - secretKey: admin-user
+            key: grafana-admin
+            property: username
+          - secretKey: admin-password
+            key: grafana-admin
+            property: password
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: vmsingle
+        namespace: flux-system
+      - name: vmalert
+        namespace: flux-system
+      - name: victoria-logs
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/grafana/app/helmrelease.yaml
+        kind: HelmRepository
+        name: grafana
+    valuesFrom: []
+  - id: monitoring/kube-state-metrics
+    application: kube-state-metrics
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/kube-state-metrics
+    payloadPath: payload/apps/monitoring/kube-state-metrics
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - ServiceMonitor
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: kube-state-metrics
+        file: kubernetes/apps/monitoring/kube-state-metrics/app/helmrelease.yaml
+        chart:
+          chart: kube-state-metrics
+          version: 7.x
+          sourceRef:
+            kind: HelmRepository
+            name: prometheus-community
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: node-exporter
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/kube-state-metrics/app/helmrelease.yaml
+        kind: HelmRepository
+        name: prometheus-community
+    valuesFrom: []
+  - id: monitoring/kubelet-cadvisor
+    application: kubelet-cadvisor
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/kubelet-cadvisor
+    payloadPath: payload/apps/monitoring/kubelet-cadvisor
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Kustomization
+      - VMNodeScrape
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: monitoring/kubetail
+    application: kubetail
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/kubetail
+    payloadPath: payload/apps/monitoring/kubetail
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+      - SecurityPolicy
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: kubetail
+        file: kubernetes/apps/monitoring/kubetail/app/helmrelease.yaml
+        chart:
+          chart: kubetail
+          version: 0.x
+          sourceRef:
+            kind: HelmRepository
+            name: kubetail
+      - kind: HelmRepository
+        name: kubetail
+        file: kubernetes/apps/monitoring/kubetail/app/helmrepository.yaml
+        url: https://kubetail-org.github.io/helm-charts/
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: kubetail-external
+        file: kubernetes/apps/monitoring/kubetail/app/httproute-external.yaml
+        hostnames:
+          - logs.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+      - name: kubetail
+        file: kubernetes/apps/monitoring/kubetail/app/httproute.yaml
+        hostnames:
+          - kubetail.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: kubetail-basic-auth
+        file: kubernetes/apps/monitoring/kubetail/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: kubetail-basic-auth
+        remoteRefs:
+          - secretKey: .htpasswd
+            key: kubetail-basic-auth
+            property: htpasswd
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/kubetail/app/helmrelease.yaml
+        kind: HelmRepository
+        name: kubetail
+    valuesFrom: []
+  - id: monitoring/node-exporter
+    application: node-exporter
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/node-exporter
+    payloadPath: payload/apps/monitoring/node-exporter
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+      - ServiceMonitor
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: node-exporter
+        file: kubernetes/apps/monitoring/node-exporter/app/helmrelease.yaml
+        chart:
+          chart: prometheus-node-exporter
+          version: 4.x
+          sourceRef:
+            kind: HelmRepository
+            name: prometheus-community
+      - kind: HelmRepository
+        name: prometheus-community
+        file: kubernetes/apps/monitoring/node-exporter/app/helmrepository.yaml
+        url: https://prometheus-community.github.io/helm-charts
+        interval: 12h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/node-exporter/app/helmrelease.yaml
+        kind: HelmRepository
+        name: prometheus-community
+    valuesFrom: []
+  - id: monitoring/truenas-exporters
+    application: truenas-exporters
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/truenas-exporters
+    payloadPath: payload/apps/monitoring/truenas-exporters
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - Kustomization
+      - VMStaticScrape
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: vmsingle
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: monitoring/vector-syslog
+    application: vector-syslog
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/vector-syslog
+    payloadPath: payload/apps/monitoring/vector-syslog
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: vector-syslog
+        file: kubernetes/apps/monitoring/vector-syslog/app/helmrelease.yaml
+        chart:
+          chart: vector
+          version: 0.x
+          sourceRef:
+            kind: HelmRepository
+            name: vector
+      - kind: HelmRepository
+        name: vector
+        file: kubernetes/apps/monitoring/vector-syslog/app/helmrepository.yaml
+        url: https://helm.vector.dev
+        interval: 1h
+    images: []
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/monitoring/vector-syslog/app/helmrelease.yaml
+        kind: configuration
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: victoria-logs
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/vector-syslog/app/helmrelease.yaml
+        kind: HelmRepository
+        name: vector
+    valuesFrom: []
+  - id: monitoring/victoria-logs
+    application: victoria-logs
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/victoria-logs
+    payloadPath: payload/apps/monitoring/victoria-logs
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: victoria-logs
+        file: kubernetes/apps/monitoring/victoria-logs/app/helmrelease.yaml
+        chart:
+          chart: victoria-logs-single
+          version: 0.11.x
+          sourceRef:
+            kind: HelmRepository
+            name: victoria-metrics
+    images: []
+    storageClasses:
+      - longhorn
+    persistenceEvidence: []
+    routes:
+      - name: victoria-metrics-write
+        file: kubernetes/apps/monitoring/victoria-logs/app/httproute.yaml
+        hostnames:
+          - vlogs-write.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/victoria-logs/app/helmrelease.yaml
+        kind: HelmRepository
+        name: victoria-metrics
+    valuesFrom: []
+  - id: monitoring/victoria-metrics-operator
+    application: victoria-metrics-operator
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/victoria-metrics-operator
+    payloadPath: payload/apps/monitoring/victoria-metrics-operator
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+      - VMServiceScrape
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: victoria-metrics-operator
+        file: kubernetes/apps/monitoring/victoria-metrics-operator/app/helmrelease.yaml
+        chart:
+          chart: victoria-metrics-operator
+          version: 0.x
+          sourceRef:
+            kind: HelmRepository
+            name: victoria-metrics
+      - kind: HelmRepository
+        name: victoria-metrics
+        file: kubernetes/apps/monitoring/victoria-metrics-operator/app/helmrepository.yaml
+        url: https://victoriametrics.github.io/helm-charts/
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/victoria-metrics-operator/app/helmrelease.yaml
+        kind: HelmRepository
+        name: victoria-metrics
+    valuesFrom: []
+  - id: monitoring/vmalert
+    application: vmalert
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/vmalert
+    payloadPath: payload/apps/monitoring/vmalert
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HTTPRoute
+      - Kustomization
+      - VMAlert
+      - VMAlertmanager
+      - VMRule
+    chartAndManifestSources: []
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: vmalert
+        file: kubernetes/apps/monitoring/vmalert/app/httproute.yaml
+        hostnames:
+          - vmalert.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+      - name: alertmanager
+        file: kubernetes/apps/monitoring/vmalert/app/httproute.yaml
+        hostnames:
+          - alertmanager.${SECRET_DOMAIN}
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: vmsingle
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: monitoring/vmsingle
+    application: vmsingle
+    sourceFolder: monitoring
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/monitoring/vmsingle
+    payloadPath: payload/apps/monitoring/vmsingle
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ClusterRole
+      - ClusterRoleBinding
+      - HTTPRoute
+      - Kustomization
+      - Role
+      - RoleBinding
+      - ServiceAccount
+      - VMAgent
+      - VMSingle
+    chartAndManifestSources: []
+    images: []
+    storageClasses:
+      - longhorn
+    persistenceEvidence: []
+    routes:
+      - name: vmsingle-write
+        file: kubernetes/apps/monitoring/vmsingle/app/httproute.yaml
+        hostnames:
+          - vm-write.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/cloudflare-dns
+    application: cloudflare-dns
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/cloudflare-dns
+    payloadPath: payload/apps/network/cloudflare-dns
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cloudflare-dns
+        file: kubernetes/apps/network/cloudflare-dns/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cloudflare-dns
+      - kind: OCIRepository
+        name: cloudflare-dns
+        file: kubernetes/apps/network/cloudflare-dns/app/ocirepository.yaml
+        url: oci://ghcr.io/home-operations/charts-mirror/external-dns
+        interval: 15m
+        ref:
+          tag: 1.21.1
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets:
+      - name: cloudflare-dns-secret
+        file: kubernetes/apps/network/cloudflare-dns/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: cloudflare-dns-secret
+        remoteRefs:
+          - secretKey: api-token
+            key: cloudflare-api-token
+            property: password
+    secretReferences:
+      - kind: secretKeyRef
+        name: cloudflare-dns-secret
+        key: api-token
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/cloudflare-dns-internal
+    application: cloudflare-dns-internal
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/cloudflare-dns-internal
+    payloadPath: payload/apps/network/cloudflare-dns-internal
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cloudflare-dns-internal
+        file: kubernetes/apps/network/cloudflare-dns-internal/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cloudflare-dns
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences:
+      - kind: secretKeyRef
+        name: cloudflare-dns-secret
+        key: api-token
+    secretManifestFiles: []
+    dependencies:
+      - name: cloudflare-dns
+        namespace: network
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/cloudflare-tunnel
+    application: cloudflare-tunnel
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/cloudflare-tunnel
+    payloadPath: payload/apps/network/cloudflare-tunnel
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - DNSEndpoint
+      - ExternalSecret
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: cloudflare-tunnel
+        file: kubernetes/apps/network/cloudflare-tunnel/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: cloudflare-tunnel
+      - kind: OCIRepository
+        name: cloudflare-tunnel
+        file: kubernetes/apps/network/cloudflare-tunnel/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: docker.io/cloudflare/cloudflared
+        tag: 2026.6.1
+    storageClasses: []
+    persistenceEvidence:
+      - file: kubernetes/apps/network/cloudflare-tunnel/app/helmrelease.yaml
+        kind: configuration
+    routes: []
+    externalSecrets:
+      - name: cloudflare-tunnel-secret
+        file: kubernetes/apps/network/cloudflare-tunnel/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: cloudflare-tunnel-secret
+        remoteRefs:
+          - secretKey: TUNNEL_TOKEN
+            key: cloudflare-tunnel-token
+            property: password
+    secretReferences:
+      - kind: secretRef
+        name: cloudflare-tunnel-secret
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/consul
+    application: consul
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/consul
+    payloadPath: payload/apps/network/consul
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ExternalSecret
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: consul
+        file: kubernetes/apps/network/consul/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: consul
+      - kind: OCIRepository
+        name: consul
+        file: kubernetes/apps/network/consul/app/ocirepository.yaml
+        url: oci://ghcr.io/bjw-s-labs/helm/app-template
+        interval: 15m
+        ref:
+          tag: 5.0.1
+    images:
+      - repository: hashicorp/consul
+        tag: "2.0"
+    storageClasses:
+      - longhorn
+    persistenceEvidence:
+      - file: kubernetes/apps/network/consul/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: consul
+        file: kubernetes/apps/network/consul/app/httproute.yaml
+        hostnames:
+          - consul.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets:
+      - name: consul-secret
+        file: kubernetes/apps/network/consul/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: consul-secret
+        remoteRefs:
+          - secretKey: CONSUL_BOOTSTRAP_TOKEN
+            key: consul-acl-token
+            property: credential
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/consul-sync
+    application: consul-sync
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/consul-sync
+    payloadPath: payload/apps/network/consul-sync
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - ClusterRole
+      - ClusterRoleBinding
+      - Deployment
+      - ExternalSecret
+      - Kustomization
+      - Service
+      - ServiceAccount
+      - ServiceMonitor
+    chartAndManifestSources: []
+    images:
+      - image: ghcr.io/alexieff-io/consul-sync:sha-1effc1d
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets:
+      - name: consul-sync-secret
+        file: kubernetes/apps/network/consul-sync/app/externalsecret.yaml
+        secretStoreRef:
+          kind: ClusterSecretStore
+          name: onepassword
+        targetName: consul-sync-secret
+        remoteRefs:
+          - secretKey: CONSUL_TOKEN
+            key: consul-acl-token
+            property: password
+    secretReferences:
+      - kind: secretKeyRef
+        name: consul-sync-secret
+        key: CONSUL_TOKEN
+    secretManifestFiles: []
+    dependencies:
+      - name: consul
+        namespace: network
+      - name: onepassword-secret-store
+        namespace: flux-system
+      - name: envoy-gateway
+        namespace: network
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/envoy-gateway
+    application: envoy-gateway
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/envoy-gateway
+    payloadPath: payload/apps/network/envoy-gateway
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - BackendTrafficPolicy
+      - Certificate
+      - ClientTrafficPolicy
+      - EnvoyProxy
+      - Gateway
+      - GatewayClass
+      - HTTPRoute
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+      - PodMonitor
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: envoy-gateway
+        file: kubernetes/apps/network/envoy-gateway/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: envoy-gateway
+      - kind: OCIRepository
+        name: envoy-gateway
+        file: kubernetes/apps/network/envoy-gateway/app/ocirepository.yaml
+        url: oci://mirror.gcr.io/envoyproxy/gateway-helm
+        interval: 15m
+        ref:
+          tag: v1.8.1
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes:
+      - name: https-redirect
+        file: kubernetes/apps/network/envoy-gateway/app/envoy.yaml
+        hostnames: []
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: http
+          - name: envoy-internal
+            namespace: network
+            sectionName: http
+    externalSecrets: []
+    secretReferences:
+      - kind: secretName
+        name: ${SECRET_DOMAIN/./-}-production-tls
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: network/k8s-gateway
+    application: k8s-gateway
+    sourceFolder: network
+    targetNamespace: network
+    fluxNamespace: network
+    sourcePath: kubernetes/apps/network/k8s-gateway
+    payloadPath: payload/apps/network/k8s-gateway
+    status: migrate
+    statePolicy: stateless
+    resourceKinds:
+      - HelmRelease
+      - Kustomization
+      - OCIRepository
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: k8s-gateway
+        file: kubernetes/apps/network/k8s-gateway/app/helmrelease.yaml
+        chartRef:
+          kind: OCIRepository
+          name: k8s-gateway
+      - kind: OCIRepository
+        name: k8s-gateway
+        file: kubernetes/apps/network/k8s-gateway/app/ocirepository.yaml
+        url: oci://ghcr.io/k8s-gateway/charts/k8s-gateway
+        interval: 1h
+        ref:
+          tag: 3.7.1
+    images: []
+    storageClasses: []
+    persistenceEvidence: []
+    routes: []
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+  - id: storage/longhorn
+    application: longhorn
+    sourceFolder: storage
+    targetNamespace: longhorn-system
+    fluxNamespace: flux-system
+    sourcePath: kubernetes/apps/storage/longhorn
+    payloadPath: payload/apps/storage/longhorn
+    status: migrate
+    statePolicy: fresh-empty-state
+    resourceKinds:
+      - ConfigMap
+      - HTTPRoute
+      - HelmRelease
+      - HelmRepository
+      - Kustomization
+    chartAndManifestSources:
+      - kind: HelmRelease
+        name: longhorn
+        file: kubernetes/apps/storage/longhorn/app/helmrelease.yaml
+        chart:
+          chart: longhorn
+          version: 1.12.x
+          sourceRef:
+            kind: HelmRepository
+            name: longhorn
+      - kind: HelmRepository
+        name: longhorn
+        file: kubernetes/apps/storage/longhorn/app/helmrepository.yaml
+        url: https://charts.longhorn.io
+        interval: 1h
+    images: []
+    storageClasses: []
+    persistenceEvidence:
+      - file: kubernetes/apps/storage/longhorn/app/helmrelease.yaml
+        kind: configuration
+    routes:
+      - name: longhorn-ui
+        file: kubernetes/apps/storage/longhorn/app/httproute.yaml
+        hostnames:
+          - longhorn.k8s.alexieff.io
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+    externalSecrets: []
+    secretReferences: []
+    secretManifestFiles: []
+    dependencies: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/storage/longhorn/app/helmrelease.yaml
+        kind: HelmRepository
+        name: longhorn
+    valuesFrom: []

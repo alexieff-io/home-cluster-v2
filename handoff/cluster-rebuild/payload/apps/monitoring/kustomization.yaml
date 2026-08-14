@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./namespace.yaml
+  - ./control-plane/ks.yaml
+  - ./kube-state-metrics/ks.yaml
+  - ./kubelet-cadvisor/ks.yaml
+  - ./node-exporter/ks.yaml
+  - ./victoria-metrics-operator/ks.yaml
+  - ./vmsingle/ks.yaml
+  - ./vmalert/ks.yaml
+  - ./victoria-logs/ks.yaml
+  - ./goldilocks/ks.yaml
+  - ./grafana/ks.yaml
+  - ./vector-syslog/ks.yaml
+  - ./kubetail/ks.yaml
+  - ./truenas-exporters/ks.yaml

@@ -1,0 +1,51 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveTableSnapshot
+metadata:
+  resource: HelmReleases
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+observedAnomalies:
+  - default/argus-panoptes reports reason RetriesExceeded despite Ready=True
+  - default/paperless-ngx and monitoring/grafana report MissingRollbackTarget despite Ready=True
+table: |
+  NAMESPACE          NAME                              READY   REASON                  REVISION
+  arc-runners        arc-runner-set                    True    UpgradeSucceeded        0.14.2
+  arc-systems        gha-runner-scale-set-controller   True    UpgradeSucceeded        0.14.2
+  cert-manager       cert-manager                      True    UpgradeSucceeded        v1.20.2
+  cnpg-system        cloudnative-pg                    True    UpgradeSucceeded        0.29.0
+  coroot             coroot-operator                   True    UpgradeSucceeded        0.9.8
+  default            argus-panoptes                    True    RetriesExceeded         1.8.0
+  default            cobalt                            True    UpgradeSucceeded        5.0.1
+  default            librechat                         True    UpgradeSucceeded        2.0.7
+  default            node-hp-scan-to                   True    UpgradeSucceeded        5.0.1
+  default            open-meteo                        True    UpgradeSucceeded        5.0.1
+  default            paperless-ngx                     True    MissingRollbackTarget   5.0.1
+  default            paperless-ngx-redis               True    InstallSucceeded        24.1.8
+  default            weather-scraper                   True    UpgradeSucceeded        0.1.10
+  external-secrets   external-secrets-operator         True    UpgradeSucceeded        2.6.0
+  external-secrets   onepassword-connect               True    UpgradeSucceeded        2.4.1
+  flux-system        flux-instance                     True    UpgradeSucceeded        0.52.0
+  flux-system        flux-operator                     True    UpgradeSucceeded        0.52.0
+  flux-system        weave-gitops                      True    UpgradeSucceeded        4.0.36
+  kube-system        cilium                            True    UpgradeSucceeded        1.18.6
+  kube-system        coredns                           True    UpgradeSucceeded        1.46.0
+  kube-system        metrics-server                    True    UpgradeSucceeded        3.13.1
+  kube-system        reloader                          True    UpgradeSucceeded        2.2.12
+  kube-system        spegel                            True    UpgradeSucceeded        0.7.2
+  kube-system        vertical-pod-autoscaler           True    UpgradeSucceeded        4.12.5
+  longhorn-system    longhorn                          True    UpgradeSucceeded        1.12.0
+  monitoring         goldilocks                        True    UpgradeSucceeded        10.5.0
+  monitoring         grafana                           True    MissingRollbackTarget   10.5.15
+  monitoring         kube-state-metrics                True    UpgradeSucceeded        7.8.1
+  monitoring         kubetail                          True    UpgradeSucceeded        0.26.0
+  monitoring         node-exporter                     True    UpgradeSucceeded        4.56.1
+  monitoring         vector-syslog                     True    UpgradeSucceeded        0.57.0
+  monitoring         victoria-logs                     True    UpgradeSucceeded        0.11.32
+  monitoring         victoria-metrics-operator         True    UpgradeSucceeded        0.67.2
+  network            cloudflare-dns                    True    UpgradeSucceeded        1.21.1
+  network            cloudflare-dns-internal           True    UpgradeSucceeded        1.21.1
+  network            cloudflare-tunnel                 True    UpgradeSucceeded        5.0.1
+  network            consul                            True    UpgradeSucceeded        5.0.1
+  network            envoy-gateway                     True    UpgradeSucceeded        v1.8.1
+  network            k8s-gateway                       True    UpgradeSucceeded        3.7.1
