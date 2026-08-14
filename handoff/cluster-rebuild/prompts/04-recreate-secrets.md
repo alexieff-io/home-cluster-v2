@@ -27,7 +27,7 @@ Read `inventories/secrets-and-prerequisites.yaml`, `runbooks/04-recreate-secrets
 ## Boundaries and stop conditions
 
 - Never paste or print secrets into chat, logs, status artifacts, or commands captured by shell history when a secure provider is available.
-- Never include `AGE-SECRET-KEY-`, deploy private keys, kubeconfig auth data, Talos secrets, or tunnel credential JSON in Git.
+- Never include an Age private-key marker, deploy private keys, kubeconfig auth data, Talos secrets, or tunnel credential JSON in Git.
 - Do not hash low-entropy secrets as proof.
 - Stop on missing provider access/item/property, wrong Age recipient, unencrypted Secret fields, unresolved app Secret reference, or leaked credential history.
 - Do not run bootstrap/apply commands.

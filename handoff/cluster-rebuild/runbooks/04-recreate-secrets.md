@@ -44,7 +44,7 @@ Before the cluster exists, validate structure offline. Provider connectivity is 
 Review the target Git index, not only the working tree, for:
 
 - PEM/OpenSSH private-key headers;
-- `AGE-SECRET-KEY-`;
+- Age private-key markers;
 - kubeconfig client keys/tokens;
 - Cloudflare tunnel account/tag/secret JSON;
 - plaintext values in Kubernetes `Secret.data` or `Secret.stringData`;
