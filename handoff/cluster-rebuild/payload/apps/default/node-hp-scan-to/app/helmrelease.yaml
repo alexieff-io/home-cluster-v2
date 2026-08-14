@@ -20,7 +20,7 @@ spec:
               repository: docker.io/manuc66/node-hp-scan-to
               tag: master
             env:
-              # TODO: replace with actual printer IP before committing
+              # Inherited current desired-state printer IP; verify during target preflight.
               IP: 192.168.11.249
               PATTERN: '"scan"_dd.mm.yyyy_hh:MM:ss'
               LABEL: scan

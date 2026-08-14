@@ -82,7 +82,7 @@ b31b4b990aca874ed9d9f4b2bb02bf93d782cb07b1c276611b721fe430413a3a  payload/apps/d
 338bdec354794717862647bfd8535d20cd540c28b2b5a86bde601bff963ea9e0  payload/apps/default/librechat/ks.yaml
 63610b7322b26ab43ff0de8e077fd6c4db3d416cf603b5816673f064c716da69  payload/apps/default/namespace.yaml
 7df91399c81bb7d77331fbaf84738f399be77a8602c4c169d28f095d475e46b4  payload/apps/default/node-hp-scan-to/app/externalsecret.yaml
-2651c866035c463f75971e5c88fb9d482525d4ac7ccb098e451eee04dd07b3d4  payload/apps/default/node-hp-scan-to/app/helmrelease.yaml
+ac2014d8a25cd6351c7436e8b0e590d7866addb5ce6cc1ead2b70da730cac2cd  payload/apps/default/node-hp-scan-to/app/helmrelease.yaml
 e975cd4d7a31397858f00e73821fbec241b9def081e371ec4873b9d7bf6d9405  payload/apps/default/node-hp-scan-to/app/kustomization.yaml
 2cb7543bfe07847b5353fa9750200f949389ad9934ca6f9870e984c7f37c3fee  payload/apps/default/node-hp-scan-to/app/ocirepository.yaml
 fdf1bae2f8d50ed4472d86870656c42ae47b4b0c239baf7a3d09fdb708a7cb41  payload/apps/default/node-hp-scan-to/ks.yaml
