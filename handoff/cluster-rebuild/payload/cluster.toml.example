@@ -1,0 +1,77 @@
+# Target configuration for onedr0p/cluster-template at
+# bb09348610aa5bee9505230b99c21c08db15bf6d.
+#
+# Copy this to cluster.toml in a fresh target repository. Replace only the
+# explicit REPLACE_WITH_* sentinels through an authorized channel. Never commit
+# a real Cloudflare token unless the generated template immediately encrypts it
+# with SOPS as documented by that pinned template revision.
+
+[network]
+node_cidr = "10.69.0.0/24"
+dns_servers = ["1.1.1.1", "1.0.0.1"]
+ntp_servers = ["162.159.200.1", "162.159.200.123"]
+default_gateway = "10.69.0.1"
+
+[kubernetes]
+pod_cidr = "10.42.0.0/16"
+svc_cidr = "10.43.0.0/16"
+coredns_addr = "10.43.0.10"
+
+[kubernetes.api]
+addr = "10.69.0.25"
+
+[gateways]
+internal = "10.69.0.27"
+dns = "10.69.0.26"
+external = "10.69.0.28"
+
+[repository]
+url = "https://github.com/REPLACE_WITH_OWNER/REPLACE_WITH_REPOSITORY.git"
+branch = "main"
+webhook_provider = "github"
+
+[domain]
+name = "k8s.alexieff.io"
+
+[dns]
+provider = "cloudflare"
+# Supply the real token only through the pinned template's generated encrypted
+# configuration workflow; this handoff never contains it.
+token = ""
+
+[ingress]
+mode = "cloudflare-tunnel"
+
+[cilium]
+loadbalancer_mode = "dsr"
+
+[talos]
+schematic_id = "85f683902139269fbc5a7f64ea94a694d31e0b3d94347a225223fcbd042083ae"
+
+[[nodes]]
+name = "node1"
+address = "10.69.0.10"
+controller = true
+disk = "/dev/mmcblk0"
+mac_addr = "ca:40:7d:5d:27:b1"
+
+[[nodes]]
+name = "node2"
+address = "10.69.0.11"
+controller = true
+disk = "/dev/mmcblk0"
+mac_addr = "6a:5a:8e:2b:a1:cd"
+
+[[nodes]]
+name = "node3"
+address = "10.69.0.12"
+controller = true
+disk = "/dev/mmcblk0"
+mac_addr = "f6:91:86:32:34:08"
+
+[[nodes]]
+name = "node4"
+address = "10.69.0.13"
+controller = true
+disk = "/dev/mmcblk0"
+mac_addr = "3e:48:c8:35:89:d4"

@@ -1,0 +1,31 @@
+---
+# Silent-sink alertmanager. No receivers, no notifications wired up — alerts
+# are still evaluated by vmalert and visible in its UI / API. Replace the
+# config below when you want real notifications (Slack, email, webhook, etc.).
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: alertmanager
+  namespace: monitoring
+spec:
+  replicaCount: 1
+  configRawYaml: |
+    route:
+      receiver: blackhole
+      group_by: ["alertname"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+    receivers:
+      - name: blackhole
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true

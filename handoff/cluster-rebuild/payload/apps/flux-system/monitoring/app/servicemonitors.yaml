@@ -1,0 +1,85 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: flux-operator
+  namespace: flux-system
+spec:
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: flux-operator
+  namespaceSelector:
+    matchNames:
+      - flux-system
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: source-controller
+  namespace: flux-system
+spec:
+  endpoints:
+    - port: http-prom
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: source-controller
+  namespaceSelector:
+    matchNames:
+      - flux-system
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+spec:
+  endpoints:
+    - port: http-prom
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: kustomize-controller
+  namespaceSelector:
+    matchNames:
+      - flux-system
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: helm-controller
+  namespace: flux-system
+spec:
+  endpoints:
+    - port: http-prom
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: helm-controller
+  namespaceSelector:
+    matchNames:
+      - flux-system
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: notification-controller
+  namespace: flux-system
+spec:
+  endpoints:
+    - port: http-prom
+      interval: 30s
+      path: /metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: notification-controller
+  namespaceSelector:
+    matchNames:
+      - flux-system

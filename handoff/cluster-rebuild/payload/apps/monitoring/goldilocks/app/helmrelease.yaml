@@ -1,0 +1,39 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: goldilocks
+spec:
+  chart:
+    spec:
+      chart: goldilocks
+      version: 10.x
+      sourceRef:
+        kind: HelmRepository
+        name: fairwinds-stable
+  interval: 1h
+  values:
+    vpa:
+      enabled: false
+    metrics-server:
+      enabled: false
+    controller:
+      enabled: true
+      resources:
+        requests:
+          cpu: 25m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+    dashboard:
+      enabled: true
+      replicaCount: 1
+      service:
+        type: ClusterIP
+        port: 80
+      resources:
+        requests:
+          cpu: 25m
+          memory: 128Mi
+        limits:
+          memory: 256Mi

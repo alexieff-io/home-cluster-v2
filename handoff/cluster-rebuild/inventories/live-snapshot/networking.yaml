@@ -1,0 +1,129 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveNetworkingSnapshot
+metadata:
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+services: |
+  NAMESPACE          NAME                                                TYPE           CLUSTER_IP      EXTERNAL_IP   PORTS
+  cert-manager       cert-manager                                        ClusterIP      10.43.132.246   <none>        9402
+  cert-manager       cert-manager-cainjector                             ClusterIP      10.43.106.111   <none>        9402
+  cert-manager       cert-manager-webhook                                ClusterIP      10.43.37.14     <none>        443,9402
+  cnpg-system        cnpg-webhook-service                                ClusterIP      10.43.91.148    <none>        443
+  coroot             coroot-clickhouse                                   ClusterIP      10.43.209.229   <none>        8123,9000
+  coroot             coroot-clickhouse-headless                          ClusterIP      None            <none>        8123,9000
+  coroot             coroot-clickhouse-keeper-headless                   ClusterIP      None            <none>        9181,9234
+  coroot             coroot-coroot                                       ClusterIP      10.43.168.85    <none>        8080,4317
+  coroot             coroot-prometheus                                   ClusterIP      10.43.189.107   <none>        9090
+  default            argus-panoptes-clickhouse                           ClusterIP      10.43.115.51    <none>        8123,9000
+  default            argus-panoptes-dashboard                            ClusterIP      10.43.146.214   <none>        3000
+  default            argus-panoptes-flow-api                             ClusterIP      10.43.64.8      <none>        8080,9102
+  default            argus-panoptes-ingestor                             LoadBalancer   10.43.13.106    10.69.0.3     2055,6343,9100
+  default            argus-panoptes-syslog-ingestor                      LoadBalancer   10.43.227.12    10.69.0.4     514,6514,9101
+  default            cobalt                                              ClusterIP      10.43.245.8     <none>        9000
+  default            kubernetes                                          ClusterIP      10.43.0.1       <none>        443
+  default            librechat-librechat                                 ClusterIP      10.43.160.44    <none>        3080
+  default            librechat-meilisearch                               ClusterIP      10.43.77.15     <none>        7700
+  default            librechat-mongodb                                   ClusterIP      10.43.71.89     <none>        27017
+  default            open-meteo                                          ClusterIP      10.43.41.157    <none>        8080
+  default            paperless-ngx                                       ClusterIP      10.43.142.149   <none>        8000
+  default            paperless-ngx-postgres-r                            ClusterIP      10.43.128.163   <none>        5432
+  default            paperless-ngx-postgres-ro                           ClusterIP      10.43.212.145   <none>        5432
+  default            paperless-ngx-postgres-rw                           ClusterIP      10.43.90.185    <none>        5432
+  default            paperless-ngx-redis-headless                        ClusterIP      None            <none>        6379
+  default            paperless-ngx-redis-master                          ClusterIP      10.43.202.87    <none>        6379
+  default            weather-scraper                                     ClusterIP      10.43.125.91    <none>        9090
+  default            zone-editor                                         ClusterIP      10.43.243.114   <none>        8099
+  external-secrets   external-secrets-operator-cert-controller-metrics   ClusterIP      10.43.233.164   <none>        8080
+  external-secrets   external-secrets-operator-metrics                   ClusterIP      10.43.93.119    <none>        8080
+  external-secrets   external-secrets-operator-webhook                   ClusterIP      10.43.61.183    <none>        443,8080
+  external-secrets   onepassword-connect                                 ClusterIP      10.43.154.130   <none>        8081,8080
+  flux-system        flux-operator                                       ClusterIP      10.43.31.44     <none>        8080,9080
+  flux-system        helm-controller-metrics                             ClusterIP      10.43.227.186   <none>        8080
+  flux-system        kustomize-controller-metrics                        ClusterIP      10.43.90.52     <none>        8080
+  flux-system        notification-controller                             ClusterIP      10.43.76.31     <none>        80
+  flux-system        notification-controller-metrics                     ClusterIP      10.43.71.204    <none>        8080
+  flux-system        source-controller                                   ClusterIP      10.43.1.180     <none>        80
+  flux-system        source-controller-metrics                           ClusterIP      10.43.78.247    <none>        8080
+  flux-system        weave-gitops                                        ClusterIP      10.43.83.132    <none>        9001,2112
+  flux-system        webhook-receiver                                    ClusterIP      10.43.162.171   <none>        80
+  kube-system        cilium-agent                                        ClusterIP      None            <none>        9962,9964
+  kube-system        cilium-operator                                     ClusterIP      None            <none>        9963
+  kube-system        hubble-metrics                                      ClusterIP      None            <none>        9965
+  kube-system        hubble-peer                                         ClusterIP      10.43.14.203    <none>        443
+  kube-system        hubble-relay                                        ClusterIP      10.43.90.224    <none>        80
+  kube-system        hubble-relay-metrics                                ClusterIP      None            <none>        9966
+  kube-system        hubble-ui                                           ClusterIP      10.43.172.252   <none>        80
+  kube-system        kube-controller-manager                             ClusterIP      None            <none>        10257
+  kube-system        kube-dns                                            ClusterIP      10.43.0.10      <none>        53,53
+  kube-system        kube-scheduler                                      ClusterIP      None            <none>        10259
+  kube-system        metrics-server                                      ClusterIP      10.43.185.130   <none>        443
+  kube-system        spegel                                              ClusterIP      10.43.53.53     <none>        9090
+  kube-system        spegel-bootstrap                                    ClusterIP      None            <none>        <none>
+  kube-system        spegel-registry                                     NodePort       10.43.142.81    <none>        5000
+  longhorn-system    longhorn-admission-webhook                          ClusterIP      10.43.30.246    <none>        9502
+  longhorn-system    longhorn-backend                                    ClusterIP      10.43.157.83    <none>        9500
+  longhorn-system    longhorn-frontend                                   ClusterIP      10.43.133.133   <none>        80
+  longhorn-system    longhorn-recovery-backend                           ClusterIP      10.43.14.105    <none>        9503
+  monitoring         goldilocks-dashboard                                ClusterIP      10.43.162.3     <none>        80
+  monitoring         grafana                                             ClusterIP      10.43.197.183   <none>        80
+  monitoring         kube-state-metrics                                  ClusterIP      10.43.91.78     <none>        8080,8081
+  monitoring         kubetail-cluster-agent                              ClusterIP      None            <none>        <none>
+  monitoring         kubetail-cluster-api                                ClusterIP      10.43.23.126    <none>        8080
+  monitoring         kubetail-dashboard                                  ClusterIP      10.43.61.12     <none>        8080
+  monitoring         node-exporter                                       ClusterIP      10.43.211.124   <none>        9100
+  monitoring         vector-syslog                                       LoadBalancer   10.43.188.200   10.69.0.1     5514,5514
+  monitoring         vector-syslog-headless                              ClusterIP      None            <none>        5514,5514
+  monitoring         victoria-logs-vector-headless                       ClusterIP      None            <none>        <none>
+  monitoring         victoria-logs-victoria-logs-single-server           ClusterIP      None            <none>        9428
+  monitoring         victoria-metrics-operator                           ClusterIP      10.43.13.64     <none>        8080,9443
+  monitoring         vmagent-vmagent                                     ClusterIP      10.43.244.53    <none>        8429
+  monitoring         vmagent-vmagent-additional-service                  ClusterIP      10.43.31.0      <none>        8429
+  monitoring         vmalert-vmalert                                     ClusterIP      10.43.143.81    <none>        8080
+  monitoring         vmalert-vmalert-additional-service                  ClusterIP      10.43.208.161   <none>        8080
+  monitoring         vmalertmanager-alertmanager                         ClusterIP      None            <none>        9093,9094,9094
+  monitoring         vmsingle-vmsingle                                   ClusterIP      10.43.246.90    <none>        8429,8428
+  monitoring         vmsingle-vmsingle-additional-service                ClusterIP      10.43.146.187   <none>        8429
+  network            cloudflare-dns                                      ClusterIP      10.43.4.246     <none>        7979
+  network            cloudflare-dns-internal                             ClusterIP      10.43.140.94    <none>        7979
+  network            cloudflare-tunnel                                   ClusterIP      10.43.26.170    <none>        8080
+  network            consul                                              LoadBalancer   10.43.73.23     10.69.0.2     8500
+  network            consul-sync                                         ClusterIP      10.43.220.147   <none>        8080
+  network            envoy-external                                      LoadBalancer   10.43.112.219   10.69.0.28    80,443,443
+  network            envoy-gateway                                       ClusterIP      10.43.208.53    <none>        18000,18001,18002,19001,9443
+  network            envoy-internal                                      LoadBalancer   10.43.233.155   10.69.0.27    80,443,443
+  network            frigate                                             ClusterIP      None            <none>        8971
+  network            k8s-gateway                                         LoadBalancer   10.43.26.100    10.69.0.26    53
+  network            omni                                                ClusterIP      None            <none>        8080
+gateways: |
+  NAMESPACE   NAME             CLASS   ADDRESSES    READY
+  network     envoy-external   envoy   10.69.0.28   True
+  network     envoy-internal   envoy   10.69.0.27   True
+httpRoutes: |
+  NAMESPACE         NAME                     HOSTNAMES                      PARENTS
+  coroot            coroot                   coroot.k8s.alexieff.io         envoy-internal
+  coroot            coroot-external          coroot-ext.k8s.alexieff.io     envoy-external
+  default           argus-panoptes           argus.k8s.alexieff.io          envoy-internal
+  default           cobalt                   cobalt.k8s.alexieff.io         envoy-internal
+  default           librechat                chat.k8s.alexieff.io           envoy-external
+  default           open-meteo               weather.k8s.alexieff.io        envoy-internal
+  default           paperless-ngx            paperless.k8s.alexieff.io      envoy-internal
+  default           zone-editor              zone.k8s.alexieff.io           envoy-internal
+  flux-system       github-webhook           flux-webhook.k8s.alexieff.io   envoy-external
+  flux-system       weave-gitops             gitops.k8s.alexieff.io         envoy-internal
+  kube-system       hubble-ui                hubble.k8s.alexieff.io         envoy-internal
+  longhorn-system   longhorn-ui              longhorn.k8s.alexieff.io       envoy-internal
+  monitoring        alertmanager             alertmanager.k8s.alexieff.io   envoy-internal
+  monitoring        goldilocks               goldilocks.k8s.alexieff.io     envoy-internal
+  monitoring        grafana                  grafana.k8s.alexieff.io        envoy-external
+  monitoring        kubetail                 kubetail.k8s.alexieff.io       envoy-internal
+  monitoring        kubetail-external        logs.k8s.alexieff.io           envoy-external
+  monitoring        victoria-metrics-write   vlogs-write.k8s.alexieff.io    envoy-internal
+  monitoring        vmalert                  vmalert.k8s.alexieff.io        envoy-internal
+  monitoring        vmsingle-write           vm-write.k8s.alexieff.io       envoy-internal
+  network           consul                   consul.k8s.alexieff.io         envoy-internal
+  network           frigate-envoy-internal   frigate.k8s.alexieff.io        envoy-internal
+  network           https-redirect           <none>                         envoy-external,envoy-internal
+  network           omni-envoy-internal      omni.k8s.alexieff.io           envoy-internal
+notes:
+  - Live-only frigate and omni route/service metadata is recorded but is not a migration unit because no matching source application directory exists.

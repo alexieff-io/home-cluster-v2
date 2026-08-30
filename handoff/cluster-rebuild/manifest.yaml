@@ -1,0 +1,79 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: HandoffPackage
+metadata:
+  name: cluster-rebuild
+  packageVersion: 1
+  generatedAt: "2026-08-14T01:10:24Z"
+source:
+  repository: home-cluster-v2
+  desiredStateRevision: ad3592a18688ce1635a5d1308e71274229643c72
+  applicationPattern: kubernetes/apps/*/*/ks.yaml
+target:
+  repositoryTemplate: https://github.com/onedr0p/cluster-template
+  templateRevision: bb09348610aa5bee9505230b99c21c08db15bf6d
+  repositoryStrategy: fresh-repository
+scope:
+  applicationCount: 50
+  mappedApplicationCount: 50
+  freshEmptyStateApplicationCount: 13
+  externalSecretResourceCount: 20
+  stateMigration: config-only
+  persistentDataIncluded: false
+topology:
+  nodes: [node1, node2, node3, node4]
+  nodeAddresses: [10.69.0.10, 10.69.0.11, 10.69.0.12, 10.69.0.13]
+  apiAddress: 10.69.0.25
+  gatewayAddresses:
+    dns: 10.69.0.26
+    internal: 10.69.0.27
+    external: 10.69.0.28
+sections:
+  inventoryFiles: 11
+  payloadFiles: 290
+  mappingFiles: 2
+  runbookFiles: 7
+  promptFiles: 6
+contentSelectors:
+  - root: inventories
+    include: ["**/*.yaml"]
+  - root: payload/apps
+    include: ["**/*.yaml", "**/*.json", "**/*.md"]
+  - root: payload/components
+    include: ["**/*.yaml"]
+  - root: payload
+    include: [cluster.toml.example]
+  - root: mappings
+    include: ["*.yaml"]
+  - root: runbooks
+    include: ["*.md"]
+  - root: prompts
+    include: ["*.md"]
+  - root: .
+    include: [START-HERE.md, manifest.yaml]
+fileInventory:
+  authority: checksums.sha256
+  rule: Every regular package file except checksums.sha256 must have exactly one sorted SHA-256 entry.
+explicitExclusions:
+  - kubeconfigs and talosconfigs
+  - Talos secret and generated clusterconfig
+  - Age and deploy private keys
+  - Cloudflare tunnel credential JSON and token files
+  - etcd snapshots
+  - PersistentVolume and database contents
+  - decrypted SOPS content
+  - plaintext Kubernetes Secret values
+  - runtime-only Frigate and Omni desired state
+validationAtGeneration:
+  applicationInventoryParity: true
+  mappingParity: true
+  yamlParse: true
+  tomlParse: true
+  forbiddenPathScan: true
+  privateMaterialPatternScan: true
+  plaintextSecretScan: true
+  liveClusterMutated: false
+postArchiveValidationRequired:
+  - archive SHA-256 verification
+  - clean extraction
+  - internal checksums verification
+  - START-HERE non-destructive smoke review

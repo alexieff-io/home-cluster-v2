@@ -1,0 +1,1065 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: SourceToTargetMap
+metadata:
+  applicationCount: 50
+  templateRevision: bb09348610aa5bee9505230b99c21c08db15bf6d
+waveDefinitions:
+  - wave: 0
+    purpose: Template-owned foundational applications except FluxInstance
+  - wave: 1
+    purpose: FluxInstance and External Secrets operator prerequisites
+  - wave: 2
+    purpose: 1Password Connect
+  - wave: 3
+    purpose: ClusterSecretStore and storage/database/core operators
+  - wave: 4
+    purpose: Observability, supporting operators, and internal integrations
+  - wave: 5
+    purpose: Stateless applications
+  - wave: 6
+    purpose: Applications that provision fresh empty state
+  - wave: 7
+    purpose: Explicit downstream applications after all dependencies
+applications:
+  - id: arc-runners/gha-runner-scale-set
+    sourcePath: payload/apps/arc-runners/gha-runner-scale-set
+    targetPath: kubernetes/apps/arc-runners/gha-runner-scale-set
+    targetNamespace: arc-runners
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - arc-systems/gha-runner-scale-set-controller
+      - external-secrets/onepassword-secret-store
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace arc-runners reach declared readiness
+      - declared routes and services resolve where present
+  - id: arc-systems/gha-runner-scale-set-controller
+    sourcePath: payload/apps/arc-systems/gha-runner-scale-set-controller
+    targetPath: kubernetes/apps/arc-systems/gha-runner-scale-set-controller
+    targetNamespace: arc-systems
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace arc-systems reach declared readiness
+      - declared routes and services resolve where present
+  - id: cert-manager/cert-manager
+    sourcePath: payload/apps/cert-manager/cert-manager
+    targetPath: kubernetes/apps/cert-manager/cert-manager
+    targetNamespace: cert-manager
+    fluxNamespace: cert-manager
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace cert-manager reach declared readiness
+      - declared routes and services resolve where present
+  - id: coroot/coroot
+    sourcePath: payload/apps/coroot/coroot
+    targetPath: kubernetes/apps/coroot/coroot
+    targetNamespace: coroot
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - coroot/coroot-operator
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace coroot reach declared readiness
+      - declared routes and services resolve where present
+  - id: coroot/coroot-operator
+    sourcePath: payload/apps/coroot/coroot-operator
+    targetPath: kubernetes/apps/coroot/coroot-operator
+    targetNamespace: coroot
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace coroot reach declared readiness
+      - declared routes and services resolve where present
+  - id: database/cloudnative-pg
+    sourcePath: payload/apps/database/cloudnative-pg
+    targetPath: kubernetes/apps/database/cloudnative-pg
+    targetNamespace: cnpg-system
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace cnpg-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/argus-panoptes
+    sourcePath: payload/apps/default/argus-panoptes
+    targetPath: kubernetes/apps/default/argus-panoptes
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/cobalt
+    sourcePath: payload/apps/default/cobalt
+    targetPath: kubernetes/apps/default/cobalt
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/echo
+    sourcePath: payload/apps/default/echo
+    targetPath: kubernetes/apps/default/echo
+    targetNamespace: default
+    fluxNamespace: default
+    owner: template
+    action: replace-template-example-with-current-definition
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/librechat
+    sourcePath: payload/apps/default/librechat
+    targetPath: kubernetes/apps/default/librechat
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - external-secrets/external-secrets-operator
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/node-hp-scan-to
+    sourcePath: payload/apps/default/node-hp-scan-to
+    targetPath: kubernetes/apps/default/node-hp-scan-to
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/open-meteo
+    sourcePath: payload/apps/default/open-meteo
+    targetPath: kubernetes/apps/default/open-meteo
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs: []
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Preserve the sync configuration and disclose sustained S3 download traffic before enabling it.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/paperless-ngx
+    sourcePath: payload/apps/default/paperless-ngx
+    targetPath: kubernetes/apps/default/paperless-ngx
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - database/cloudnative-pg
+      - external-secrets/onepassword-secret-store
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/weather-scraper
+    sourcePath: payload/apps/default/weather-scraper
+    targetPath: kubernetes/apps/default/weather-scraper
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 7
+    resolvedDependencyIDs:
+      - default/open-meteo
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: default/zone-editor
+    sourcePath: payload/apps/default/zone-editor
+    targetPath: kubernetes/apps/default/zone-editor
+    targetNamespace: default
+    fluxNamespace: default
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace default reach declared readiness
+      - declared routes and services resolve where present
+  - id: external-secrets/external-secrets-operator
+    sourcePath: payload/apps/external-secrets/external-secrets-operator
+    targetPath: kubernetes/apps/external-secrets/external-secrets-operator
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 1
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace external-secrets reach declared readiness
+      - declared routes and services resolve where present
+  - id: external-secrets/onepassword-connect
+    sourcePath: payload/apps/external-secrets/onepassword-connect
+    targetPath: kubernetes/apps/external-secrets/onepassword-connect
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 2
+    resolvedDependencyIDs:
+      - external-secrets/external-secrets-operator
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace external-secrets reach declared readiness
+      - declared routes and services resolve where present
+  - id: external-secrets/onepassword-secret-store
+    sourcePath: payload/apps/external-secrets/onepassword-secret-store
+    targetPath: kubernetes/apps/external-secrets/onepassword-secret-store
+    targetNamespace: external-secrets
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs:
+      - external-secrets/external-secrets-operator
+      - external-secrets/onepassword-connect
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace external-secrets reach declared readiness
+      - declared routes and services resolve where present
+  - id: flux-system/capacitor
+    sourcePath: payload/apps/flux-system/capacitor
+    targetPath: kubernetes/apps/flux-system/capacitor
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace flux-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: flux-system/flux-instance
+    sourcePath: payload/apps/flux-system/flux-instance
+    targetPath: kubernetes/apps/flux-system/flux-instance
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 1
+    resolvedDependencyIDs:
+      - flux-system/flux-operator
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace flux-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: flux-system/flux-operator
+    sourcePath: payload/apps/flux-system/flux-operator
+    targetPath: kubernetes/apps/flux-system/flux-operator
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace flux-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: flux-system/monitoring
+    sourcePath: payload/apps/flux-system/monitoring
+    targetPath: kubernetes/apps/flux-system/monitoring
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace flux-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: flux-system/weave-gitops
+    sourcePath: payload/apps/flux-system/weave-gitops
+    targetPath: kubernetes/apps/flux-system/weave-gitops
+    targetNamespace: flux-system
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - external-secrets/external-secrets-operator
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace flux-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/cilium
+    sourcePath: payload/apps/kube-system/cilium
+    targetPath: kubernetes/apps/kube-system/cilium
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/coredns
+    sourcePath: payload/apps/kube-system/coredns
+    targetPath: kubernetes/apps/kube-system/coredns
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/metrics-server
+    sourcePath: payload/apps/kube-system/metrics-server
+    targetPath: kubernetes/apps/kube-system/metrics-server
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/reloader
+    sourcePath: payload/apps/kube-system/reloader
+    targetPath: kubernetes/apps/kube-system/reloader
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/spegel
+    sourcePath: payload/apps/kube-system/spegel
+    targetPath: kubernetes/apps/kube-system/spegel
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: kube-system/vertical-pod-autoscaler
+    sourcePath: payload/apps/kube-system/vertical-pod-autoscaler
+    targetPath: kubernetes/apps/kube-system/vertical-pod-autoscaler
+    targetNamespace: kube-system
+    fluxNamespace: kube-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs:
+      - kube-system/metrics-server
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace kube-system reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/control-plane
+    sourcePath: payload/apps/monitoring/control-plane
+    targetPath: kubernetes/apps/monitoring/control-plane
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - monitoring/victoria-metrics-operator
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/goldilocks
+    sourcePath: payload/apps/monitoring/goldilocks
+    targetPath: kubernetes/apps/monitoring/goldilocks
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - kube-system/vertical-pod-autoscaler
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/grafana
+    sourcePath: payload/apps/monitoring/grafana
+    targetPath: kubernetes/apps/monitoring/grafana
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 6
+    resolvedDependencyIDs:
+      - monitoring/victoria-logs
+      - monitoring/vmalert
+      - monitoring/vmsingle
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/kube-state-metrics
+    sourcePath: payload/apps/monitoring/kube-state-metrics
+    targetPath: kubernetes/apps/monitoring/kube-state-metrics
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - monitoring/node-exporter
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/kubelet-cadvisor
+    sourcePath: payload/apps/monitoring/kubelet-cadvisor
+    targetPath: kubernetes/apps/monitoring/kubelet-cadvisor
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - monitoring/victoria-metrics-operator
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/kubetail
+    sourcePath: payload/apps/monitoring/kubetail
+    targetPath: kubernetes/apps/monitoring/kubetail
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/node-exporter
+    sourcePath: payload/apps/monitoring/node-exporter
+    targetPath: kubernetes/apps/monitoring/node-exporter
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/truenas-exporters
+    sourcePath: payload/apps/monitoring/truenas-exporters
+    targetPath: kubernetes/apps/monitoring/truenas-exporters
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - monitoring/vmsingle
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/vector-syslog
+    sourcePath: payload/apps/monitoring/vector-syslog
+    targetPath: kubernetes/apps/monitoring/vector-syslog
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - monitoring/victoria-logs
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/victoria-logs
+    sourcePath: payload/apps/monitoring/victoria-logs
+    targetPath: kubernetes/apps/monitoring/victoria-logs
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - monitoring/victoria-metrics-operator
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/victoria-metrics-operator
+    sourcePath: payload/apps/monitoring/victoria-metrics-operator
+    targetPath: kubernetes/apps/monitoring/victoria-metrics-operator
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/vmalert
+    sourcePath: payload/apps/monitoring/vmalert
+    targetPath: kubernetes/apps/monitoring/vmalert
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - monitoring/vmsingle
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: monitoring/vmsingle
+    sourcePath: payload/apps/monitoring/vmsingle
+    targetPath: kubernetes/apps/monitoring/vmsingle
+    targetNamespace: monitoring
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - monitoring/victoria-metrics-operator
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace monitoring reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/cloudflare-dns
+    sourcePath: payload/apps/network/cloudflare-dns
+    targetPath: kubernetes/apps/network/cloudflare-dns
+    targetNamespace: network
+    fluxNamespace: network
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/cloudflare-dns-internal
+    sourcePath: payload/apps/network/cloudflare-dns-internal
+    targetPath: kubernetes/apps/network/cloudflare-dns-internal
+    targetNamespace: network
+    fluxNamespace: network
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - network/cloudflare-dns
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/cloudflare-tunnel
+    sourcePath: payload/apps/network/cloudflare-tunnel
+    targetPath: kubernetes/apps/network/cloudflare-tunnel
+    targetNamespace: network
+    fluxNamespace: network
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/consul
+    sourcePath: payload/apps/network/consul
+    targetPath: kubernetes/apps/network/consul
+    targetNamespace: network
+    fluxNamespace: network
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 4
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/consul-sync
+    sourcePath: payload/apps/network/consul-sync
+    targetPath: kubernetes/apps/network/consul-sync
+    targetNamespace: network
+    fluxNamespace: network
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 5
+    resolvedDependencyIDs:
+      - external-secrets/onepassword-secret-store
+      - network/consul
+      - network/envoy-gateway
+    statePolicy: stateless
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Preserve dependsOn edges and effective namespaces from inventories/dependencies.yaml.
+      - Reconnect External Secrets or re-encrypt SOPS ciphertext for the new Age recipient before enabling this application.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/envoy-gateway
+    sourcePath: payload/apps/network/envoy-gateway
+    targetPath: kubernetes/apps/network/envoy-gateway
+    targetNamespace: network
+    fluxNamespace: network
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: network/k8s-gateway
+    sourcePath: payload/apps/network/k8s-gateway
+    targetPath: kubernetes/apps/network/k8s-gateway
+    targetNamespace: network
+    fluxNamespace: network
+    owner: template
+    action: compare-and-overlay
+    deploymentWave: 0
+    resolvedDependencyIDs: []
+    statePolicy: stateless
+    adaptations:
+      - Start from generated template resources and apply only reviewed differences; do not create a second owner.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace network reach declared readiness
+      - declared routes and services resolve where present
+  - id: storage/longhorn
+    sourcePath: payload/apps/storage/longhorn
+    targetPath: kubernetes/apps/storage/longhorn
+    targetNamespace: longhorn-system
+    fluxNamespace: flux-system
+    owner: migration-payload
+    action: add-to-generated-repository
+    deploymentWave: 3
+    resolvedDependencyIDs: []
+    statePolicy: fresh-empty-state
+    adaptations:
+      - Copy into the generated repository using its namespace kustomization and Flux source conventions.
+      - Rewrite Flux GitRepository sourceRef/path only where the generated target repository identity differs.
+      - Recreate target cluster-secrets substitution and retain postBuild substituteFrom references.
+      - Preserve current hostnames and intended internal/external Gateway parent after the target Gateways are Ready.
+      - Provision new empty storage only; source data is not restored.
+      - Render and validate CRDs and chart APIs against the pinned template toolchain before commit.
+    verification:
+      - Flux Kustomization Ready=True
+      - workloads in namespace longhorn-system reach declared readiness
+      - declared routes and services resolve where present

@@ -1,0 +1,41 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudnative-pg
+spec:
+  chart:
+    spec:
+      chart: cloudnative-pg
+      version: 0.x
+      sourceRef:
+        kind: HelmRepository
+        name: cloudnative-pg
+  interval: 1h
+  values:
+    # Cluster-wide operator mode
+    config:
+      clusterWide: true
+
+    # Monitoring configuration
+    monitoring:
+      podMonitorEnabled: true
+      grafanaDashboard:
+        create: false
+
+    # Resource limits for operator
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+
+    # Security context
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
