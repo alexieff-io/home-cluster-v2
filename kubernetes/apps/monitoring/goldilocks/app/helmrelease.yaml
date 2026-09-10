@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: goldilocks
-      version: 10.x
+      version: 11.x
       sourceRef:
         kind: HelmRepository
         name: fairwinds-stable
