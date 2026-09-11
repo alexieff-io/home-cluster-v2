@@ -1,0 +1,26 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveMetadataSnapshot
+metadata:
+  resource: namespaces
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+records:
+  - {name: arc-runners, phase: Active}
+  - {name: arc-systems, phase: Active}
+  - {name: cert-manager, phase: Active}
+  - {name: cilium-secrets, phase: Active}
+  - {name: cnpg-system, phase: Active}
+  - {name: coroot, phase: Active}
+  - {name: default, phase: Active}
+  - {name: external-secrets, phase: Active}
+  - {name: flux-system, phase: Active}
+  - {name: kube-node-lease, phase: Active}
+  - {name: kube-public, phase: Active}
+  - {name: kube-system, phase: Active}
+  - {name: longhorn-system, phase: Active}
+  - {name: lynq-system, phase: Active}
+  - {name: monitoring, phase: Active}
+  - {name: network, phase: Active}
+notes:
+  - cilium-secrets, lynq-system, kube-node-lease, and kube-public are live namespaces without source application directories and are not application migration units.

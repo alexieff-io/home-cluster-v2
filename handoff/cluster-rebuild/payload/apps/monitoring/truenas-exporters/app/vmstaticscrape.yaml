@@ -1,0 +1,58 @@
+---
+# Static scrape configs for the three exporters running on the TrueNAS host
+# (off-cluster, no Kubernetes service discovery possible).
+# TrueNAS host: 192.168.11.150.
+#
+# Phase A (install on TrueNAS, separate steps in README):
+#   • node_exporter      → :9100   /metrics
+#   • zfs_exporter       → :9134   /metrics
+#   • smartctl_exporter  → :9633   /metrics
+#
+# All three are scraped at 30s, matching the existing in-cluster intervals.
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: truenas-node-exporter
+  namespace: monitoring
+spec:
+  jobName: truenas-node
+  targetEndpoints:
+    - targets: ["192.168.11.150:9100"]
+      labels:
+        instance: truenas
+      scheme: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: truenas-zfs-exporter
+  namespace: monitoring
+spec:
+  jobName: truenas-zfs
+  targetEndpoints:
+    - targets: ["192.168.11.150:9134"]
+      labels:
+        instance: truenas
+      scheme: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: truenas-smartctl-exporter
+  namespace: monitoring
+spec:
+  jobName: truenas-smartctl
+  targetEndpoints:
+    - targets: ["192.168.11.150:9633"]
+      labels:
+        instance: truenas
+      scheme: http
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 20s

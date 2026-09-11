@@ -1,0 +1,58 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: vmsingle
+  namespace: monitoring
+spec:
+  # Retention period
+  retentionPeriod: "365d"
+
+  # Storage configuration
+  storage:
+    storageClassName: longhorn
+    resources:
+      requests:
+        storage: 512Gi
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+
+  # Security context
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+
+  # Service configuration
+  serviceSpec:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8429"
+    spec:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 8429
+          targetPort: http
+
+  # Ingress (disabled - using HTTPRoute)
+  ingress:
+    enabled: false
+
+  # Service scrape configuration
+  # This enables automatic discovery of VMServiceScrape and VMPodScrape
+  serviceScrapeNamespaceSelector: {}
+  podScrapeNamespaceSelector: {}
+  serviceScrapeSelector: {}
+  podScrapeSelector: {}
+
+  # Enable all namespace monitoring
+  selectAllByDefault: true

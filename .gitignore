@@ -21,3 +21,5 @@ talosconfig
 Thumbs.db
 .claude/settings.local.json
 etcd-20260429T234412Z.db
+
+.worktrees/

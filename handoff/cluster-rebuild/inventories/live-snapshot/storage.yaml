@@ -1,0 +1,41 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveStorageSnapshot
+metadata:
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+  containsPersistentData: false
+statePolicy: All listed claims are metadata only. Their contents are intentionally excluded and will not be restored.
+storageClasses: |
+  NAME              PROVISIONER          DEFAULT   RECLAIM   BINDING
+  longhorn          driver.longhorn.io   <none>    Delete    Immediate
+  longhorn-static   driver.longhorn.io   <none>    Delete    Immediate
+persistentVolumeClaims: |
+  NAMESPACE    NAME                                                        STATUS   CLASS      CAPACITY
+  coroot       data-coroot-clickhouse-keeper-0                             Bound    longhorn   10Gi
+  coroot       data-coroot-clickhouse-keeper-1                             Bound    longhorn   10Gi
+  coroot       data-coroot-clickhouse-keeper-2                             Bound    longhorn   10Gi
+  coroot       data-coroot-clickhouse-shard-0-0                            Bound    longhorn   10Gi
+  coroot       data-coroot-coroot-0                                        Bound    longhorn   10Gi
+  coroot       data-coroot-prometheus                                      Bound    longhorn   10Gi
+  default      argus-panoptes-flow-api-data                                Bound    longhorn   5Gi
+  default      argus-panoptes-ingestor-enrichment                          Bound    longhorn   5Gi
+  default      data-argus-panoptes-clickhouse-0                            Bound    longhorn   100Gi
+  default      librechat-librechat-images                                  Bound    longhorn   9538Mi
+  default      librechat-meilisearch                                       Bound    longhorn   10Gi
+  default      librechat-mongodb                                           Bound    longhorn   20Gi
+  default      node-hp-scan-to                                             Bound    longhorn   50Gi
+  default      open-meteo                                                  Bound    longhorn   500Gi
+  default      paperless-ngx-consume                                       Bound    longhorn   5Gi
+  default      paperless-ngx-data                                          Bound    longhorn   10Gi
+  default      paperless-ngx-export                                        Bound    longhorn   5Gi
+  default      paperless-ngx-media                                         Bound    longhorn   100Gi
+  default      paperless-ngx-postgres-1                                    Bound    longhorn   20Gi
+  default      paperless-ngx-postgres-2                                    Bound    longhorn   20Gi
+  default      paperless-ngx-postgres-4                                    Bound    longhorn   20Gi
+  default      redis-data-paperless-ngx-redis-master-0                     Bound    longhorn   8Gi
+  monitoring   data-vector-syslog-0                                        Bound    longhorn   10Gi
+  monitoring   grafana                                                     Bound    longhorn   10Gi
+  monitoring   server-volume-victoria-logs-victoria-logs-single-server-0   Bound    longhorn   512Gi
+  monitoring   vmsingle-vmsingle                                           Bound    longhorn   512Gi
+  network      consul                                                      Bound    longhorn   2Gi

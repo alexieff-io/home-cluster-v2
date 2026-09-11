@@ -1,0 +1,180 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+spec:
+  chart:
+    spec:
+      chart: grafana
+      version: 10.x
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+  interval: 1h
+  timeout: 10m
+  values:
+    deploymentStrategy:
+      type: Recreate
+    replicas: 1
+
+    admin:
+      existingSecret: grafana-secret
+      userKey: admin-user
+      passwordKey: admin-password
+
+    env:
+      GF_EXPLORE_ENABLED: true
+      GF_SERVER_ROOT_URL: "https://grafana.${SECRET_DOMAIN}"
+      GF_AUTH_ANONYMOUS_ENABLED: false
+      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
+      GF_DATE_FORMATS_FULL_DATE: "MMM Do, YYYY hh:mm:ss a"
+      GF_DATE_FORMATS_INTERVAL_SECOND: "hh:mm:ss a"
+      GF_DATE_FORMATS_INTERVAL_MINUTE: "hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_HOUR: "DD/MM hh:mm a"
+      GF_DATE_FORMATS_INTERVAL_DAY: "DD/MM"
+      GF_DATE_FORMATS_INTERVAL_MONTH: "MM-YYYY"
+      GF_DATE_FORMATS_INTERVAL_YEAR: "YYYY"
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: VictoriaMetrics
+            type: prometheus
+            uid: victoriametrics
+            access: proxy
+            url: http://vmsingle-vmsingle:8429
+            isDefault: true
+            jsonData:
+              timeInterval: 30s
+              httpMethod: POST
+            editable: true
+          - name: VictoriaLogs
+            type: victoriametrics-logs-datasource
+            uid: victorialogs
+            access: proxy
+            url: http://victoria-logs-victoria-logs-single-server:9428/
+            jsonData:
+              httpMethod: POST
+            editable: true
+          - name: Alertmanager
+            type: alertmanager
+            uid: alertmanager
+            access: proxy
+            url: http://vmalertmanager-alertmanager:9093
+            jsonData:
+              implementation: prometheus
+              handleGrafanaManagedAlerts: false
+            editable: true
+
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+        label: grafana_dashboard
+        labelValue: "1"
+        folderAnnotation: grafana_folder
+        provider:
+          foldersFromFilesStructure: true
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+
+    dashboards:
+      default:
+        victoriametrics:
+          gnetId: 11176  # VictoriaMetrics overview
+          revision: 18
+          datasource: VictoriaMetrics
+        # dotdc kubernetes views — built for kube-state-metrics + Prometheus/VM
+        kubernetes-views-global:
+          gnetId: 15757  # Kubernetes / Views / Global
+          revision: 43
+          datasource: VictoriaMetrics
+        kubernetes-views-namespaces:
+          gnetId: 15758  # Kubernetes / Views / Namespaces
+          revision: 42
+          datasource: VictoriaMetrics
+        kubernetes-views-nodes:
+          gnetId: 15759  # Kubernetes / Views / Nodes
+          revision: 37
+          datasource: VictoriaMetrics
+        kubernetes-views-pods:
+          gnetId: 15760  # Kubernetes / Views / Pods
+          revision: 36
+          datasource: VictoriaMetrics
+        kubernetes-apiserver:
+          gnetId: 15761  # Kubernetes / System / API Server
+          revision: 17
+          datasource: VictoriaMetrics
+        node-exporter:
+          gnetId: 1860  # Node Exporter Full — works for cluster nodes and the
+                        # TrueNAS host (switch via the dashboard's "job" picker:
+                        # job=truenas-node for the NAS).
+          revision: 37
+          datasource: VictoriaMetrics
+        zfs-pools:
+          gnetId: 7845  # ZFS (pdf/zfs_exporter) — pools, datasets, ARC, L2ARC
+          revision: 4
+          datasource: VictoriaMetrics
+        smart-monitoring:
+          gnetId: 12993  # SMART monitoring (smartctl_exporter)
+          revision: 6
+          datasource: VictoriaMetrics
+        flux2:
+          gnetId: 16714  # "Flux2" dashboard — FluxCD reconciliation overview
+          revision: 1
+          datasource: VictoriaMetrics
+        # NOTE: gnetId 16213 was previously listed here as "Flux Control Plane"
+        # but it actually publishes a Minecraft Server dashboard. Removed.
+        # The canonical Flux Control Plane dashboard is shipped in the fluxcd/
+        # flux2-monitoring-example repo and would need to be loaded via a
+        # ConfigMap with the grafana_dashboard=1 label.
+        #
+        # cilium-agent and hubble-overview are provided via ConfigMaps
+        # by the Cilium Helm chart (sidecar picks them up automatically)
+
+    plugins:
+      - victoriametrics-logs-datasource
+    persistence:
+      enabled: true
+      storageClassName: longhorn
+      size: 10Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 80
+      targetPort: 3000
+
+    ingress:
+      enabled: false
+
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 472
+      runAsGroup: 472
+      fsGroup: 472

@@ -1,0 +1,21 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name arc-runner-set
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+  interval: 1h
+  values:
+    controllerServiceAccount:
+      name: gha-runner-scale-set-controller
+      namespace: arc-systems
+    githubConfigUrl: https://github.com/alexieff-io
+    githubConfigSecret: arc-github-pat
+    runnerScaleSetName: *name
+    minRunners: 0
+    maxRunners: 5
+    containerMode:
+      type: dind

@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kubetail-external-security
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kubetail-external
+  # IP Allowlist - only allow specific CIDR ranges
+  authorization:
+    defaultAction: Deny
+    rules:
+      - action: Allow
+        principal:
+          clientCIDRs:
+            # UPDATE THIS with your allowed IP/CIDR
+            - "4.7.118.146/32"
+  # Basic Authentication
+  basicAuth:
+    users:
+      name: kubetail-basic-auth
