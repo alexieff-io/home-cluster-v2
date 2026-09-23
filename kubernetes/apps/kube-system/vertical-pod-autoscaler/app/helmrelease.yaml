@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: vpa
-      version: 4.x
+      version: 5.x
       sourceRef:
         kind: HelmRepository
         name: fairwinds-stable
