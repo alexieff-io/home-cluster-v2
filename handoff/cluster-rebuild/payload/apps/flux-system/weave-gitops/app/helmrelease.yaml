@@ -1,0 +1,55 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: weave-gitops
+spec:
+  chart:
+    spec:
+      chart: weave-gitops
+      version: 4.x
+      sourceRef:
+        kind: HelmRepository
+        name: ww-gitops
+  interval: 1h
+  values:
+    # Admin user - uses cluster-user-auth secret from ExternalSecret
+    # Username must match the value in 1Password/cluster-user-auth secret
+    adminUser:
+      create: true
+      createClusterRole: true
+      createSecret: false
+      username: mikea
+
+    # Resources
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 256Mi
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 9001
+
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Metrics for VictoriaMetrics
+    metrics:
+      enabled: true
+
+    # Network policy
+    networkPolicy:
+      create: true

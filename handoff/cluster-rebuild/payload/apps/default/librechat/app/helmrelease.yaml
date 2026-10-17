@@ -1,0 +1,144 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: librechat
+  namespace: default
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: librechat
+    namespace: default
+  interval: 1h
+  timeout: 15m
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: librechat-librechat
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: librechat-librechat
+              spec:
+                strategy:
+                  type: Recreate
+                template:
+                  spec:
+                    containers:
+                      - name: librechat-librechat
+                        env:
+                          - name: APP_TITLE
+                            value: "LibreChat"
+                          - name: ALLOW_EMAIL_LOGIN
+                            value: "true"
+                          - name: ALLOW_REGISTRATION
+                            value: "false"
+                          - name: ALLOW_SOCIAL_LOGIN
+                            value: "false"
+                          - name: ENDPOINTS
+                            value: "custom,agents,assistants"
+                        volumeMounts:
+                          - name: config-volume
+                            mountPath: /app/librechat.yaml
+                            subPath: librechat.yaml
+                            readOnly: true
+                    volumes:
+                      - name: config-volume
+                        configMap:
+                          name: librechat-config
+  values:
+    image:
+      tag: v0.8.5
+
+    # LibreChat configuration
+    config:
+      # App URL for external access
+      appTitle: "LibreChat"
+      host: "https://chat.k8s.alexieff.io"
+
+      # Enable registration (set to false in production after first user)
+      allowEmailLogin: true
+      allowRegistration: false
+      allowSocialLogin: false
+
+    # Use secrets from ExternalSecret
+    existingSecret: librechat-credentials-env
+
+    # MongoDB configuration
+    mongodb:
+      enabled: true
+      image:
+        # Chart 2.0.3 switched the default to bitnamilegacy/mongodb, which only
+        # publishes up to 8.0.13. Override back to bitnami/mongodb so the rolling
+        # `latest` tag (currently 8.2.x) is used — required because the existing
+        # PVC is at FCV 8.2 and cannot downgrade to 8.0.x.
+        repository: bitnami/mongodb
+        tag: "latest"
+      auth:
+        rootPassword: "" # Will be auto-generated
+        username: librechat
+        password: "" # Will be auto-generated
+        database: librechat
+      persistence:
+        enabled: true
+        storageClass: longhorn
+        size: 20Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+
+    # MeiliSearch configuration (for search functionality)
+    meilisearch:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: longhorn
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+
+    # LibreChat application resources
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        memory: 1Gi
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 3080
+
+    # Disable Ingress - using HTTPRoute with Envoy Gateway instead
+    ingress:
+      enabled: false
+
+    # Enable metrics
+    metrics:
+      enabled: false
+
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      fsGroup: 1000
+
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+          - ALL

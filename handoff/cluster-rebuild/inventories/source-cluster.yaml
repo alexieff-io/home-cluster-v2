@@ -1,0 +1,77 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: SourceCluster
+metadata:
+  name: kubernetes
+  capturedAt: "2026-08-13"
+  sourceDesiredStateRevision: ad3592a18688ce1635a5d1308e71274229643c72
+spec:
+  migrationPolicy:
+    repositoryStrategy: fresh-repository
+    stateMigration: config-only
+    persistentDataOutcome: fresh-empty-state
+  targetTemplate:
+    repository: https://github.com/onedr0p/cluster-template
+    revision: bb09348610aa5bee9505230b99c21c08db15bf6d
+    revisionDate: "2026-08-13"
+  kubernetes:
+    currentVersion: v1.36.2
+    apiAddress: 10.69.0.25
+    podCIDR: 10.42.0.0/16
+    serviceCIDR: 10.43.0.0/16
+  network:
+    nodeCIDR: 10.69.0.0/24
+    defaultGateway: 10.69.0.1
+    gatewayAddresses:
+      dns: 10.69.0.26
+      internal: 10.69.0.27
+      external: 10.69.0.28
+    ciliumLoadBalancerMode: dsr
+  talos:
+    currentVersion: v1.13.0
+    schematicID: 85f683902139269fbc5a7f64ea94a694d31e0b3d94347a225223fcbd042083ae
+    installDisk: /dev/mmcblk0
+  nodes:
+    - name: node1
+      address: 10.69.0.10
+      macAddress: ca:40:7d:5d:27:b1
+      architecture: arm64
+      controller: true
+      installDisk: /dev/mmcblk0
+    - name: node2
+      address: 10.69.0.11
+      macAddress: 6a:5a:8e:2b:a1:cd
+      architecture: arm64
+      controller: true
+      installDisk: /dev/mmcblk0
+    - name: node3
+      address: 10.69.0.12
+      macAddress: f6:91:86:32:34:08
+      architecture: arm64
+      controller: true
+      installDisk: /dev/mmcblk0
+    - name: node4
+      address: 10.69.0.13
+      macAddress: 3e:48:c8:35:89:d4
+      architecture: arm64
+      controller: true
+      installDisk: /dev/mmcblk0
+  platform:
+    operatingSystem: Talos Linux
+    cni: Cilium
+    gitOps: Flux CD via Flux Operator
+    ingress: Envoy Gateway and Gateway API
+    storage: Longhorn
+    secrets:
+      - External Secrets with 1Password
+      - SOPS with Age
+    metrics: VictoriaMetrics and Grafana
+    logs: VictoriaLogs and Vector
+    certificates: cert-manager with Lets Encrypt
+    dns:
+      internal: k8s-gateway
+      external: cloudflare-dns
+  risks:
+    - Four control-plane nodes form an even etcd member count; preserve only because topology reuse was explicitly requested.
+    - Reusing node and virtual IPs makes this an offline cutover; old and new clusters cannot coexist on the same network.
+    - No persistent volume or database contents are included in this package.
+    - Open-Meteo currently produces sustained S3 download traffic and is preserved without behavior changes.

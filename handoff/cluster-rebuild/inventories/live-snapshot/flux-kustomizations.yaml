@@ -1,0 +1,60 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveTableSnapshot
+metadata:
+  resource: Flux Kustomizations
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+table: |
+  NAMESPACE      NAME                              READY   REASON                    REVISION
+  cert-manager   cert-manager                      True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        argus-panoptes                    True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        cobalt                            True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        librechat                         True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        node-hp-scan-to                   True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        open-meteo                        True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        paperless-ngx                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        weather-scraper                   True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  default        zone-editor                       True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    cloudflare-dns-internal           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    cloudnative-pg                    True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    cluster-apps                      True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    control-plane                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    coroot                            True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    coroot-operator                   True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    external-secrets-operator         True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    flux-instance                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    flux-monitoring                   True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    flux-operator                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    flux-system                       True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    gha-runner-scale-set              True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    gha-runner-scale-set-controller   True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    goldilocks                        True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    grafana                           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    kube-state-metrics                True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    kubelet-cadvisor                  True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    kubetail                          True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    longhorn                          True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    node-exporter                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    onepassword-connect               True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    onepassword-secret-store          True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    truenas-exporters                 True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    vector-syslog                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    victoria-logs                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    victoria-metrics-operator         True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    vmalert                           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    vmsingle                          True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  flux-system    weave-gitops                      True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    cilium                            True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    coredns                           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    metrics-server                    True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    reloader                          True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    spegel                            True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  kube-system    vertical-pod-autoscaler           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        cloudflare-dns                    True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        cloudflare-dns-internal           True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        cloudflare-tunnel                 True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        consul                            True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        consul-sync                       True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        envoy-gateway                     True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183
+  network        k8s-gateway                       True    ReconciliationSucceeded   refs/heads/main@sha1:e99f7fd6a1718b4a4bfb89a8686c04da38449183

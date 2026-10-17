@@ -1,0 +1,43 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argus-panoptes-ingestor
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: ingestor
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: argus-panoptes-syslog-ingestor
+  namespace: default
+  labels:
+    app.kubernetes.io/name: argus-panoptes
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argus-panoptes
+      app.kubernetes.io/instance: argus-panoptes
+      app.kubernetes.io/component: syslog-ingestor
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+# flow-api does NOT expose a /metrics endpoint as of chart 1.4.3 — every
+# plausible path returns 404. DEPLOYMENT.md's port matrix is wrong on this
+# point (its own narrative even says the watcher daemon has the only
+# /metrics endpoint). Re-add a ServiceMonitor here once upstream ships
+# Prometheus metrics on flow-api.

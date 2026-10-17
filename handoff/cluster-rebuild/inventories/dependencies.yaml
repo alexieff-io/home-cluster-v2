@@ -1,0 +1,749 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: DependencyInventory
+metadata:
+  applicationCount: 50
+  dependsOnEdgeCount: 34
+applications:
+  - id: arc-runners/gha-runner-scale-set
+    fluxNamespace: flux-system
+    targetNamespace: arc-runners
+    dependsOn:
+      - name: gha-runner-scale-set-controller
+        namespace: flux-system
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: arc-systems/gha-runner-scale-set-controller
+    fluxNamespace: flux-system
+    targetNamespace: arc-systems
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: cert-manager/cert-manager
+    fluxNamespace: cert-manager
+    targetNamespace: cert-manager
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: coroot/coroot
+    fluxNamespace: flux-system
+    targetNamespace: coroot
+    dependsOn:
+      - name: coroot-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: coroot-external
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+      - route: coroot
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: coroot/coroot-operator
+    fluxNamespace: flux-system
+    targetNamespace: coroot
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/coroot/coroot-operator/app/helmrelease.yaml
+        kind: HelmRepository
+        name: coroot
+    valuesFrom: []
+    gatewayParents: []
+  - id: database/cloudnative-pg
+    fluxNamespace: flux-system
+    targetNamespace: cnpg-system
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/database/cloudnative-pg/app/helmrelease.yaml
+        kind: HelmRepository
+        name: cloudnative-pg
+    valuesFrom: []
+    gatewayParents: []
+  - id: default/argus-panoptes
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom:
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_JWT_SECRET
+        targetPath: flowApi.secrets.FLOW_API_JWT_SECRET
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_CLICKHOUSE_USER
+        targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_CLICKHOUSE_PASSWORD
+        targetPath: flowApi.secrets.FLOW_API_CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: FLOW_API_LLM_API_KEY
+        targetPath: flowApi.secrets.FLOW_API_LLM_API_KEY
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: clickhouse.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: clickhouse.secrets.CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: ingestor.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: ingestor.secrets.CLICKHOUSE_PASSWORD
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_USER
+        targetPath: syslogIngestor.secrets.CLICKHOUSE_USER
+      - file: kubernetes/apps/default/argus-panoptes/app/helmrelease.yaml
+        kind: Secret
+        name: argus-panoptes-secrets
+        valuesKey: CLICKHOUSE_PASSWORD
+        targetPath: syslogIngestor.secrets.CLICKHOUSE_PASSWORD
+    gatewayParents:
+      - route: argus-panoptes
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: default/cobalt
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: cobalt
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+  - id: default/echo
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: echo
+        parentRefs:
+          - - name: envoy-external
+              namespace: network
+              sectionName: https
+  - id: default/librechat
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: librechat
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+  - id: default/node-hp-scan-to
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: default/open-meteo
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: open-meteo
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+  - id: default/paperless-ngx
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: cloudnative-pg
+        namespace: flux-system
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/default/paperless-ngx/app/redis-helmrelease.yaml
+        kind: HelmRepository
+        name: bitnami
+        namespace: default
+    valuesFrom: []
+    gatewayParents:
+      - route: paperless-ngx
+        parentRefs:
+          - - name: envoy-internal
+              namespace: network
+              sectionName: https
+  - id: default/weather-scraper
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: open-meteo
+        namespace: default
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: default/zone-editor
+    fluxNamespace: default
+    targetNamespace: default
+    dependsOn:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: zone-editor
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: external-secrets/external-secrets-operator
+    fluxNamespace: flux-system
+    targetNamespace: external-secrets
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: external-secrets/onepassword-connect
+    fluxNamespace: flux-system
+    targetNamespace: external-secrets
+    dependsOn:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/external-secrets/onepassword-connect/app/helmrelease.yaml
+        kind: HelmRepository
+        name: onepassword
+    valuesFrom: []
+    gatewayParents: []
+  - id: external-secrets/onepassword-secret-store
+    fluxNamespace: flux-system
+    targetNamespace: external-secrets
+    dependsOn:
+      - name: external-secrets-operator
+        namespace: flux-system
+      - name: onepassword-connect
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: flux-system/capacitor
+    fluxNamespace: flux-system
+    targetNamespace: flux-system
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: capacitor
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: flux-system/flux-instance
+    fluxNamespace: flux-system
+    targetNamespace: flux-system
+    dependsOn:
+      - name: flux-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: github-webhook
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+  - id: flux-system/flux-operator
+    fluxNamespace: flux-system
+    targetNamespace: flux-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: flux-system/monitoring
+    fluxNamespace: flux-system
+    targetNamespace: flux-system
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: flux-system/weave-gitops
+    fluxNamespace: flux-system
+    targetNamespace: flux-system
+    dependsOn:
+      - name: external-secrets-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/flux-system/weave-gitops/app/helmrelease.yaml
+        kind: HelmRepository
+        name: ww-gitops
+    valuesFrom: []
+    gatewayParents:
+      - route: weave-gitops
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: kube-system/cilium
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: hubble-ui
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: kube-system/coredns
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: kube-system/metrics-server
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: kube-system/reloader
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: kube-system/spegel
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: kube-system/vertical-pod-autoscaler
+    fluxNamespace: kube-system
+    targetNamespace: kube-system
+    dependsOn:
+      - name: metrics-server
+        namespace: kube-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/kube-system/vertical-pod-autoscaler/app/helmrelease.yaml
+        kind: HelmRepository
+        name: fairwinds-stable
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/control-plane
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/goldilocks
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: vertical-pod-autoscaler
+        namespace: kube-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/goldilocks/app/helmrelease.yaml
+        kind: HelmRepository
+        name: fairwinds-stable
+    valuesFrom: []
+    gatewayParents:
+      - route: goldilocks
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: monitoring/grafana
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: vmsingle
+        namespace: flux-system
+      - name: vmalert
+        namespace: flux-system
+      - name: victoria-logs
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/grafana/app/helmrelease.yaml
+        kind: HelmRepository
+        name: grafana
+    valuesFrom: []
+    gatewayParents:
+      - route: grafana
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+  - id: monitoring/kube-state-metrics
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: node-exporter
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/kube-state-metrics/app/helmrelease.yaml
+        kind: HelmRepository
+        name: prometheus-community
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/kubelet-cadvisor
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/kubetail
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/kubetail/app/helmrelease.yaml
+        kind: HelmRepository
+        name: kubetail
+    valuesFrom: []
+    gatewayParents:
+      - route: kubetail-external
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: https
+      - route: kubetail
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: monitoring/node-exporter
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/node-exporter/app/helmrelease.yaml
+        kind: HelmRepository
+        name: prometheus-community
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/truenas-exporters
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: vmsingle
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/vector-syslog
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: victoria-logs
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/vector-syslog/app/helmrelease.yaml
+        kind: HelmRepository
+        name: vector
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/victoria-logs
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/victoria-logs/app/helmrelease.yaml
+        kind: HelmRepository
+        name: victoria-metrics
+    valuesFrom: []
+    gatewayParents:
+      - route: victoria-metrics-write
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: monitoring/victoria-metrics-operator
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn: []
+    substituteFrom: []
+    sourceReferences:
+      - file: kubernetes/apps/monitoring/victoria-metrics-operator/app/helmrelease.yaml
+        kind: HelmRepository
+        name: victoria-metrics
+    valuesFrom: []
+    gatewayParents: []
+  - id: monitoring/vmalert
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: vmsingle
+        namespace: flux-system
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: vmalert
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+      - route: alertmanager
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: monitoring/vmsingle
+    fluxNamespace: flux-system
+    targetNamespace: monitoring
+    dependsOn:
+      - name: victoria-metrics-operator
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: vmsingle-write
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: network/cloudflare-dns
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: network/cloudflare-dns-internal
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn:
+      - name: cloudflare-dns
+        namespace: network
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: network/cloudflare-tunnel
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: network/consul
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn:
+      - name: onepassword-secret-store
+        namespace: flux-system
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: consul
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+  - id: network/consul-sync
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn:
+      - name: consul
+        namespace: network
+      - name: onepassword-secret-store
+        namespace: flux-system
+      - name: envoy-gateway
+        namespace: network
+    substituteFrom: []
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: network/envoy-gateway
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents:
+      - route: https-redirect
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+            sectionName: http
+          - name: envoy-internal
+            namespace: network
+            sectionName: http
+  - id: network/k8s-gateway
+    fluxNamespace: network
+    targetNamespace: network
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences: []
+    valuesFrom: []
+    gatewayParents: []
+  - id: storage/longhorn
+    fluxNamespace: flux-system
+    targetNamespace: longhorn-system
+    dependsOn: []
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+    sourceReferences:
+      - file: kubernetes/apps/storage/longhorn/app/helmrelease.yaml
+        kind: HelmRepository
+        name: longhorn
+    valuesFrom: []
+    gatewayParents:
+      - route: longhorn-ui
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https

@@ -1,0 +1,90 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cobalt
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: cobalt
+  interval: 1h
+  values:
+    controllers:
+      cobalt:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/imputnet/cobalt
+              tag: "11"
+            env:
+              API_URL: "https://cobalt.${SECRET_DOMAIN}/"
+              API_PORT: &port 9000
+              API_LISTEN_ADDRESS: "0.0.0.0"
+              API_AUTH_REQUIRED: "1"
+              API_KEY_URL: "file:///etc/cobalt/keys.json"
+              CORS_WILDCARD: "0"
+              CORS_URL: "https://cobalt.tools"
+              RATELIMIT_MAX: "60"
+              SESSION_RATELIMIT_MAX: "30"
+              TUNNEL_RATELIMIT_MAX: "120"
+              DURATION_LIMIT: "10800"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 5
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+      keys:
+        type: secret
+        name: cobalt-keys
+        globalMounts:
+          - path: /etc/cobalt/keys.json
+            subPath: keys.json
+            readOnly: true
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames: ["cobalt.${SECRET_DOMAIN}"]
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: *port

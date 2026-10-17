@@ -1,0 +1,36 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveMetadataSnapshot
+metadata:
+  resource: nodes
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+records:
+  - name: node1
+    status: Ready
+    internalIP: 10.69.0.10
+    architecture: arm64
+    osImage: Talos (v1.13.0)
+    kernel: 6.18.24-talos
+    kubelet: v1.36.2
+  - name: node2
+    status: Ready
+    internalIP: 10.69.0.11
+    architecture: arm64
+    osImage: Talos (v1.13.0)
+    kernel: 6.18.24-talos
+    kubelet: v1.36.2
+  - name: node3
+    status: Ready
+    internalIP: 10.69.0.12
+    architecture: arm64
+    osImage: Talos (v1.13.0)
+    kernel: 6.18.24-talos
+    kubelet: v1.36.2
+  - name: node4
+    status: Ready
+    internalIP: 10.69.0.13
+    architecture: arm64
+    osImage: Talos (v1.13.0)
+    kernel: 6.18.24-talos
+    kubelet: v1.36.2

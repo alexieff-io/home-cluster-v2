@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: coroot-operator
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/coroot/coroot-operator/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: coroot
+  wait: true
+  retryInterval: 1m
+  timeout: 5m

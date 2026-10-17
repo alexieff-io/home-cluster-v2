@@ -1,0 +1,90 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: LiveTableSnapshot
+metadata:
+  resource: Deployments, StatefulSets, and DaemonSets
+  capturedAt: "2026-08-13"
+  context: admin@kubernetes
+  containsSecretValues: false
+table: |
+  KIND          NAMESPACE          NAME                                                READY    DESIRED   IMAGES
+  Deployment    arc-systems        gha-runner-scale-set-controller-gha-rs-controller   1        1         ghcr.io/actions/gha-runner-scale-set-controller:0.14.2
+  Deployment    cert-manager       cert-manager                                        1        1         quay.io/jetstack/cert-manager-controller:v1.20.2
+  Deployment    cert-manager       cert-manager-cainjector                             1        1         quay.io/jetstack/cert-manager-cainjector:v1.20.2
+  Deployment    cert-manager       cert-manager-webhook                                1        1         quay.io/jetstack/cert-manager-webhook:v1.20.2
+  Deployment    cnpg-system        cloudnative-pg                                      1        1         ghcr.io/cloudnative-pg/cloudnative-pg:1.30.0
+  Deployment    coroot             coroot-cluster-agent                                1        1         ghcr.io/coroot/coroot-cluster-agent:1.8.5
+  Deployment    coroot             coroot-operator                                     1        1         ghcr.io/coroot/coroot-operator:1.9.6
+  Deployment    coroot             coroot-prometheus                                   1        1         ghcr.io/coroot/prometheus:2.55.1-ubi9-0
+  Deployment    default            argus-panoptes                                      1        1         ghcr.io/alexieff-io/argus-panoptes:1.8.0
+  Deployment    default            argus-panoptes-dashboard                            1        1         ghcr.io/alexieff-io/argus-dashboard:1.8.0
+  Deployment    default            argus-panoptes-flow-api                             1        1         ghcr.io/alexieff-io/argus-flow-api:1.8.0
+  Deployment    default            argus-panoptes-ingestor                             1        1         ghcr.io/alexieff-io/argus-ingestor:1.8.0
+  Deployment    default            argus-panoptes-syslog-ingestor                      1        1         ghcr.io/alexieff-io/argus-syslog-ingestor:1.8.0
+  Deployment    default            cobalt                                              1        1         ghcr.io/imputnet/cobalt:11
+  Deployment    default            librechat-librechat                                 1        1         registry.librechat.ai/danny-avila/librechat:v0.8.5
+  Deployment    default            librechat-mongodb                                   1        1         docker.io/bitnami/mongodb:latest
+  Deployment    default            node-hp-scan-to                                     1        1         docker.io/manuc66/node-hp-scan-to:master
+  Deployment    default            open-meteo                                          1        1         ghcr.io/open-meteo/open-meteo:1.5.2,ghcr.io/open-meteo/open-meteo:1.5.2
+  Deployment    default            paperless-ngx                                       1        1         ghcr.io/paperless-ngx/paperless-ngx:2.20.15,docker.io/gotenberg/gotenberg:8,docker.io/apache/tika:latest-full
+  Deployment    default            weather-scraper                                     1        1         ghcr.io/alexieff-io/open-meteo-scrapper:main
+  Deployment    default            zone-editor                                         1        1         ghcr.io/sensy-one/zone-editor:latest
+  Deployment    external-secrets   external-secrets-operator                           1        1         ghcr.io/external-secrets/external-secrets:v2.6.0
+  Deployment    external-secrets   external-secrets-operator-cert-controller           1        1         ghcr.io/external-secrets/external-secrets:v2.6.0
+  Deployment    external-secrets   external-secrets-operator-webhook                   1        1         ghcr.io/external-secrets/external-secrets:v2.6.0
+  Deployment    external-secrets   onepassword-connect                                 1        1         1password/connect-api:1.8.2,1password/connect-sync:1.8.2
+  Deployment    flux-system        flux-operator                                       1        1         ghcr.io/controlplaneio-fluxcd/flux-operator:v0.52.0
+  Deployment    flux-system        helm-controller                                     1        1         ghcr.io/fluxcd/helm-controller:v1.5.5@sha256:b4b8f7715cc7cb61382eeb82bea108d1bdd965b00e7192c5dc9ab7436a33658b
+  Deployment    flux-system        kustomize-controller                                1        1         ghcr.io/fluxcd/kustomize-controller:v1.8.5@sha256:70e2a25edeee82690e68662409fb1b60f7d3084c93435e8ab5337a6e0244ffed
+  Deployment    flux-system        notification-controller                             1        1         ghcr.io/fluxcd/notification-controller:v1.8.4@sha256:75842ecfcca4397a788051d6b00ec34f96ea74788c92d9c360fc4d196ea04551
+  Deployment    flux-system        source-controller                                   1        1         ghcr.io/fluxcd/source-controller:v1.8.5@sha256:65172e2405cf95b92c4b00cefd28d5e8ffd1f81d6d097f85c6e83a9c557c9def
+  Deployment    flux-system        weave-gitops                                        1        1         ghcr.io/weaveworks/wego-app:v0.38.0
+  Deployment    kube-system        cilium-operator                                     1        1         quay.io/cilium/operator-generic:v1.18.6@sha256:34a827ce9ed021c8adf8f0feca131f53b3c54a3ef529053d871d0347ec4d69af
+  Deployment    kube-system        coredns                                             2        2         mirror.gcr.io/coredns/coredns:1.13.1
+  Deployment    kube-system        hubble-relay                                        1        1         quay.io/cilium/hubble-relay:v1.18.6@sha256:fb6135e34c31e5f175cb5e75f86cea52ef2ff12b49bcefb7088ed93f5009eb8e
+  Deployment    kube-system        hubble-ui                                           1        1         quay.io/cilium/hubble-ui:v0.13.3@sha256:661d5de7050182d495c6497ff0b007a7a1e379648e60830dd68c4d78ae21761d,quay.io/cilium/hubble-ui-backend:v0.13.3@sha256:db1454e45dc39ca41fbf7cad31eec95d99e5b9949c39daaad0fa81ef29d56953
+  Deployment    kube-system        metrics-server                                      1        1         registry.k8s.io/metrics-server/metrics-server:v0.8.1
+  Deployment    kube-system        reloader                                            1        1         ghcr.io/stakater/reloader:v1.4.17
+  Deployment    kube-system        vertical-pod-autoscaler-vpa-recommender             1        1         registry.k8s.io/autoscaling/vpa-recommender:1.6.0
+  Deployment    longhorn-system    csi-attacher                                        3        3         docker.io/longhornio/csi-attacher:v4.12.0
+  Deployment    longhorn-system    csi-provisioner                                     3        3         docker.io/longhornio/csi-provisioner:v5.3.0-20260514
+  Deployment    longhorn-system    csi-resizer                                         3        3         docker.io/longhornio/csi-resizer:v2.1.0-20260514
+  Deployment    longhorn-system    csi-snapshotter                                     3        3         docker.io/longhornio/csi-snapshotter:v8.5.0-20260514
+  Deployment    longhorn-system    longhorn-driver-deployer                            1        1         docker.io/longhornio/longhorn-manager:v1.12.0
+  Deployment    longhorn-system    longhorn-ui                                         2        2         docker.io/longhornio/longhorn-ui:v1.12.0
+  Deployment    monitoring         goldilocks-controller                               1        1         us-docker.pkg.dev/fairwinds-ops/oss/goldilocks:v4.14.1
+  Deployment    monitoring         goldilocks-dashboard                                1        1         us-docker.pkg.dev/fairwinds-ops/oss/goldilocks:v4.14.1
+  Deployment    monitoring         grafana                                             1        1         quay.io/kiwigrid/k8s-sidecar:2.5.0,docker.io/grafana/grafana:12.3.1
+  Deployment    monitoring         kube-state-metrics                                  1        1         registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.19.1
+  Deployment    monitoring         kubetail-cluster-api                                1        1         ghcr.io/kubetail-org/kubetail-cluster-api:0.8.2
+  Deployment    monitoring         kubetail-dashboard                                  1        1         ghcr.io/kubetail-org/kubetail-dashboard:0.17.0
+  Deployment    monitoring         victoria-metrics-operator                           1        1         victoriametrics/operator:v0.74.0
+  Deployment    monitoring         vmagent-vmagent                                     1        1         victoriametrics/vmagent:v1.148.0,victoriametrics/operator:config-reloader-v0.74.0
+  Deployment    monitoring         vmalert-vmalert                                     1        1         victoriametrics/vmalert:v1.148.0,victoriametrics/operator:config-reloader-v0.74.0
+  Deployment    monitoring         vmsingle-vmsingle                                   1        1         victoriametrics/victoria-metrics:v1.148.0
+  Deployment    network            cloudflare-dns                                      1        1         registry.k8s.io/external-dns/external-dns:v0.21.0
+  Deployment    network            cloudflare-dns-internal                             1        1         registry.k8s.io/external-dns/external-dns:v0.21.0
+  Deployment    network            cloudflare-tunnel                                   1        1         docker.io/cloudflare/cloudflared:2026.6.1
+  Deployment    network            consul                                              1        1         hashicorp/consul:2.0
+  Deployment    network            consul-sync                                         <none>   1         ghcr.io/alexieff-io/consul-sync:sha-1effc1d
+  Deployment    network            envoy-external                                      2        2         mirror.gcr.io/envoyproxy/envoy:distroless-v1.38.1,mirror.gcr.io/envoyproxy/gateway:v1.8.1
+  Deployment    network            envoy-gateway                                       1        1         mirror.gcr.io/envoyproxy/gateway:v1.8.1
+  Deployment    network            envoy-internal                                      2        2         mirror.gcr.io/envoyproxy/envoy:distroless-v1.38.1,mirror.gcr.io/envoyproxy/gateway:v1.8.1
+  Deployment    network            k8s-gateway                                         1        1         ghcr.io/k8s-gateway/k8s_gateway:1.7.0
+  StatefulSet   coroot             coroot-clickhouse-keeper                            3        3         ghcr.io/coroot/clickhouse:25.11.2-ubi9-0
+  StatefulSet   coroot             coroot-clickhouse-shard-0                           1        1         ghcr.io/coroot/clickhouse:25.11.2-ubi9-0
+  StatefulSet   coroot             coroot-coroot                                       1        1         ghcr.io/coroot/coroot-ee:1.24.4
+  StatefulSet   default            argus-panoptes-clickhouse                           1        1         clickhouse/clickhouse-server:24.8
+  StatefulSet   default            librechat-meilisearch                               1        1         getmeili/meilisearch:v1.7.3
+  StatefulSet   default            paperless-ngx-redis-master                          1        1         registry-1.docker.io/bitnami/redis:latest
+  StatefulSet   monitoring         vector-syslog                                       1        1         docker.io/timberio/vector:0.57.0-distroless-libc
+  StatefulSet   monitoring         victoria-logs-victoria-logs-single-server           1        1         victoriametrics/victoria-logs:v1.50.0
+  StatefulSet   monitoring         vmalertmanager-alertmanager                         1        1         prom/alertmanager:v0.31.0,victoriametrics/operator:config-reloader-v0.74.0
+  DaemonSet     coroot             coroot-node-agent                                   <none>   <none>    ghcr.io/coroot/coroot-node-agent:1.35.8
+  DaemonSet     kube-system        cilium                                              <none>   <none>    quay.io/cilium/cilium:v1.18.6@sha256:42ec562a5ff6c8a860c0639f5a7611685e253fd9eb2d2fcdade693724c9166a4
+  DaemonSet     kube-system        spegel                                              <none>   <none>    ghcr.io/spegel-org/spegel@sha256:2c587a649b1b9b61d09e1e42901da5f34b2ab187247acb23086de3fad504a49c
+  DaemonSet     longhorn-system    engine-image-ei-a4d05f02                            <none>   <none>    docker.io/longhornio/longhorn-engine:v1.12.0
+  DaemonSet     longhorn-system    longhorn-csi-plugin                                 <none>   <none>    docker.io/longhornio/csi-node-driver-registrar:v2.17.0,docker.io/longhornio/livenessprobe:v2.19.0,docker.io/longhornio/longhorn-manager:v1.12.0
+  DaemonSet     longhorn-system    longhorn-manager                                    <none>   <none>    docker.io/longhornio/longhorn-manager:v1.12.0,docker.io/longhornio/longhorn-share-manager:v1.12.0
+  DaemonSet     monitoring         kubetail-cluster-agent                              <none>   <none>    ghcr.io/kubetail-org/kubetail-cluster-agent:0.7.1
+  DaemonSet     monitoring         node-exporter                                       <none>   <none>    quay.io/prometheus/node-exporter:v1.12.1
+  DaemonSet     monitoring         victoria-logs-vector                                <none>   <none>    docker.io/timberio/vector:0.54.0-distroless-libc

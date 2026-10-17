@@ -1,0 +1,94 @@
+apiVersion: handoff.cluster-rebuild/v1
+kind: TemplateOwnershipMap
+metadata:
+  templateRevision: bb09348610aa5bee9505230b99c21c08db15bf6d
+  rule: Generated template owns overlaps; current configuration contributes reviewed differences only.
+components:
+  - component: talos-and-bootstrap
+    sourcePaths: [talos/, bootstrap/, .taskfiles/]
+    templatePath: template/config/talos and template/config/bootstrap
+    owner: template
+    action: generate-from-cluster.toml
+    requiredComparison:
+      - ARM64 schematic and /dev/mmcblk0 install disk
+      - node MAC addresses and static addresses
+      - API VIP, gateway addresses, and Kubernetes CIDRs
+      - machine sysctls, files, network, time, and disk patches
+  - component: cert-manager/cert-manager
+    sourcePath: payload/apps/cert-manager/cert-manager
+    templatePath: kubernetes/apps/cert-manager/cert-manager
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [ClusterIssuer and wildcard certificate, metrics, Cloudflare DNS-01 credentials]
+  - component: default/echo
+    sourcePath: payload/apps/default/echo
+    templatePath: kubernetes/apps/default/echo
+    owner: template-slot-current-config
+    action: replace-template-example-with-current-definition
+    requiredComparison: [route exposure and hostname, image, security context]
+  - component: flux-system/flux-operator
+    sourcePath: payload/apps/flux-system/flux-operator
+    templatePath: kubernetes/apps/flux-system/flux-operator
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [operator chart settings, metrics]
+  - component: flux-system/flux-instance
+    sourcePath: payload/apps/flux-system/flux-instance
+    templatePath: kubernetes/apps/flux-system/flux-instance
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [Git source authentication, webhook Receiver and route, controller settings, monitoring]
+  - component: kube-system/cilium
+    sourcePath: payload/apps/kube-system/cilium
+    templatePath: kubernetes/apps/kube-system/cilium
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [native routing, autoDirectNodeRoutes, DSR and Maglev, L2 announcements and LB pools, Hubble, Talos hostLegacyRouting]
+  - component: kube-system/coredns
+    sourcePath: payload/apps/kube-system/coredns
+    templatePath: kubernetes/apps/kube-system/coredns
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [service address 10.43.0.10, metrics, replicas and resources]
+  - component: kube-system/metrics-server
+    sourcePath: payload/apps/kube-system/metrics-server
+    templatePath: kubernetes/apps/kube-system/metrics-server
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [Talos-compatible kubelet TLS settings, resources]
+  - component: kube-system/reloader
+    sourcePath: payload/apps/kube-system/reloader
+    templatePath: kubernetes/apps/kube-system/reloader
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [chart source, resources]
+  - component: kube-system/spegel
+    sourcePath: payload/apps/kube-system/spegel
+    templatePath: kubernetes/apps/kube-system/spegel
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [registry port, Talos mirror configuration, chart settings]
+  - component: network/cloudflare-dns
+    sourcePath: payload/apps/network/cloudflare-dns
+    templatePath: kubernetes/apps/network/cloudflare-dns
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [domain filters, external gateway target, token source, record ownership]
+  - component: network/cloudflare-tunnel
+    sourcePath: payload/apps/network/cloudflare-tunnel
+    templatePath: kubernetes/apps/network/cloudflare-tunnel
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [new tunnel credential handoff, external gateway origin, health settings]
+  - component: network/envoy-gateway
+    sourcePath: payload/apps/network/envoy-gateway
+    templatePath: kubernetes/apps/network/envoy-gateway
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [internal 10.69.0.27 and external 10.69.0.28, listeners and certificates, redirects, compression, HTTP2 and HTTP3, TLS policy, PodMonitor]
+  - component: network/k8s-gateway
+    sourcePath: payload/apps/network/k8s-gateway
+    templatePath: kubernetes/apps/network/k8s-gateway
+    owner: template
+    action: compare-and-overlay
+    requiredComparison: [LoadBalancer address 10.69.0.26, watched resources and domain, upstream DNS]

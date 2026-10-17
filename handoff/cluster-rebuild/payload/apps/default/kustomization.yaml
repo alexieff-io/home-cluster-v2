@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+
+components:
+  - ../../components/sops
+
+resources:
+  - ./namespace.yaml
+  - ./argus-panoptes/ks.yaml
+  - ./cobalt/ks.yaml
+  - ./librechat/ks.yaml
+  - ./node-hp-scan-to/ks.yaml
+  - ./open-meteo/ks.yaml
+  - ./paperless-ngx/ks.yaml
+  - ./weather-scraper/ks.yaml
+  - ./zone-editor/ks.yaml
